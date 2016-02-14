@@ -4,7 +4,7 @@ import com.etherblood.cardsmatch.cardgame.MatchState;
 import com.etherblood.cardsmatch.cardgame.bot.Bot;
 import com.etherblood.cardsmatch.cardgame.bot.commands.Command;
 import com.etherblood.entitysystem.data.EntityId;
-import com.etherblood.montecarlotreesearch.MonteCarloAgent;
+import com.etherblood.montecarlotreesearch.old.MonteCarloAgent;
 import com.etherblood.montecarlotreesearch.MonteCarloNode;
 
 /**

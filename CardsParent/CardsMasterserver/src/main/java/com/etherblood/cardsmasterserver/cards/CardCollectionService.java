@@ -42,7 +42,7 @@ public class CardCollectionService {
     @Transactional
     @PreAuthorize("hasRole('ROLE_USER')")
     public CardCollectionUpdate onCardCollectionRequest(CardCollectionRequest request) {
-        CardCollection userCollection = cardsRepo.getFirstUserCollectionByTypeFetch(connectionService.getCurrentUser().getId(), CollectionType.Collection);
+        CardCollection userCollection = cardsRepo.getFirstUserCollectionByType(connectionService.getCurrentUser().getId(), CollectionType.Collection);
         List<String> cards = userCollection.getCards();
         return new CardCollectionUpdate(cards.toArray(new String[cards.size()]));
     }
@@ -111,7 +111,7 @@ public class CardCollectionService {
     @Transactional
     @PreAuthorize("hasRole('ROLE_USER')")
     public CardCollection getActiveUserLibrary(long userId) {
-        CardCollection library = cardsRepo.getFirstUserCollectionByTypeFetch(connectionService.getCurrentUser().getId(), CollectionType.Collection);
+        CardCollection library = cardsRepo.getFirstUserCollectionByType(connectionService.getCurrentUser().getId(), CollectionType.Collection);
 //        CardCollection library = cardsRepo.getFirstUserCollectionByType(userId, CollectionType.Library);//TODO get active lib instead of first
 //        if (!isSubCollection(cardsRepo.getFirstUserCollectionByType(userId, CollectionType.Collection), library)) {
 //            throw new IllegalStateException("Library of user with id " + userId + " is invalid");

@@ -1,7 +1,7 @@
 package com.etherblood.cardsmasterserver.cards;
 
-import com.etherblood.cardsmasterserver.cards.model.CardCollection;
 import com.etherblood.cardsmasterserver.cards.model.CollectionType;
+import com.etherblood.cardsmasterserver.cards.model.CardCollection;
 import com.etherblood.cardsmasterserver.cards.model.QCardCollection;
 import com.etherblood.cardsmasterserver.core.AbstractRepository;
 import java.util.List;
@@ -19,14 +19,6 @@ public class CardCollectionRepository extends AbstractRepository<CardCollection>
         return from(collection)
                 .where(collection.owner.id.eq(userId))
                 .list(collection);
-    }
-
-    public CardCollection getFirstUserCollectionByTypeFetch(long userId, CollectionType collectionType) {
-        return from(collection)
-                .join(collection.cards).fetch()
-                .where(collection.owner.id.eq(userId))
-                .where(collection.type.eq(collectionType))
-                .singleResult(collection);
     }
 
     public CardCollection getFirstUserCollectionByType(long userId, CollectionType collectionType) {

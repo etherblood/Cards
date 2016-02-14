@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <templates>
+        <template name="Wisp">
+            <collectible/>
+            <components>
+                <cost cost="1"/>
+                <attack attack="1"/>
+                <health health="2"/>
+                <minion/>
+                <castEffect template="Activation=>Summon"/>
+            </components>
+            
+            <image>
+                <url>http://img12.deviantart.net/e9ef/i/2015/304/d/8/let_s_go_find_some_candy_by_deadslug-d9f1jzb.png</url>
+            </image>
+        </template>
+        <template name="Mirth">
+            <collectible/>
+            <components>
+                <cost cost="3"/>
+                <attack attack="3"/>
+                <health health="2"/>
+                <charge/>
+                <minion/>
+                <castEffect template="Activation=>Summon"/>
+            </components>
+            
+            <image>
+                <url>http://orig15.deviantart.net/6138/f/2015/214/f/2/tumblr_nbp9lcycoa1r4c1xto1_500_by_unikeko-d93vbwy.gif</url>
+            </image>
+        </template>
+        <template name="Faerie Dragon">
+            <collectible/>
+            <components>
+                <cost cost="3"/>
+                <attack attack="3"/>
+                <health health="2"/>
+                <minion/>
+                <dragon/>
+                <divine/>
+                <castEffect template="Activation=>Summon"/>
+            </components>
+            <image>
+                <url>http://pre07.deviantart.net/4d7a/th/pre/i/2015/357/7/4/king_of_the_undersea_by_dragolisco-d9l85yu.jpg</url>
+            </image>
+        </template>
+        <template name="Black Dragon">
+            <collectible/>
+            <components>
+                <cost cost="6"/>
+                <attack attack="5"/>
+                <health health="5"/>
+                <minion/>
+                <dragon/>
+                <taunt/>
+                <divine/>
+                <castEffect template="Activation=>Summon"/>
+            </components>
+            <image>
+                <url>http://img09.deviantart.net/5bbb/i/2015/287/a/4/black_dragon_by_sandara-d6h59lm.jpg</url>
+            </image>
+        </template>
+        <template name="River Crocolisk">
+            <collectible/>
+            <components>
+                <cost cost="2"/>
+                <attack attack="2"/>
+                <health health="3"/>
+                <beast/>
+                <minion/>
+                <castEffect template="Activation=>Summon"/>
+            </components>
+            
+            <image>
+                <url>http://orig12.deviantart.net/dc80/f/2015/341/b/8/banner_snakes_rule_by_alradeck-d9je7gx.jpg</url>
+            </image>
+        </template>
+        <template name="Dunno">
+            <collectible/>
+            <components>
+                <cost cost="4"/>
+                <attack attack="4"/>
+                <health health="3"/>
+                <beast/>
+                <minion/>
+                <charge/>
+                <castEffect template="Activation=>Summon"/>
+            </components>
+            
+            <image>
+                <url>http://orig07.deviantart.net/4f91/f/2016/034/a/5/mh_test_by_denorelli-d9qe2aq.gif</url>
+            </image>
+        </template>
+        <template name="Leeroy Jenkins">
+            <collectible/>
+            <components>
+                <cost cost="5"/>
+                <attack attack="6"/>
+                <health health="2"/>
+                <charge/>
+                <minion/>
+                <castEffect template="Activation=>Summon"/>
+            </components>
+            <childs>
+                <child>Battlecry=>Whelp {SetOwnerEffectComponent}</child>
+                <child>Battlecry=>Whelp {SetOwnerEffectComponent}</child>
+            </childs>
+            
+            <image>
+                <url>http://hydra-media.cursecdn.com/hearthstone.gamepedia.com/thumb/6/69/Leeroy_Jenkins_(art).jpg/525px-Leeroy_Jenkins_(art).jpg?version=a4ff9050dedc9c96a05cbabe019c6b1e</url>
+            </image>
+            <audio>
+                <summon>
+                    <path>sounds/Leeroy Jenkins/Summon.wav</path>
+                </summon>
+                <death>
+                    <path>sounds/Leeroy Jenkins/Death.wav</path>
+                </death>
+                <intro>
+                    <path>sounds/Leeroy Jenkins/Intro.wav</path>
+                </intro>
+                <attack>
+                    <path>sounds/Leeroy Jenkins/Attack.wav</path>
+                </attack>
+            </audio>
+        </template>
+        <template name="Whelp">
+            <components>
+                <cost cost="1"/>
+                <attack attack="1"/>
+                <health health="1"/>
+                <dragon/>
+                <minion/>
+                <castEffect template="Activation=>Summon"/>
+            </components>
+            
+            <image>
+                <url>http://hydra-media.cursecdn.com/hearthstone.gamepedia.com/1/16/Whelp_full.png?version=a2a4d0ec0f80d219842717d901ba859f</url>
+            </image>
+        </template>
+    </templates>
+    <aliases>
+        <alias key="health" value="com.etherblood.cardsmatch.cardgame.components.battle.stats.HealthComponent"/>
+        <alias key="attack" value="com.etherblood.cardsmatch.cardgame.components.battle.stats.AttackComponent"/>
+        <alias key="cost" value="com.etherblood.cardsmatch.cardgame.components.battle.stats.ManaCostComponent"/>
+        <alias key="minion" value="com.etherblood.cardsmatch.cardgame.components.battle.MinionComponent"/>
+        <alias key="charge" value="com.etherblood.cardsmatch.cardgame.components.battle.buffs.ChargeComponent"/>
+        <alias key="divine" value="com.etherblood.cardsmatch.cardgame.components.battle.buffs.DivineShieldComponent"/>
+        <alias key="taunt" value="com.etherblood.cardsmatch.cardgame.components.battle.buffs.TauntComponent"/>
+        <alias key="castEffect" value="com.etherblood.cardsmatch.cardgame.components.cards.CastTemplateComponent"/>
+        <alias key="beast" value="com.etherblood.cardsmatch.cardgame.components.battle.races.BeastComponent"/>
+        <alias key="dragon" value="com.etherblood.cardsmatch.cardgame.components.battle.races.DragonComponent"/>
+    </aliases>
+</root>

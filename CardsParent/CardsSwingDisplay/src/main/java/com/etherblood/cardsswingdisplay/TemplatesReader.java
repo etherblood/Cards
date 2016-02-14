@@ -19,10 +19,9 @@ public class TemplatesReader {
 
     public void read(String rootPath) {
         SAXBuilder builder = new SAXBuilder();
-        File xmlFile = new File(rootPath + "templates.xml");
 
         try {
-            Document document = (Document) builder.build(xmlFile);
+            Document document = (Document) builder.build(TemplatesReader.class.getClassLoader().getResourceAsStream(rootPath + "templates.xml"));
             Element rootNode = document.getRootElement();
             Element templatesNode = rootNode.getChild("templates");
             List<Element> list = templatesNode.getChildren("template");

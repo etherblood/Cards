@@ -96,7 +96,7 @@ public class JSONBUserType extends CollectionUserType implements
   public void setParameterValues(Properties parameters) {
     final String clazz = (String) parameters.get(CLASS);
     try {
-      returnedClass = ReflectHelper.classForName(clazz);
+      returnedClass = ReflectHelper.classForName(clazz, getClass());
     } catch (ClassNotFoundException e) {
       throw new IllegalArgumentException("Class: " + clazz
           + " is not a known class type.");

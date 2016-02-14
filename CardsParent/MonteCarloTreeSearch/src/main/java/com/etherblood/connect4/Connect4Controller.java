@@ -1,7 +1,7 @@
 package com.etherblood.connect4;
 
 import com.etherblood.montecarlotreesearch.MonteCarloState;
-import com.etherblood.montecarlotreesearch.interactive.MonteCarloControls;
+import com.etherblood.montecarlotreesearch.MonteCarloControls;
 import java.util.Random;
 
 /**

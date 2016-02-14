@@ -7,8 +7,8 @@ import com.etherblood.cardsmatch.cardgame.components.player.ItsMyTurnComponent;
 import com.etherblood.cardsmatch.cardgame.components.player.WinnerComponent;
 import com.etherblood.entitysystem.data.EntityId;
 import com.etherblood.entitysystem.filters.FilterQuery;
-import com.etherblood.montecarlotreesearch.GameSimulation;
-import com.etherblood.montecarlotreesearch.MoveIterator;
+import com.etherblood.montecarlotreesearch.old.GameSimulation;
+import com.etherblood.montecarlotreesearch.old.MoveIterator;
 import java.util.Set;
 
 /**

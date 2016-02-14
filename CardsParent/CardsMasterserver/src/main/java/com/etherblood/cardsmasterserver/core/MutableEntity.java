@@ -53,15 +53,15 @@ public abstract class MutableEntity {
         return updated;
     }
 
-//    public void setCreated(Date created) {
-//        this.created = created;
-//    }
+    public void setCreated(Date created) {
+        this.created = created;
+    }
 
     public void setVersion(int version) {
         this.version = version;
     }
 
-//    public void setUpdated(Date updated) {
-//        this.updated = updated;
-//    }
+    public void setUpdated(Date updated) {
+        this.updated = updated;
+    }
 }

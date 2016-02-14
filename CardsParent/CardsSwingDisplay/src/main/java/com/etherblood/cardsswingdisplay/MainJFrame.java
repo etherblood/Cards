@@ -17,28 +17,11 @@ public class MainJFrame extends javax.swing.JFrame {
      * Creates new form MainJFrame
      */
     public MainJFrame() {
-        TemplatesReader.INSTANCE.read(CLIENT_TEMPLATES_PATH);
-////        ImageFactory.INSTANCE.registerPath("Cairne Bloodhoof", new URL("http://img12.deviantart.net/e9ef/i/2015/304/d/8/let_s_go_find_some_candy_by_deadslug-d9f1jzb.png"));
-////        ImageFactory.INSTANCE.registerPath("Boulderfist Ogre", "C:\\Users\\Philipp\\Pictures\\armor_small_by_chaosringen-d73llq1.jpg");
-//        
-//        
-////        ImageFactory.INSTANCE.registerPath("Argent Squire", "C:\\Users\\Philipp\\Pictures\\Sprites\\Little Red Hood\\random_sprites___little_red_by_extrahp-d7auma5.gif");
-////        ImageFactory.INSTANCE.registerPath("Arcane Intellect", "C:\\Users\\Philipp\\Pictures\\「フラン」-「坂田ケイ」のイラスト [pixiv]-12234294.jpg");
-////        ImageFactory.INSTANCE.registerPath("Argent Commander", "C:\\Users\\Philipp\\Pictures\\blubber.png");
-////        ImageFactory.INSTANCE.registerPath("Booty Bay Bodyguard", "C:\\Users\\Philipp\\Pictures\\halloween_samus_by_splashbrush-d9cgray.jpg");
-//        ImageFactory.INSTANCE.registerPath("Boulderfist Ogre", "C:\\Users\\Philipp\\Pictures\\armor_small_by_chaosringen-d73llq1.jpg");
-//        try {
-////            ImageFactory.INSTANCE.registerPath("Arcane Explosion", new URL("http://orig10.deviantart.net/87cf/f/2015/315/b/0/lol__soraka__yandere__by_lynashi-d9gbylv.gif"));
-////            ImageFactory.INSTANCE.registerPath("Annoy-o-Tron", new URL("http://orig07.deviantart.net/4048/f/2015/284/c/b/deviantart_by_lynashi-d9cq3pg.gif"));
-////            ImageFactory.INSTANCE.registerPath("Argent Horserider", new URL("http://orig03.deviantart.net/4a4c/f/2015/307/1/4/hbdbarricade_by_lynashi-d9fe6d6.gif"));
-////            ImageFactory.INSTANCE.registerPath("Bloodfen Raptor", new URL("http://orig15.deviantart.net/175b/f/2015/295/0/b/thankyouudev_by_lynashi-d9dz810.gif"));
-//            ImageFactory.INSTANCE.registerUrl("Bluegill Warrior", new URL("http://orig15.deviantart.net/6138/f/2015/214/f/2/tumblr_nbp9lcycoa1r4c1xto1_500_by_unikeko-d93vbwy.gif"));
-//            ImageFactory.INSTANCE.registerUrl("Cairne Bloodhoof", new URL("http://img12.deviantart.net/e9ef/i/2015/304/d/8/let_s_go_find_some_candy_by_deadslug-d9f1jzb.png"));
-////            ImageFactory.INSTANCE.registerPath("Captured Jormungar", new URL("http://orig12.deviantart.net/99c4/f/2015/185/e/3/skittish_dark_pumpkin_by_ostinlein-d8zvna8.gif"));
-////            ImageFactory.INSTANCE.registerPath("Chillwind Yeti", new URL("http://pre05.deviantart.net/f825/th/pre/f/2015/184/f/1/f194687b320fe9dd3b3f15552d2887b2-d8zrdkl.jpg"));
-//        } catch (MalformedURLException ex) {
-//            throw new RuntimeException(ex);
-//        }
+        try {
+            TemplatesReader.INSTANCE.read(CLIENT_TEMPLATES_PATH);
+        } catch(Exception e) {
+            e.printStackTrace(System.out);
+        }
 
         initComponents();
         

@@ -14,7 +14,7 @@ public class UserRepository extends AbstractRepository<UserAccount> {
     private static final QUserAccount userAccount = QUserAccount.userAccount;
 
     public UserAccount findByName(String username) {
-        return from(userAccount).where(userAccount.username.eq(username)).singleResult(userAccount);
+        return from(userAccount).where(userAccount.username.equalsIgnoreCase(username)).singleResult(userAccount);
     }
     public UserAccount findById(long userId) {
         return from(userAccount).where(userAccount.id.eq(userId)).singleResult(userAccount);

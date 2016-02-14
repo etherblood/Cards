@@ -24,7 +24,7 @@ public class Main {
     private void run() {
         try (ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(SPRING_CONTEXT_FILEPATH)) {
             context.registerShutdownHook();
-            DefaultAuthentication adminAuthentication = new DefaultAuthentication(DefaultAuthentication.SYSTEM_PRINCIPAL, null, UserRoles.ADMIN);
+            DefaultAuthentication adminAuthentication = new DefaultAuthentication(DefaultAuthentication.LOCAL_ADMIN_PRINCIPAL, null, UserRoles.ADMIN);
             SecurityContextHolder.getContext().setAuthentication(adminAuthentication);
             runAdminThread(context);
             SecurityContextHolder.clearContext();
@@ -43,11 +43,11 @@ public class Main {
                     case "shutdown":
                         return;
                     case "register":
-                        context.getBean(UserService.class).registerUser(new UserRegistration(args[1], args[2]));
+                        context.getBean(UserService.class).registerUser(new UserRegistration(args[1], chainArgs(args, 2)));
                         break;
                     case "gift":
                         UserAccount user = context.getBean(UserService.class).getUser(args[1]);
-                        context.getBean(CardCollectionService.class).giftCard(user, args[2], 1);
+                        context.getBean(CardCollectionService.class).giftCard(user, chainArgs(args, 2), 1);
                         break;
                     default:
                         System.out.println("command not found");
@@ -57,5 +57,13 @@ public class Main {
                 e.printStackTrace(System.out);
             }
         }
+    }
+    
+    private String chainArgs(String[] args, int from) {
+        String result = args[from];
+        for (int i = from + 1; i < args.length; i++) {
+            result += " " + args[i];
+        }
+        return result;
     }
 }

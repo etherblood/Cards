@@ -23,7 +23,7 @@ import com.etherblood.entitysystem.data.EntityId;
 import com.etherblood.entitysystem.filters.AbstractComponentFieldValueFilter;
 import com.etherblood.entitysystem.filters.EqualityOperator;
 import com.etherblood.entitysystem.filters.FilterQuery;
-import com.etherblood.montecarlotreesearch.MoveIterator;
+import com.etherblood.montecarlotreesearch.old.MoveIterator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;

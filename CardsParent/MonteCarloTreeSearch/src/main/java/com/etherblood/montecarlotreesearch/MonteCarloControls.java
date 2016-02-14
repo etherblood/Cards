@@ -1,7 +1,5 @@
-package com.etherblood.montecarlotreesearch.interactive;
+package com.etherblood.montecarlotreesearch;
 
-import com.etherblood.montecarlotreesearch.MonteCarloNode;
-import com.etherblood.montecarlotreesearch.MonteCarloState;
 import java.util.ArrayList;
 import java.util.Random;
 

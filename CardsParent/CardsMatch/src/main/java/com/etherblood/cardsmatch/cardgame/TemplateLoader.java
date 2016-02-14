@@ -24,10 +24,9 @@ public class TemplateLoader {
         HashMap<String, String> aliases = new HashMap<>();
     public List<EntityTemplate> read(String pathName) {
         SAXBuilder builder = new SAXBuilder();
-        File xmlFile = new File(pathName);
 
         try {
-            Document document = (Document) builder.build(xmlFile);
+            Document document = (Document) builder.build(TemplateLoader.class.getClassLoader().getResourceAsStream(pathName));
             Element rootNode = document.getRootElement();
             
             Element aliasElements = rootNode.getChild("aliases");
