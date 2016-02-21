@@ -73,12 +73,16 @@ public class CardCollectionService {
         collection.setOwner(event.getUser());
         collection.setType(CollectionType.Collection);
         collection.setCards(new ArrayList<String>());
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 2; i++) {
             collection.getCards().add("Wisp");
             collection.getCards().add("River Crocolisk");
             collection.getCards().add("Black Dragon");
             collection.getCards().add("Faerie Dragon");
             collection.getCards().add("Mirth");
+            collection.getCards().add("Leeroy Jenkins");
+            collection.getCards().add("Elf");
+            collection.getCards().add("Orc");
+            collection.getCards().add("Test");
         }
 //        collection.getCards().add("Leeroy Jenkins");
         cardsRepo.persist(collection);

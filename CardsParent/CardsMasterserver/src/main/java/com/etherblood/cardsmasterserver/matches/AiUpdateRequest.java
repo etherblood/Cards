@@ -1,6 +1,6 @@
 package com.etherblood.cardsmasterserver.matches;
 
-import com.etherblood.cardsmasterserver.matches.internal.MatchWrapper;
+import com.etherblood.cardsmasterserver.matches.internal.MatchContextWrapper;
 import org.springframework.context.ApplicationEvent;
 
 /**
@@ -9,11 +9,11 @@ import org.springframework.context.ApplicationEvent;
  */
 public class AiUpdateRequest extends ApplicationEvent {
 
-    public AiUpdateRequest(MatchWrapper source) {
+    public AiUpdateRequest(MatchContextWrapper source) {
         super(source);
     }
 
-    public MatchWrapper getMatchWrapper() {
-        return (MatchWrapper) getSource();
+    public MatchContextWrapper getMatchWrapper() {
+        return (MatchContextWrapper) getSource();
     }
 }

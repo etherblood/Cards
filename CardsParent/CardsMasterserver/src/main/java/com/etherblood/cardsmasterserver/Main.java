@@ -32,6 +32,7 @@ public class Main {
     }
 
     private void runAdminThread(ClassPathXmlApplicationContext context) {
+        context.getBean(UserService.class).registerUser(new UserRegistration("testuser", "password"));
         Scanner scanner = new Scanner(System.in);
         while (true) {
             String nextLine = scanner.nextLine();

@@ -15,11 +15,11 @@ public class MatchContext {
     private final List<Object> beans;
 
     MatchContext(List<Object> beans) {
-        this.beans = Collections.unmodifiableList(beans);
+        this.beans = new ArrayList<>(beans);
         populateAll(beans);
     }
 
-    private void populateAll(List<Object> beans) {
+    final void populateAll(List<Object> beans) {
         for (Object bean : beans) {
             populate(bean);
         }

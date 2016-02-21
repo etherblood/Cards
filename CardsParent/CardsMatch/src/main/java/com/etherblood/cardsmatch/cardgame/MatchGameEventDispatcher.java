@@ -30,15 +30,15 @@ public class MatchGameEventDispatcher implements GameEventDispatcher {
         }
     }
 
-    private GameEvent handleEvent(GameEventHandler handler, GameEvent event) {
+    private <T extends GameEvent> T handleEvent(GameEventHandler<T> handler, T event) {
 //        try {
-            GameEvent result = handler.handle(event);
+            T result = handler.handle(event);
 //        } catch(Exception ex) {
 //            //TODO: add interface which makes rollbacks possible?
 //            Logger.getLogger(GameEventDispatcherImpl.class.getName()).log(Level.SEVERE, null, ex);
 //        }
-        if(systemsEventHandler != null && systemsEventHandler.isEnabled()) {
-            systemsEventHandler.onEvent(handler.getClass(), event);
+        if(systemsEventHandler != null) {
+            systemsEventHandler.onEvent((Class<GameEventHandler<T>>)handler.getClass(), event);
         }
         return result;
     }

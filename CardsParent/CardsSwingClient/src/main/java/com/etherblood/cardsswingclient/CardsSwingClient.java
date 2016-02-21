@@ -12,6 +12,7 @@ import com.etherblood.cardsnetworkshared.match.updates.SetAttack;
 import com.etherblood.cardsnetworkshared.match.updates.SetCost;
 import com.etherblood.cardsnetworkshared.match.updates.SetHealth;
 import com.etherblood.cardsnetworkshared.match.updates.SetOwner;
+import com.etherblood.cardsnetworkshared.match.updates.SetProperty;
 import com.etherblood.cardsnetworkshared.match.updates.SetZone;
 import com.etherblood.cardsswingdisplay.Ability;
 import com.etherblood.cardsswingdisplay.CardZone;
@@ -97,6 +98,12 @@ public class CardsSwingClient {
             @Override
             public void handle(AttachEffect update) {
                 controller.attachCardEffect(update.getCard(), new Ability(update.getEffect(), update.getName()));
+            }
+        });
+        updateHandlers.put(SetProperty.class, new UpdateHandler<SetProperty>() {
+            @Override
+            public void handle(SetProperty update) {
+                controller.setCardProperty(update.getCard(), update.getKey(), update.getValue() != 0);
             }
         });
         updateHandlers.put(DetachEffect.class, new UpdateHandler<DetachEffect>() {

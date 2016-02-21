@@ -1,9 +1,12 @@
 package com.etherblood.cardsmasterserver.network.connections;
 
+import com.etherblood.cardsmasterserver.network.events.UserLogoutEvent;
 import com.etherblood.cardsmasterserver.users.UserRoles;
 import com.etherblood.cardsmasterserver.network.messages.MessageFromClientService;
 import com.etherblood.cardsmasterserver.network.messages.MessageHandler;
+import com.etherblood.cardsmasterserver.system.SystemTaskEvent;
 import com.etherblood.cardsmasterserver.users.UserRepository;
+import com.etherblood.cardsmasterserver.users.events.UserRegisteredEvent;
 import com.etherblood.cardsmasterserver.users.model.UserAccount;
 import com.etherblood.cardsnetworkshared.master.commands.UserLogin;
 import com.etherblood.cardsnetworkshared.master.commands.UserLogout;
@@ -19,6 +22,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -38,6 +42,8 @@ public class UserConnectionService {
     private MessageFromClientService messageService;
     @Autowired
     private UserRepository userRepo;
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
     
     @PostConstruct
     @PreAuthorize("denyAll")
@@ -79,6 +85,11 @@ public class UserConnectionService {
         if(!user.getPlaintextPassword().equals(userLogin.getPlaintextPassword())) {
             throw new RuntimeException("invalid password");
         }
+        HostedConnection previousConnection = findUserConnection(user.getId());
+        if(previousConnection != null) {
+            setAnonymous(previousConnection);
+            System.out.println("user " + user.getUsername() + " was kicked because he logged in a second time.");
+        }
         HostedConnection connection = getCurrentConnection();
         setAuthentication(connection, new DefaultAuthentication(connection, user.getId(), userRepo.getRoles(user)));
         System.out.println(connection.getAddress() + " logged in as " + user.getUsername());
@@ -100,14 +111,7 @@ public class UserConnectionService {
     
     @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_SYSTEM')")
     public void sendMessage(long userId, Message message) {
-        for (HostedConnection connection : server.getConnections()) {
-            Long id = getAuthentication(connection).getCredentials();
-            if(id != null && id.longValue() == userId) {
-                connection.send(message);
-                return;
-            }
-        }
-        throw new RuntimeException("can't send message, no connection with userId " + userId + " found.");
+        findUserConnection(userId).send(message);
     }
     
     @PreAuthorize("hasAnyRole('ROLE_USER')")
@@ -121,7 +125,12 @@ public class UserConnectionService {
     }
     @PreAuthorize("hasRole('ROLE_USER')")
     public Long getCurrentUserId() {
-        return getAuthentication(getCurrentConnection()).getCredentials();
+        return getUserId(getCurrentConnection());
+    }
+    
+    private Long getUserId(HostedConnection connection) {
+        DefaultAuthentication<HostedConnection> authentication = getAuthentication(connection);
+        return authentication == null? null: authentication.getCredentials();
     }
     
     private void attachAuthentication(HostedConnection connection) {
@@ -140,10 +149,24 @@ public class UserConnectionService {
     }
     
     private void setAuthentication(HostedConnection connection, Authentication authentication) {
+        Long currentUserId = getUserId(connection);
+        if(currentUserId != null && authentication == null) {
+            eventPublisher.publishEvent(new SystemTaskEvent(new UserLogoutEvent(currentUserId)));
+        }
         connection.setAttribute(AUTHENTICATION, authentication);
     }
     
     private DefaultAuthentication<HostedConnection> getAuthentication(HostedConnection connection) {
         return connection.getAttribute(AUTHENTICATION);
+    }
+
+    private HostedConnection findUserConnection(long userId) throws NullPointerException {
+        for (HostedConnection connection : server.getConnections()) {
+            Long id = getAuthentication(connection).getCredentials();
+            if(id != null && id.longValue() == userId) {
+                return connection;
+            }
+        }
+        return null;
     }
 }

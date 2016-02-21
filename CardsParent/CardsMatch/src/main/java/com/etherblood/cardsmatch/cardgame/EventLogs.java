@@ -32,14 +32,4 @@ public class EventLogs implements SystemsEventHandler {
     public Class system(int index) {
         return systems.get(index);
     }
-
-    @Override
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return enabled;
-    }
 }

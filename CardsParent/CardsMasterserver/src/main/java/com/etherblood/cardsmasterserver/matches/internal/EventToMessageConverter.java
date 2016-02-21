@@ -11,20 +11,21 @@ import java.util.Map;
  * @author Philipp
  */
 public class EventToMessageConverter implements SystemsEventHandler {
-    private boolean enabled = true;
-    private final List<HumanPlayer> players;
+    private List<HumanPlayer> players;
     private final Map<Class, UpdateBuilder> updateBuilders;
     
     public MatchLogger matchLogger;
 
-    public EventToMessageConverter(List<HumanPlayer> players, Map<Class, UpdateBuilder> updateBuilders) {
-        this.players = players;
+    public EventToMessageConverter(Map<Class, UpdateBuilder> updateBuilders) {
         this.updateBuilders = updateBuilders;
+    }
+
+    public void setPlayers(List<HumanPlayer> players) {
+        this.players = players;
     }
     
     @Override
     public void onEvent(Class systemClass, GameEvent gameEvent) {
-        assert enabled;
         if(matchLogger != null) {
             matchLogger.onEvent(systemClass, gameEvent);
         }
@@ -32,19 +33,9 @@ public class EventToMessageConverter implements SystemsEventHandler {
         for (HumanPlayer player : players) {
             UpdateBuilder updateBuilder = updateBuilders.get(systemClass);
             if (updateBuilder != null) {
-                player.send(updateBuilder.build(player.getMatch().getState(), player.getConverter(), gameEvent));
+                player.send(updateBuilder.build(player.getMatch().getData(), player.getConverter(), gameEvent));
             }
         }
-    }
-
-    @Override
-    public void setEnabled(boolean value) {
-        enabled = value;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return enabled;
     }
 
 }

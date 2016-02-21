@@ -82,4 +82,23 @@ public class EntityComponentMapImpl implements EntityComponentMap, EntityCompone
     public Set<Class> registeredComponentClasses() {
         return componentMaps.keySet();
     }
+    
+    @Override
+    public void copyFrom(EntityComponentMapReadonly source) {
+        clear();
+        for (Class componentType : source.registeredComponentClasses()) {
+            source.extractMappingsForComponentType(componentType, getComponentMap(componentType));
+        }
+    }
+
+    private void clear() {
+        for (HashMap<EntityId, EntityComponent> hashMap : componentMaps.values()) {
+            hashMap.clear();
+        }
+    }
+
+    @Override
+    public void extractMappingsForComponentType(Class componentType, Map<EntityId, EntityComponent> dest) {
+        dest.putAll(getComponentMap(componentType));
+    }
 }

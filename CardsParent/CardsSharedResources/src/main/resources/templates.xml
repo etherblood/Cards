@@ -1,6 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
     <templates>
+        <template name="Elf">
+            <collectible/>
+            <components>
+                <cost cost="6"/>
+                <attack attack="4"/>
+                <health health="10"/>
+                <minion/>
+                <castEffect template="Activation=>Summon"/>
+            </components>
+            <image>
+                <url>http://orig00.deviantart.net/8914/f/2016/034/e/1/tellest_versus_by_skence-d9qg43y.png</url>
+                <view>
+                    <x>1000</x>
+                    <y>100</y>
+                    <width>886</width>
+                    <height>900</height>
+                </view>
+            </image>
+        </template>
+        <template name="Orc">
+            <collectible/>
+            <components>
+                <cost cost="6"/>
+                <attack attack="10"/>
+                <health health="4"/>
+                <minion/>
+                <castEffect template="Activation=>Summon"/>
+            </components>
+            <image>
+                <url>http://orig00.deviantart.net/8914/f/2016/034/e/1/tellest_versus_by_skence-d9qg43y.png</url>
+                <view>
+                    <x>100</x>
+                    <y>0</y>
+                    <width>900</width>
+                    <height>900</height>
+                </view>
+            </image>
+        </template>
+        <template name="Test">
+            <collectible/>
+            <components>
+                <cost cost="6"/>
+                <attack attack="7"/>
+                <health health="7"/>
+                <minion/>
+                <castEffect template="Activation=>Summon"/>
+            </components>
+            <image>
+                <url>http://orig00.deviantart.net/8914/f/2016/034/e/1/tellest_versus_by_skence-d9qg43y.png</url>
+                <view>
+                    <x>800</x>
+                    <y>500</y>
+                    <width>600</width>
+                    <height>540</height>
+                </view>
+            </image>
+        </template>
         <template name="Wisp">
             <collectible/>
             <components>
@@ -112,16 +169,16 @@
             </image>
             <audio>
                 <summon>
-                    <path>sounds/Leeroy Jenkins/Summon.wav</path>
+                    <path>/sounds/Leeroy Jenkins/Summon.wav</path>
                 </summon>
                 <death>
-                    <path>sounds/Leeroy Jenkins/Death.wav</path>
+                    <path>/sounds/Leeroy Jenkins/Death.wav</path>
                 </death>
                 <intro>
-                    <path>sounds/Leeroy Jenkins/Intro.wav</path>
+                    <path>/sounds/Leeroy Jenkins/Intro.wav</path>
                 </intro>
                 <attack>
-                    <path>sounds/Leeroy Jenkins/Attack.wav</path>
+                    <path>/sounds/Leeroy Jenkins/Attack.wav</path>
                 </attack>
             </audio>
         </template>

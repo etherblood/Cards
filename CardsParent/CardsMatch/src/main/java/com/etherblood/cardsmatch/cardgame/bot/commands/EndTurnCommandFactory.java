@@ -14,7 +14,7 @@ import com.etherblood.entitysystem.filters.FilterQuery;
  * @author Philipp
  */
 public class EndTurnCommandFactory {
-    @Autowire private EntityComponentMapReadonly data;
+    @Autowire public EntityComponentMapReadonly data;
     
     private final AbstractComponentFieldValueFilter<OwnerComponent> ownerFilter = OwnerComponent.createPlayerFilter(new EqualityOperator());
     private final FilterQuery effectQuery = new FilterQuery()

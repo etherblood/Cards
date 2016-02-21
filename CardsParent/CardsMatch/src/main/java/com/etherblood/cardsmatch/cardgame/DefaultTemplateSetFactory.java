@@ -20,7 +20,7 @@ import com.etherblood.cardsmatch.cardgame.components.cards.CastTemplateComponent
 import com.etherblood.cardsmatch.cardgame.components.cards.DeleteOnTriggerRemovedFromHand;
 import com.etherblood.cardsmatch.cardgame.components.cards.cardZone.BoardCardComponent;
 import com.etherblood.cardsmatch.cardgame.components.cards.SpellComponent;
-import com.etherblood.cardsmatch.cardgame.components.effects.effects.PlayerLostEffectComponent;
+import com.etherblood.cardsmatch.cardgame.components.effects.effects.PlayerDefeatedEffectComponent;
 import com.etherblood.cardsmatch.cardgame.components.effects.effects.AttachTemplateEffectComponent;
 import com.etherblood.cardsmatch.cardgame.components.effects.effects.AttackEffectComponent;
 import com.etherblood.cardsmatch.cardgame.components.effects.effects.cardzone.BoardAttachEffectComponent;
@@ -265,13 +265,13 @@ public class DefaultTemplateSetFactory {
         endTurnEffect.add(new EndTurnEffectComponent());
         templates.add(endTurnEffect);
         
-        EntityTemplate deathrattleGameOver = new EntityTemplate();
-        deathrattleGameOver.setCollectible(false);
-        deathrattleGameOver.add(new NameComponent("Deathrattle=>GameOver"));
-        deathrattleGameOver.add(new DeathrattleTriggerComponent());
-        deathrattleGameOver.add(new PlayerLostEffectComponent());
-        templates.add(deathrattleGameOver);
-        template.addChild(deathrattleGameOver.getName());
+        EntityTemplate deathrattleDefeat = new EntityTemplate();
+        deathrattleDefeat.setCollectible(false);
+        deathrattleDefeat.add(new NameComponent("Deathrattle=>Defeat"));
+        deathrattleDefeat.add(new DeathrattleTriggerComponent());
+        deathrattleDefeat.add(new PlayerDefeatedEffectComponent());
+        templates.add(deathrattleDefeat);
+        template.addChild(deathrattleDefeat.getName());
         template.addChild(endTurnEffect.getName());
         template.setCollectible(false);
         templates.add(template);

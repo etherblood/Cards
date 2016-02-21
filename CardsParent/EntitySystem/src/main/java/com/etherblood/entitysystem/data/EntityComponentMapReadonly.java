@@ -1,10 +1,7 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.etherblood.entitysystem.data;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -20,4 +17,6 @@ public interface EntityComponentMapReadonly {
 //    boolean passesAllFilters(EntityId entity, ComponentFilter... filters);
     List<EntityComponent> components(EntityId entity);
     Set<Class> registeredComponentClasses();
+    void extractMappingsForComponentType(Class componentType, Map<EntityId, EntityComponent> dest);
+//    Set<Map.Entry<EntityId, EntityComponent>> getEntityComponentPairs(Class componentType);
 }

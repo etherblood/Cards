@@ -1,10 +1,6 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.etherblood.cardsmasterserver.matches.internal.players;
 
-import com.etherblood.cardsmasterserver.matches.internal.MatchWrapper;
+import com.etherblood.cardsmasterserver.matches.internal.MatchContextWrapper;
 import com.etherblood.cardsmatch.cardgame.events.endTurn.EndTurnEvent;
 import com.etherblood.entitysystem.data.EntityId;
 
@@ -14,11 +10,10 @@ import com.etherblood.entitysystem.data.EntityId;
  */
 public abstract class AbstractPlayer {
     
-    private final MatchWrapper match;
+    private MatchContextWrapper match;
     private final EntityId player;
 
-    public AbstractPlayer(MatchWrapper match, EntityId player) {
-        this.match = match;
+    public AbstractPlayer(EntityId player) {
         this.player = player;
     }
     
@@ -26,16 +21,21 @@ public abstract class AbstractPlayer {
         match.triggerEffect(player, source, targets);
     }
     
-    public MatchWrapper getMatch() {
+    public MatchContextWrapper getMatch() {
         return match;
     }
 
     public EntityId getPlayer() {
+        assert player != null;
         return player;
     }
     
     protected void endTurn() {
-        match.getState().events.fireEvent(new EndTurnEvent(player));
-        match.getState().events.handleEvents();
+        match.getEvents().fireEvent(new EndTurnEvent(player));
+        match.getEvents().handleEvents();
+    }
+
+    public void setMatch(MatchContextWrapper match) {
+        this.match = match;
     }
 }

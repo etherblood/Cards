@@ -1,8 +1,10 @@
 package com.etherblood.cardsmasterserver.matches.internal;
 
+import com.etherblood.cardsmatch.cardgame.client.SystemsEventHandler;
 import com.etherblood.cardsmatch.cardgame.components.battle.MinionComponent;
 import com.etherblood.cardsmatch.cardgame.components.misc.NameComponent;
 import com.etherblood.cardsmatch.cardgame.components.misc.OwnerComponent;
+import com.etherblood.cardsmatch.cardgame.events.ShuffleLibraryEvent;
 import com.etherblood.cardsmatch.cardgame.events.attack.AttackEvent;
 import com.etherblood.cardsmatch.cardgame.events.attack.systems.ApplyAttackSystem;
 import com.etherblood.cardsmatch.cardgame.events.damage.SetDivineShieldEvent;
@@ -17,6 +19,7 @@ import com.etherblood.cardsmatch.cardgame.events.startTurn.StartTurnEvent;
 import com.etherblood.cardsmatch.cardgame.events.startTurn.systems.StartTurnSystem;
 import com.etherblood.cardsmatch.cardgame.events.summon.SummonEvent;
 import com.etherblood.cardsmatch.cardgame.events.summon.systems.ApplySummonSystem;
+import com.etherblood.cardsmatch.cardgame.events.systems.ShuffleLibrarySystem;
 import com.etherblood.entitysystem.data.EntityComponentMapReadonly;
 import com.etherblood.entitysystem.data.EntityId;
 import com.etherblood.eventsystem.GameEvent;
@@ -25,13 +28,14 @@ import com.etherblood.eventsystem.GameEvent;
  *
  * @author Philipp
  */
-public class MatchLogger {
+public class MatchLogger implements SystemsEventHandler {
     private final EntityComponentMapReadonly data;
 
     public MatchLogger(EntityComponentMapReadonly data) {
         this.data = data;
     }
     
+    @Override
     public void onEvent(Class systemClass, GameEvent gameEvent) {
         if(systemClass == ApplyAttackSystem.class) {
             AttackEvent attack = (AttackEvent) gameEvent;
@@ -57,6 +61,11 @@ public class MatchLogger {
         } else if(systemClass == ApplyDrawSystem.class) {
             DrawEvent draw = (DrawEvent) gameEvent;
             System.out.println(toString(data.get(draw.card, OwnerComponent.class).player) + " drew " + toString(draw.card));
+        } else if(systemClass == ShuffleLibrarySystem.class) {
+            ShuffleLibraryEvent shuffle = (ShuffleLibraryEvent) gameEvent;
+            System.out.println(toString(shuffle.player) + "'s library was shuffled.");
+        } else {
+            System.out.println(gameEvent);
         }
     }
     

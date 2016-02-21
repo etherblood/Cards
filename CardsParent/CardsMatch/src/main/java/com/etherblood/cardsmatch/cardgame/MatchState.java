@@ -101,10 +101,6 @@ public class MatchState {
         return data.entities(PlayerComponent.class);
     }
     
-    public void setLoggingEnabled(boolean value) {
-        eventLogger.setEnabled(value);
-    }
-    
 //    }
 
     //    protected void updateClients(MatchUpdate update) {

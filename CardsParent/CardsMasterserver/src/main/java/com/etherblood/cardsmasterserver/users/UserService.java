@@ -24,7 +24,7 @@ public class UserService {
     private ApplicationEventPublisher eventPublisher;
     
     @Transactional
-    @PreAuthorize("hasRole('ROLE_SYSTEM')")
+    @PreAuthorize("hasAnyRole('ROLE_SYSTEM', 'ROLE_USER')")
     public UserAccount getUser(long userId) {
         return userRepo.findById(userId);
     }
@@ -39,6 +39,10 @@ public class UserService {
     @Transactional
     @PreAuthorize("permitAll")
     public void registerUser(UserRegistration userRegistration) {
+        UserAccount oldUser = getUser(userRegistration.getUsername());
+        if(oldUser != null) {
+            throw new IllegalStateException("can't create user with name: " + userRegistration.getUsername() + " because user " + oldUser.getUsername() + " already exists.");
+        }
         UserAccount user = new UserAccount();
         user.setUsername(userRegistration.getUsername());
         user.setPlaintextPassword(userRegistration.getPlaintextPassword());

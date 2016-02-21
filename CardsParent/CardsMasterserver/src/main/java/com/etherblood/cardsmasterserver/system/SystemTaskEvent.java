@@ -2,6 +2,7 @@ package com.etherblood.cardsmasterserver.system;
 
 import org.springframework.context.ApplicationEvent;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
@@ -14,7 +15,11 @@ public class SystemTaskEvent extends ApplicationEvent {
     
     public SystemTaskEvent(ApplicationEvent source) {
         super(source);
-        issuedBy = SecurityContextHolder.getContext().getAuthentication();
+        SecurityContext context = SecurityContextHolder.getContext();
+        if(context == null) {
+            throw new NullPointerException("cannot fire systemTasks without authentication");
+        }
+        issuedBy = context.getAuthentication();
     }
 
     public ApplicationEvent getEvent() {
