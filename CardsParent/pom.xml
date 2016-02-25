@@ -9,7 +9,7 @@
     
     <modules>
         <module>CardsMasterserver</module>
-        <module>CardsMasterclient</module>
+        <module>CardsJsonClient</module>
         <module>CardsMatch</module>
         <module>CardsNetworkShared</module>
         <module>CardsSwingClient</module>
