@@ -49,9 +49,7 @@ public class GameEventDataStack {
         values.clear();
     }
     
-//    public void pop() {
-//        int lastIndex = values.size() - 1;
-//        values.remove(lastIndex);
-//        keys.remove(lastIndex);
-//    }
+    public boolean isEmpty() {
+        return depth() == 0;
+    }
 }

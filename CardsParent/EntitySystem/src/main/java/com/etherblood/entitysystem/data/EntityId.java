@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.etherblood.entitysystem.data;
 
 /**
@@ -22,12 +18,14 @@ public final class EntityId implements Comparable<EntityId> {
 
     @Override
     public int hashCode() {
-        int hash = 3;
-        hash = 13 * hash + (int) (this.id ^ (this.id >>> 32));
-        return hash;
+        return (int) id;
     }
     public boolean equals(EntityId obj) {
-        return this.id == obj.id;
+        return id == obj.id;
+    }
+
+    public long longValue() {
+        return id;
     }
 
     @Override
@@ -37,6 +35,6 @@ public final class EntityId implements Comparable<EntityId> {
 
     @Override
     public int compareTo(EntityId o) {
-        return (int) (o.id - id);
+        return Long.compare(id, o.id);
     }
 }

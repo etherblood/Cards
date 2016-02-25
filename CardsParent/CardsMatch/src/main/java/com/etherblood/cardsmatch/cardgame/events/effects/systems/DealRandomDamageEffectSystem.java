@@ -2,7 +2,7 @@ package com.etherblood.cardsmatch.cardgame.events.effects.systems;
 
 import com.etherblood.cardsmatch.cardgame.AbstractMatchSystem;
 import com.etherblood.cardsmatch.cardgame.Autowire;
-import com.etherblood.cardsmatch.cardgame.RngFactory;
+import com.etherblood.cardsmatch.cardgame.rng.RngFactory;
 import com.etherblood.cardsmatch.cardgame.components.effects.effects.DealRandomDamageEffectComponent;
 import com.etherblood.cardsmatch.cardgame.eventData.EffectTargets;
 import com.etherblood.cardsmatch.cardgame.events.damage.DamageEvent;
@@ -25,7 +25,6 @@ public class DealRandomDamageEffectSystem extends AbstractMatchSystem<EffectEven
         DealRandomDamageEffectComponent damageComponent = data.get(event.effect, DealRandomDamageEffectComponent.class);
         if (damageComponent != null) {
             for (EntityId target : eventData().get(EffectTargets.class).targets) {
-//            for (EntityId target : data.get(event.effect, EffectTargetsComponent.class).targets) {
                 int damage = damageComponent.offset + rng.nextInt(damageComponent.rngRange);
                 if (damage > 0) {
                     enqueueEvent(new DamageEvent(event.effect, target, damage));

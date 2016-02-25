@@ -15,8 +15,7 @@ import com.etherblood.cardsmasterserver.network.events.UserLogoutEvent;
 import com.etherblood.cardsmasterserver.network.messages.MessageHandler;
 import com.etherblood.cardsmasterserver.system.SystemTaskEvent;
 import com.etherblood.cardsmasterserver.users.UserService;
-import com.etherblood.cardsmatch.cardgame.bot.EndTurnBot;
-import com.etherblood.cardsmatch.cardgame.bot.commands.EndTurnCommandFactory;
+import com.etherblood.cardsmatch.cardgame.bot.monteCarlo.MonteCarloController;
 import com.etherblood.cardsmatch.cardgame.client.SystemsEventHandler;
 import com.etherblood.cardsnetworkshared.master.commands.MatchRequest;
 import com.etherblood.cardsnetworkshared.match.commands.TriggerEffectRequest;
@@ -166,11 +165,12 @@ public class MatchService {
             if (player instanceof AiPlayer) {
                 AiPlayer ai = (AiPlayer) player;
                 
-                EndTurnCommandFactory endTurnCommandFactory = new EndTurnCommandFactory();
-                endTurnCommandFactory.data = wrapper.getData();
-                ai.setBot(new EndTurnBot(endTurnCommandFactory));
-//                MonteCarloBot monteCarloBot = new MonteCarloBot(context, def1.getEntity());
-//                ai.setBot(monteCarloBot);
+//                EndTurnCommandFactory endTurnCommandFactory = new EndTurnCommandFactory();
+//                endTurnCommandFactory.data = wrapper.getData();
+//                ai.setBot(new EndTurnBot(endTurnCommandFactory));
+                MatchContext simulationContext = new DefaultRulesDef(templateService.getAll()).getBuilder().build();
+                MonteCarloController monteCarloBot = new MonteCarloController(context, simulationContext, player1.getPlayer());
+                ai.setBot(monteCarloBot);
             }
         }
         
@@ -184,8 +184,9 @@ public class MatchService {
 
     private PlayerDefinition createHumanPlayerDefinition(long userAccountId) {
         PlayerDefinition def = new PlayerDefinition();
-        List<String> cards = collectionService.getActiveUserLibrary(userAccountId).getCards();
-        def.setLibrary(cards.toArray(new String[cards.size()]));
+//        List<String> cards = collectionService.getActiveUserLibrary(userAccountId).getCards();
+//        def.setLibrary(cards.toArray(new String[cards.size()]));
+        def.setLibrary(createBotLibrary());//TODO: use player cards instead
         def.setHeroTemplate("Hero");
         def.setName(userService.getUser(userAccountId).getUsername());
         return def;

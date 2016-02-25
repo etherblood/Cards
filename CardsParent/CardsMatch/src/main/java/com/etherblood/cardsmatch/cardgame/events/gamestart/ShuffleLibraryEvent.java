@@ -1,4 +1,4 @@
-package com.etherblood.cardsmatch.cardgame.events;
+package com.etherblood.cardsmatch.cardgame.events.gamestart;
 
 import com.etherblood.entitysystem.data.EntityId;
 import com.etherblood.eventsystem.GameEvent;

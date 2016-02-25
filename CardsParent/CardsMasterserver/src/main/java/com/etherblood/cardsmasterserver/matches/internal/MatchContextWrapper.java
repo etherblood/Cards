@@ -38,7 +38,7 @@ public class MatchContextWrapper {
     public synchronized void triggerEffect(EntityId player, EntityId source, EntityId... targets) {
         if (getData().has(player, ItsMyTurnComponent.class) && getData().has(source, PlayerActivationTriggerComponent.class)) {
             OwnerComponent ownerComponent = getData().get(source, OwnerComponent.class);
-            if (ownerComponent != null && ownerComponent.player == player) {
+            if (ownerComponent != null && ownerComponent.player.equals(player)) {
 //                int checkpoint = getCheckpoint();
                 try {
                     getEvents().fireEvent(new TargetedTriggerEffectEvent(source, targets));
@@ -86,7 +86,7 @@ public class MatchContextWrapper {
         EntityId currentPlayer = currentPlayerEntity();
         assert currentPlayer != null;
         for (AbstractPlayer matchPlayer : players) {
-            if(matchPlayer.getPlayer() == currentPlayer) {
+            if(matchPlayer.getPlayer().equals(currentPlayer)) {
                 return matchPlayer;
             }
         }

@@ -15,4 +15,12 @@ public class IncrementalEntityIdFactory implements EntityIdFactory {
     public EntityId createEntity() {
         return new EntityId(nextId++);
     }
+
+    public long getNextId() {
+        return nextId;
+    }
+
+    public void setNextId(long nextId) {
+        this.nextId = nextId;
+    }
 }

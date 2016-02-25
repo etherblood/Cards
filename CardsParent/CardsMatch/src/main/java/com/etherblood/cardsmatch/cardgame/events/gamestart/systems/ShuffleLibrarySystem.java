@@ -1,11 +1,11 @@
-package com.etherblood.cardsmatch.cardgame.events.systems;
+package com.etherblood.cardsmatch.cardgame.events.gamestart.systems;
 
 import com.etherblood.cardsmatch.cardgame.AbstractMatchSystem;
 import com.etherblood.cardsmatch.cardgame.Autowire;
-import com.etherblood.cardsmatch.cardgame.RngFactory;
+import com.etherblood.cardsmatch.cardgame.rng.RngFactory;
 import com.etherblood.cardsmatch.cardgame.components.cards.cardZone.LibraryCardComponent;
 import com.etherblood.cardsmatch.cardgame.components.misc.OwnerComponent;
-import com.etherblood.cardsmatch.cardgame.events.ShuffleLibraryEvent;
+import com.etherblood.cardsmatch.cardgame.events.gamestart.ShuffleLibraryEvent;
 import com.etherblood.entitysystem.data.EntityComponentMap;
 import com.etherblood.entitysystem.data.EntityId;
 import com.etherblood.entitysystem.filters.AbstractComponentFieldValueFilter;

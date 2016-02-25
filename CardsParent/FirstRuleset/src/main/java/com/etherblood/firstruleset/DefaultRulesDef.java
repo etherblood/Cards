@@ -1,12 +1,12 @@
 package com.etherblood.firstruleset;
 
 import com.etherblood.cardsmatch.cardgame.MatchGameEventDispatcher;
-import com.etherblood.cardsmatch.cardgame.RngFactoryImpl;
+import com.etherblood.cardsmatch.cardgame.rng.RngFactoryImpl;
 import com.etherblood.cardsmatch.cardgame.TemplateSet;
 import com.etherblood.cardsmatch.cardgame.client.SystemsEventHandler;
 import com.etherblood.cardsmatch.cardgame.components.misc.NameComponent;
 import com.etherblood.cardsmatch.cardgame.components.player.PlayerComponent;
-import com.etherblood.cardsmatch.cardgame.events.ShuffleLibraryEvent;
+import com.etherblood.cardsmatch.cardgame.events.gamestart.ShuffleLibraryEvent;
 import com.etherblood.cardsmatch.cardgame.events.attack.AttackEvent;
 import com.etherblood.cardsmatch.cardgame.events.attack.systems.ApplyAttackSystem;
 import com.etherblood.cardsmatch.cardgame.events.attack.systems.IncreaseAttackCountSystem;
@@ -111,7 +111,7 @@ import com.etherblood.cardsmatch.cardgame.events.summon.systems.ApplySummonSyste
 import com.etherblood.cardsmatch.cardgame.events.summon.systems.BattlecrySystem;
 import com.etherblood.cardsmatch.cardgame.events.surrender.SurrenderEvent;
 import com.etherblood.cardsmatch.cardgame.events.surrender.systems.SurrenderSystem;
-import com.etherblood.cardsmatch.cardgame.events.systems.ShuffleLibrarySystem;
+import com.etherblood.cardsmatch.cardgame.events.gamestart.systems.ShuffleLibrarySystem;
 import com.etherblood.entitysystem.data.EntityComponentMap;
 import com.etherblood.entitysystem.data.EntityComponentMapImpl;
 import com.etherblood.entitysystem.data.EntityId;
@@ -301,5 +301,9 @@ public class DefaultRulesDef implements RulesDefinition {
             events.fireEvent(new LibraryAttachEvent(cardId));
         }
         events.fireEvent(new ShuffleLibraryEvent(player));
+    }
+
+    public MatchContextBuilder getBuilder() {
+        return builder;
     }
 }

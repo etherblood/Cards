@@ -33,8 +33,6 @@ import com.etherblood.cardsmatch.cardgame.events.setHealth.systems.SetHealthSyst
 import com.etherblood.cardsmatch.cardgame.events.setOwner.SetOwnerEvent;
 import com.etherblood.cardsmatch.cardgame.events.setOwner.systems.SetOwnerSystem;
 import com.etherblood.cardsmatch.cardgame.events.startTurn.RemoveSummonSicknessEvent;
-import com.etherblood.cardsmatch.cardgame.events.startTurn.StartTurnEvent;
-import com.etherblood.cardsmatch.cardgame.events.startTurn.systems.MultiRemoveSummonSicknessSystem;
 import com.etherblood.cardsmatch.cardgame.events.startTurn.systems.RemoveSummonSicknessSystem;
 import com.etherblood.cardsnetworkshared.match.misc.CardZone;
 import com.etherblood.cardsnetworkshared.match.misc.MatchUpdate;
@@ -119,7 +117,7 @@ public class ClientUpdaterFactory {
             @Override
             public MatchUpdate build(EntityComponentMapReadonly data, IdConverter converter, SetManaEvent event) {
                 for (EntityId hero : heroQuery.list(data)) {
-                    if(data.get(hero, OwnerComponent.class).player == event.entity) {
+                    if(data.get(hero, OwnerComponent.class).player.equals(event.entity)) {
                         return new SetCost(converter.toLong(hero), event.mana);
                     }
                 }

@@ -1,6 +1,9 @@
 package com.etherblood.montecarlotreesearch;
 
+import static com.etherblood.montecarlotreesearch.MonteCarloState.DISABLED;
+import static com.etherblood.montecarlotreesearch.MonteCarloState.PLAYOUT;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 /**
@@ -8,6 +11,10 @@ import java.util.Random;
  * @author Philipp
  */
 public class MonteCarloControls {
+    public static final int PLAYER_1 = 0;
+    public static final int PLAYER_2 = 1;
+    public static final int DRAW = 2;
+    public static final int ONGOING = 3;
 
     private final static float epsilon = 1e-6f;
     private final static float constant = (float) Math.sqrt(2);
@@ -18,6 +25,12 @@ public class MonteCarloControls {
     private MonteCarloState state = MonteCarloState.DISABLED;
     private final ArrayList<MonteCarloNode> nodeHistory = new ArrayList<>();
 
+    public void clear() {
+        current = new MonteCarloNode();
+        assert nodeHistory.isEmpty();
+        assert state == MonteCarloState.DISABLED;
+    }
+    
     public void startIteration() {
         assert state == MonteCarloState.DISABLED;
         state = MonteCarloState.SELECT;
@@ -27,6 +40,18 @@ public class MonteCarloControls {
     public void endIteration() {
         apply();
         reset();
+    }
+    
+    public MonteCarloNode startWalk() {
+        assert state == MonteCarloState.DISABLED;
+        state = MonteCarloState.CUSTOM_WALK;
+        return current;
+    }
+    
+    public void endWalk(MonteCarloNode root) {
+        assert state == MonteCarloState.CUSTOM_WALK;
+        state = MonteCarloState.DISABLED;
+        current = root;
     }
 
     private void apply() {
@@ -58,18 +83,24 @@ public class MonteCarloControls {
     }
 
     public int selectMove(int moveCount, int player) {
+        assert 0 < moveCount;
         switch (state) {
             case DISABLED:
+            case CUSTOM_WALK:
                 if (current.isLeaf()) {
                     current.initChilds(moveCount);
                 }
+                assert current.numChilds() == moveCount;
                 return bestChild(player);
             case SELECT:
                 if (current.isLeaf()) {
                     current.initChilds(moveCount);
                     state = MonteCarloState.PLAYOUT;
                 }
+                assert current.numChilds() == moveCount;
                 return selectChild(player);
+            case PLAYOUT:
+                return rng.nextInt(moveCount);
             default:
                 throw new AssertionError(state);
         }
@@ -90,7 +121,7 @@ public class MonteCarloControls {
                     scores += "{";
                 }
                 float winrate = current.getChild(x).winrate(player);
-                assert 0 <= winrate && winrate <= 1;
+                assert current.getChild(x).visitScore() == 0 || (0 <= winrate && winrate <= 1);
                 scores += ((int) (winrate * 100)) + "%";
                 if (x == best) {
                     scores += "}";
@@ -100,24 +131,33 @@ public class MonteCarloControls {
             System.out.println("simulation-strength: " + current.visitScore() / 2);
             System.out.println(scores);
         }
+        assert 0 <= best && best < current.numChilds();
         return best;
     }
 
     public void move(int move, int moveCount) {
+        assert 0 <= move && move < moveCount;
         switch (state) {
             case SELECT:
-            case PLAYOUT:
+                if (current.isLeaf()) {
+                    state = MonteCarloState.PLAYOUT;
+                    break;
+                }
                 assert current.numChilds() == moveCount;
                 current = current.getChild(move);
                 nodeHistory.add(current);
                 break;
             case DISABLED:
+            case CUSTOM_WALK:
                 if (current.isLeaf()) {
-                    current = new MonteCarloNode();
+                    Arrays.fill(current.scores, 0);
+//                    current = new MonteCarloNode();
                 } else {
                     assert current.numChilds() == moveCount;
                     current = current.getChild(move);
                 }
+                break;
+            case PLAYOUT:
                 break;
             default:
                 throw new AssertionError(state);

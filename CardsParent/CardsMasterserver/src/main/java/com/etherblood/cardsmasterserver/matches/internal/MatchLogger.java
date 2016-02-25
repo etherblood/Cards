@@ -4,7 +4,7 @@ import com.etherblood.cardsmatch.cardgame.client.SystemsEventHandler;
 import com.etherblood.cardsmatch.cardgame.components.battle.MinionComponent;
 import com.etherblood.cardsmatch.cardgame.components.misc.NameComponent;
 import com.etherblood.cardsmatch.cardgame.components.misc.OwnerComponent;
-import com.etherblood.cardsmatch.cardgame.events.ShuffleLibraryEvent;
+import com.etherblood.cardsmatch.cardgame.events.gamestart.ShuffleLibraryEvent;
 import com.etherblood.cardsmatch.cardgame.events.attack.AttackEvent;
 import com.etherblood.cardsmatch.cardgame.events.attack.systems.ApplyAttackSystem;
 import com.etherblood.cardsmatch.cardgame.events.damage.SetDivineShieldEvent;
@@ -19,7 +19,7 @@ import com.etherblood.cardsmatch.cardgame.events.startTurn.StartTurnEvent;
 import com.etherblood.cardsmatch.cardgame.events.startTurn.systems.StartTurnSystem;
 import com.etherblood.cardsmatch.cardgame.events.summon.SummonEvent;
 import com.etherblood.cardsmatch.cardgame.events.summon.systems.ApplySummonSystem;
-import com.etherblood.cardsmatch.cardgame.events.systems.ShuffleLibrarySystem;
+import com.etherblood.cardsmatch.cardgame.events.gamestart.systems.ShuffleLibrarySystem;
 import com.etherblood.entitysystem.data.EntityComponentMapReadonly;
 import com.etherblood.entitysystem.data.EntityId;
 import com.etherblood.eventsystem.GameEvent;
@@ -64,8 +64,6 @@ public class MatchLogger implements SystemsEventHandler {
         } else if(systemClass == ShuffleLibrarySystem.class) {
             ShuffleLibraryEvent shuffle = (ShuffleLibraryEvent) gameEvent;
             System.out.println(toString(shuffle.player) + "'s library was shuffled.");
-        } else {
-            System.out.println(gameEvent);
         }
     }
     

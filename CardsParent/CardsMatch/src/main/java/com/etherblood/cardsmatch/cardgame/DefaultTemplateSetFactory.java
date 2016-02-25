@@ -45,16 +45,17 @@ import com.etherblood.cardsmatch.cardgame.components.effects.triggers.PlayerActi
 import com.etherblood.cardsmatch.cardgame.components.misc.OwnerComponent;
 import com.etherblood.cardsmatch.cardgame.components.player.NextTurnPlayerComponent;
 import com.etherblood.cardsmatch.cardgame.components.player.PlayerComponent;
+import com.etherblood.cardsmatch.cardgame.rng.RngFactory;
 import com.etherblood.entitysystem.data.EntityComponent;
 import com.etherblood.entitysystem.data.EntityComponentMapReadonly;
 import com.etherblood.entitysystem.data.EntityId;
 import com.etherblood.entitysystem.filters.AbstractComponentFieldValueFilter;
 import com.etherblood.entitysystem.filters.DifferentOperator;
 import com.etherblood.entitysystem.filters.FilterQuery;
+import com.etherblood.entitysystem.util.DeterministicEntityIndices;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 
 /**
  *
@@ -63,7 +64,7 @@ import java.util.Random;
 public class DefaultTemplateSetFactory {
     public static final String ACTIVATION_ATTACK = "Activation=>Attack";
     public static final String ACTIVATION_SUMMON = "Activation=>Summon";
-    private final Random rng = new Random();
+//    private final Random rng = new Random();
     private final ArrayList<EntityTemplate> templates = new ArrayList<>();
 
     private final SelectionFilter enemyMinions = new SelectionFilter() {
@@ -74,7 +75,7 @@ public class DefaultTemplateSetFactory {
                 .addComponentClassFilter(MinionComponent.class);
 
         @Override
-        public synchronized List<EntityId> select(EntityComponentMapReadonly data, EntityId effectSource, EntityId owner) {
+        public synchronized List<EntityId> select(EntityComponentMapReadonly data, EntityId effectSource, EntityId owner, RngFactory rng) {
             opponentFilter.setValue(owner);
             return enemyMinionsQuery.list(data);
         }
@@ -90,7 +91,7 @@ public class DefaultTemplateSetFactory {
                 .addComponentClassFilter(MinionComponent.class);
 
         @Override
-        public synchronized List<EntityId> select(EntityComponentMapReadonly data, EntityId effectSource, EntityId owner) {
+        public synchronized List<EntityId> select(EntityComponentMapReadonly data, EntityId effectSource, EntityId owner, RngFactory rng) {
             return enemyMinionsQuery.list(data);
         }
 
@@ -106,7 +107,7 @@ public class DefaultTemplateSetFactory {
                 .addComponentFilter(opponentFilter);
 
         @Override
-        public synchronized List<EntityId> select(EntityComponentMapReadonly data, EntityId effectSource, EntityId owner) {
+        public synchronized List<EntityId> select(EntityComponentMapReadonly data, EntityId effectSource, EntityId owner, RngFactory rng) {
             opponentFilter.setValue(owner);
             return enemiesQuery.list(data);
         }
@@ -118,7 +119,7 @@ public class DefaultTemplateSetFactory {
     };
     private final SelectionFilter owner = new SelectionFilter() {
         @Override
-        public List<EntityId> select(EntityComponentMapReadonly data, EntityId effectSource, EntityId owner) {
+        public List<EntityId> select(EntityComponentMapReadonly data, EntityId effectSource, EntityId owner, RngFactory rng) {
             ArrayList<EntityId> list = new ArrayList<>();
             list.add(owner);
             return list;
@@ -131,7 +132,7 @@ public class DefaultTemplateSetFactory {
     };
     private final SelectionFilter opponent = new SelectionFilter() {
         @Override
-        public List<EntityId> select(EntityComponentMapReadonly data, EntityId effectSource, EntityId owner) {
+        public List<EntityId> select(EntityComponentMapReadonly data, EntityId effectSource, EntityId owner, RngFactory rng) {
             ArrayList<EntityId> list = new ArrayList<>();
             list.add(data.get(owner, NextTurnPlayerComponent.class).player);
             return list;
@@ -147,7 +148,7 @@ public class DefaultTemplateSetFactory {
                 .setBaseClass(PlayerComponent.class);
 
         @Override
-        public List<EntityId> select(EntityComponentMapReadonly data, EntityId effectSource, EntityId owner) {
+        public List<EntityId> select(EntityComponentMapReadonly data, EntityId effectSource, EntityId owner, RngFactory rng) {
             return playerQuery.list(data);
         }
 
@@ -161,7 +162,7 @@ public class DefaultTemplateSetFactory {
                 .setBaseClass(BoardCardComponent.class);
 
         @Override
-        public List<EntityId> select(EntityComponentMapReadonly data, EntityId effectSource, EntityId owner) {
+        public List<EntityId> select(EntityComponentMapReadonly data, EntityId effectSource, EntityId owner, RngFactory rng) {
             return boardQuery.list(data);
         }
 
@@ -172,7 +173,7 @@ public class DefaultTemplateSetFactory {
     };
     private final SelectionFilter self = new SelectionFilter() {
         @Override
-        public List<EntityId> select(EntityComponentMapReadonly data, EntityId effectSource, EntityId owner) {
+        public List<EntityId> select(EntityComponentMapReadonly data, EntityId effectSource, EntityId owner, RngFactory rng) {
             ArrayList<EntityId> result = new ArrayList<EntityId>();
             result.add(effectSource);
             return result;
@@ -191,7 +192,7 @@ public class DefaultTemplateSetFactory {
                 .addComponentFilter(opponentFilter);
 
         @Override
-        public synchronized List<EntityId> select(EntityComponentMapReadonly data, EntityId effectSource, EntityId owner) {
+        public synchronized List<EntityId> select(EntityComponentMapReadonly data, EntityId effectSource, EntityId owner, RngFactory rng) {
             opponentFilter.setValue(owner);
             return enemiesQuery.list(data);
         }
@@ -345,7 +346,7 @@ public class DefaultTemplateSetFactory {
         createMinion("Force-Tank MAX", 8, 7, 7, divine, mech);
         createMinion("Ironbark Protector", 8, 8, 8, taunt);
         createMinion("King Krush", 9, 8, 8, charge, beast, legendary);
-//        createMinion(templates, "Nozdormu", 9, 8, 8, dragon);
+        createMinion("Nozdormu", 9, 8, 8, dragon);
         createMinion("Thaddius", 10, 11, 11, legendary);
 
 
@@ -416,10 +417,10 @@ public class DefaultTemplateSetFactory {
         dreadInfernal.addChild(createFilteredDamage(1, createExcludeSelfFilter(allCharacters), battlecry));
         
         EntityTemplate baronGeddon = createMinion("Baron Geddon", 7, 7, 5, legendary);
-        baronGeddon.addChild(createFilteredDamage(2, createExcludeSelfFilter(allCharacters), endTurn));
+        baronGeddon.addChild(createFilteredDamage(2, createExcludeSelfFilter(allCharacters), endTurn, myTurn));
         
         EntityTemplate dreadScale = createMinion("Dreadscale", 3, 4, 2, legendary, beast);
-        dreadScale.addChild(createFilteredDamage(1, createExcludeSelfFilter(allMinions), endTurn));
+        dreadScale.addChild(createFilteredDamage(1, createExcludeSelfFilter(allMinions), endTurn, myTurn));
         
         EntityTemplate hogger = createMinion("Hogger", 6, 4, 4, legendary);
         hogger.addChild(createSpawn(createToken("Gnoll", 2, 2, 2, taunt).getName(), endTurn, myTurn));
@@ -431,12 +432,15 @@ public class DefaultTemplateSetFactory {
         impMaster.addChild(createSpawn(createToken("Imp", 1, 1, 1, demon).getName(), endTurn, myTurn));
         impMaster.addChild(createFilteredDamage(1, self, endTurn, myTurn));
         
-//        EntityTemplate drBoom = createMinion("Dr. Boom", 7, 7, 7, legendary);
-//        EntityTemplate boomBot = createToken("Boom Bot", 1, 1, 1, mech);
-//        boomBot.addChild(createFilteredRandomDamage(1, 4, createRandomFilter(enemyCharacters), deathrattle));
-//        String spawnBoomBot = createSpawn(boomBot.getName(), battlecry);
-//        drBoom.addChild(spawnBoomBot);
-//        drBoom.addChild(spawnBoomBot);
+        EntityTemplate drBoom = createMinion("Dr. Boom", 7, 7, 7, legendary);
+        EntityTemplate boomBot = createToken("Boom Bot", 1, 1, 1, mech);
+        boomBot.addChild(createFilteredRandomDamage(1, 4, createRandomFilter(enemyCharacters), deathrattle));
+        String spawnBoomBot = createSpawn(boomBot.getName(), battlecry);
+        drBoom.addChild(spawnBoomBot);
+        drBoom.addChild(spawnBoomBot);
+        
+        EntityTemplate bombLobber = createMinion("Bomb Lobber", 5, 3, 3);
+        bombLobber.addChild(createFilteredDamage(4, createRandomFilter(enemyMinions), battlecry));
         
         EntityTemplate tidehunter = createMinion("Murloc Tidehunter", 2, 2, 1, murloc);
         tidehunter.addChild(createSpawn(createToken("Murloc Scout", 1, 1, 1, murloc).getName(), battlecry));
@@ -475,8 +479,7 @@ public class DefaultTemplateSetFactory {
         createSpell("Arcane Explosion", 2, createFilteredDamage(1, enemyMinions, battlecry));
         createSpell("Whirlwind", 1, createFilteredDamage(1, allMinions, battlecry));
         createSpell("Hellfire", 4, createFilteredDamage(3, allCharacters, battlecry));
-        //TODO: AI cant handle rng
-//        createSpell("Flamecannon", 2, createFilteredDamage(4, createRandomFilter(enemyMinions), battlecry));
+        createSpell("Flamecannon", 2, createFilteredDamage(4, createRandomFilter(enemyMinions), battlecry));
         createSpell("Sinister Strike", 1, createFilteredDamage(3, enemyHeroes, battlecry));
         
         //TODO: AI cant handle targeting
@@ -492,9 +495,8 @@ public class DefaultTemplateSetFactory {
         createSpell("Arcane Intellect", 3, createDrawEffect(2, owner, battlecry));
         createSpell("Sprint", 7, createDrawEffect(4, owner, battlecry));
         createSpell("Fan of Knives", 3, createFilteredDamage(1, enemyMinions, battlecry), createDrawEffect(1, owner, battlecry));
-//        String randomDamage = createFilteredDamage(1, createRandomFilter(enemyMinions), battlecry);
-        //TODO: AI cant handle rng
-//        createSpell("Arcane Missles", 1, randomDamage, randomDamage, randomDamage);
+        String randomDamage = createFilteredDamage(1, createRandomFilter(enemyCharacters), battlecry);
+        createSpell("Arcane Missles", 1, randomDamage, randomDamage, randomDamage);
     }
 
     private void createSpell(String name, int cost, String... effects) {
@@ -624,11 +626,12 @@ public class DefaultTemplateSetFactory {
     
     private SelectionFilter createRandomFilter(final SelectionFilter filter) {
         return new SelectionFilter() {
+            private final DeterministicEntityIndices indices = new DeterministicEntityIndices();
             @Override
-            public List<EntityId> select(EntityComponentMapReadonly data, EntityId effectSource, EntityId owner) {
-                List<EntityId> list = filter.select(data, effectSource, owner);
+            public List<EntityId> select(EntityComponentMapReadonly data, EntityId effectSource, EntityId owner, RngFactory rng) {
+                List<EntityId> list = filter.select(data, effectSource, owner, rng);
                 if(!list.isEmpty()) {
-                    EntityId result = list.get(rng.nextInt(list.size()));
+                    EntityId result = indices.getEntityForDeterministicIndex(list, rng.nextInt(list.size()));
                     list.clear();
                     list.add(result);
                 }
@@ -645,8 +648,8 @@ public class DefaultTemplateSetFactory {
     private SelectionFilter createExcludeSelfFilter(final SelectionFilter filter) {
         return new SelectionFilter() {
             @Override
-            public List<EntityId> select(EntityComponentMapReadonly data, EntityId effectSource, EntityId owner) {
-                List<EntityId> list = filter.select(data, effectSource, owner);
+            public List<EntityId> select(EntityComponentMapReadonly data, EntityId effectSource, EntityId owner, RngFactory rng) {
+                List<EntityId> list = filter.select(data, effectSource, owner, rng);
                 list.remove(effectSource);
                 return list;
             }
