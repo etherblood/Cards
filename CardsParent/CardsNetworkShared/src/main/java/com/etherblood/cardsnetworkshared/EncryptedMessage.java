@@ -1,4 +1,4 @@
-package com.etherblood.cardsnetworkshared.match.misc;
+package com.etherblood.cardsnetworkshared;
 
 import com.jme3.network.AbstractMessage;
 import com.jme3.network.serializing.Serializable;
@@ -8,18 +8,20 @@ import com.jme3.network.serializing.Serializable;
  * @author Philipp
  */
 @Serializable
-public class CardsMessage<T> extends AbstractMessage {
-    private T data;
-
-    public CardsMessage(T data) {
+public class EncryptedMessage extends AbstractMessage {
+    private byte[] data;
+    
+    public EncryptedMessage(byte[] data) {
         super(true);
         this.data = data;
     }
-    public CardsMessage() {
+
+    public EncryptedMessage() {
         super(true);
     }
 
-    public T getData() {
+    public byte[] getData() {
         return data;
     }
+    
 }

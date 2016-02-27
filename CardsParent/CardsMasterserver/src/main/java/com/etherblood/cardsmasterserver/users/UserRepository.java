@@ -19,8 +19,4 @@ public class UserRepository extends AbstractRepository<UserAccount> {
     public UserAccount findById(long userId) {
         return from(userAccount).where(userAccount.id.eq(userId)).singleResult(userAccount);
     }
-    
-    public String getRoles(UserAccount user) {
-        return "ROLE_USER";//TODO
-    }
 }

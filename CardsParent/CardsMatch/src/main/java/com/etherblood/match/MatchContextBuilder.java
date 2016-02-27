@@ -8,18 +8,18 @@ import java.util.ArrayList;
  */
 public class MatchContextBuilder {
     private final ArrayList<Object> beans = new ArrayList<>();
-    private final ArrayList<Object> hiddenBeans = new ArrayList<>();
+    private final ArrayList<Object> passiveBeans = new ArrayList<>();
     
     public void addBean(Object bean) {
         beans.add(bean);
     }
-    public void addHiddenBean(Object bean) {
-        hiddenBeans.add(bean);
+    public void addPassiveBean(Object bean) {
+        passiveBeans.add(bean);
     }
     
     public MatchContext build() {
         MatchContext context = new MatchContext(beans);
-        context.populateAll(hiddenBeans);
+        context.populateAll(passiveBeans);
         return context;
     }
 }

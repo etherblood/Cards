@@ -1,7 +1,7 @@
 package com.etherblood.cardsswingclient;
 
 import com.etherblood.cardsnetworkshared.match.commands.TriggerEffectRequest;
-import com.etherblood.cardsnetworkshared.match.misc.CardsMessage;
+import com.etherblood.cardsnetworkshared.DefaultMessage;
 import com.etherblood.cardsnetworkshared.match.misc.MatchUpdate;
 import com.etherblood.cardsnetworkshared.match.updates.AttachEffect;
 import com.etherblood.cardsnetworkshared.match.updates.AttackUpdate;
@@ -124,13 +124,13 @@ public class CardsSwingClient {
         controller.setCommandHandler(new CommandHandler() {
             @Override
             public void triggerEffect(long effect, long... targets) {
-                client.send(new CardsMessage(new TriggerEffectRequest(effect, targets)));
+                client.send(new DefaultMessage(new TriggerEffectRequest(effect, targets)));
             }
         });
         client.addMessageListener(new MessageListener<Client>() {
             @Override
             public void messageReceived(Client source, Message m) {
-                Object data = ((CardsMessage)m).getData();
+                Object data = ((DefaultMessage)m).getData();
                 if(data instanceof MatchUpdate) {
                 final MatchUpdate update = (MatchUpdate) data;
                     SwingUtilities.invokeLater(new Runnable() {
@@ -143,7 +143,7 @@ public class CardsSwingClient {
                     });
                 }
             }
-        }, CardsMessage.class);
+        }, DefaultMessage.class);
         client.addErrorListener(new ErrorListener<Client>() {
             @Override
             public void handleError(Client source, Throwable t) {

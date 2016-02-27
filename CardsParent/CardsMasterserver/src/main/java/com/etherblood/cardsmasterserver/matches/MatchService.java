@@ -19,7 +19,7 @@ import com.etherblood.cardsmatch.cardgame.bot.monteCarlo.MonteCarloController;
 import com.etherblood.cardsmatch.cardgame.client.SystemsEventHandler;
 import com.etherblood.cardsnetworkshared.master.commands.MatchRequest;
 import com.etherblood.cardsnetworkshared.match.commands.TriggerEffectRequest;
-import com.etherblood.cardsnetworkshared.match.misc.CardsMessage;
+import com.etherblood.cardsnetworkshared.DefaultMessage;
 import com.etherblood.cardsnetworkshared.match.misc.MatchUpdate;
 import com.etherblood.entitysystem.data.EntityComponentMapReadonly;
 import com.etherblood.eventsystem.GameEvent;
@@ -242,16 +242,16 @@ public class MatchService {
             if(updates.isEmpty()) {
                 continue;
             }
-            CardsMessage[] messages = messagesFromUpdates(updates);
+            DefaultMessage[] messages = messagesFromUpdates(updates);
             System.out.println(messages.length + " messages for player with id " + matchPlayer.getUserId());
             connectionService.sendMessages(matchPlayer.getUserId(), messages);
         }
     }
 
-    private CardsMessage[] messagesFromUpdates(List<MatchUpdate> updates) {
-        CardsMessage[] messages = new CardsMessage[updates.size()];
+    private DefaultMessage[] messagesFromUpdates(List<MatchUpdate> updates) {
+        DefaultMessage[] messages = new DefaultMessage[updates.size()];
         for (int i = 0; i < updates.size(); i++) {
-            messages[i] = new CardsMessage(updates.get(i));
+            messages[i] = new DefaultMessage(updates.get(i));
         }
         return messages;
     }

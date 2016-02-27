@@ -1,7 +1,7 @@
 package com.etherblood.cardsmasterserver.network.messages;
 
 import com.etherblood.cardsmasterserver.network.connections.UserConnectionService;
-import com.etherblood.cardsnetworkshared.match.misc.CardsMessage;
+import com.etherblood.cardsnetworkshared.DefaultMessage;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -61,7 +61,7 @@ public class MessageFromClientService implements BeanDefinitionRegistryPostProce
                                 Object bean = context.getBean(loadClass);
                                 Object result = bean.getClass().getMethod(method.getName(), messageClass).invoke(bean, message);
                                 if (result != null) {
-                                    connectionService.returnMessage(new CardsMessage(result));
+                                    connectionService.returnMessage(new DefaultMessage(result));
                                 }
                             }
 

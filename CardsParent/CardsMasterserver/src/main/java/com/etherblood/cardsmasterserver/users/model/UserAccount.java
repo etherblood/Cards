@@ -2,6 +2,7 @@ package com.etherblood.cardsmasterserver.users.model;
 
 import com.etherblood.cardsmasterserver.core.MutableEntity;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -17,10 +18,11 @@ public class UserAccount extends MutableEntity {
     @Id
     @GeneratedValue
     private Long id;
-    @Column(unique=true, nullable=false)
+    @Column(unique = true, nullable = false)
     private String username;
     @NotNull
-    private String plaintextPassword;
+    @Embedded
+    private Password password;
 
     public Long getId() {
         return id;
@@ -38,12 +40,15 @@ public class UserAccount extends MutableEntity {
         this.username = username;
     }
 
-    public String getPlaintextPassword() {
-        return plaintextPassword;
+    public Password getPassword() {
+        return password;
     }
 
-    public void setPlaintextPassword(String plaintextPassword) {
-        this.plaintextPassword = plaintextPassword;
+    public void setPassword(Password password) {
+        this.password = password;
     }
 
+    public String[] getRoles() {
+        return new String[]{"ROLE_USER"};
+    }
 }

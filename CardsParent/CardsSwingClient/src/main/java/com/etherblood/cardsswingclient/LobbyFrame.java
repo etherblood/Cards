@@ -6,7 +6,10 @@ import com.etherblood.cardsnetworkshared.master.commands.SetLibraryRequest;
 import com.etherblood.cardsnetworkshared.master.commands.UserLogin;
 import com.etherblood.cardsnetworkshared.master.misc.LobbyUpdate;
 import com.etherblood.cardsnetworkshared.master.updates.CardCollectionUpdate;
-import com.etherblood.cardsnetworkshared.match.misc.CardsMessage;
+import com.etherblood.cardsnetworkshared.DefaultMessage;
+import com.etherblood.cardsnetworkshared.EncryptedObject;
+import com.etherblood.cardsnetworkshared.EncryptionKeysUtil;
+import com.etherblood.cardsnetworkshared.EncryptedObjectSerializer;
 import com.etherblood.cardsswingdisplay.MainJFrame;
 import com.jme3.network.Client;
 import com.jme3.network.Message;
@@ -15,6 +18,8 @@ import com.jme3.network.Network;
 import com.jme3.network.serializing.Serializer;
 import generatedSerializable.Serializables;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
 import java.util.Comparator;
 import javax.swing.DefaultListModel;
@@ -44,7 +49,7 @@ public class LobbyFrame extends javax.swing.JFrame {
         client.addMessageListener(new MessageListener<Client>() {
             @Override
             public void messageReceived(Client source, Message m) {
-                CardsMessage message = (CardsMessage) m;
+                DefaultMessage message = (DefaultMessage) m;
                 if (message.getData() instanceof LobbyUpdate) {
                     LobbyUpdate update = (LobbyUpdate) message.getData();
                     if (update instanceof CardCollectionUpdate) {
@@ -68,7 +73,7 @@ public class LobbyFrame extends javax.swing.JFrame {
                     });
                 }
             }
-        }, CardsMessage.class);
+        }, DefaultMessage.class);
         CardsSwingClient cardsSwingClient = new CardsSwingClient(frame.getController());
         cardsSwingClient.bind(client);
         client.start();
@@ -207,8 +212,8 @@ public class LobbyFrame extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         Object[] objLibrary = ((DefaultListModel) jList2.getModel()).toArray();
         String[] library = Arrays.copyOf(objLibrary, objLibrary.length, String[].class);
-        client.send(new CardsMessage(new SetLibraryRequest(library)));
-        client.send(new CardsMessage(new MatchRequest(jRadioButton1.isSelected())));
+        client.send(new DefaultMessage(new SetLibraryRequest(library)));
+        client.send(new DefaultMessage(new MatchRequest(jRadioButton1.isSelected())));
         frame.getController().reset();
         frame.setVisible(true);
 //        setVisible(false);
@@ -231,15 +236,19 @@ public class LobbyFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jList2MouseClicked
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        client.send(new CardsMessage(new UserLogin(jTextField1.getText(), jTextField2.getText())));
-        client.send(new CardsMessage(new CardCollectionRequest()));
+        client.send(new DefaultMessage(new EncryptedObject(new UserLogin(jTextField1.getText(), jTextField2.getText()))));
+        client.send(new DefaultMessage(new CardCollectionRequest()));
     }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
+    public static void main(String args[]) throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
         Serializer.registerClasses(new Serializables().classes);
+        EncryptedObjectSerializer encryptedObjectSerializer = new EncryptedObjectSerializer();
+        String publicKey = "10001;cde9421b0e82e0e179ff3f2b738151ecf51477b74056d0b40c472aca0b90332f8b2ead260049a5ff63b13ae9e47c48efe35a470b110b9f97324d802c647ae88e9ad299e5a5890fb1d4b79803d7d68b7adb1505b38b93c831e9a54ec7ec8b137b5635f4705fd36097dacceb59346d9a84edd86aa96d729d3cfa91feff0e307c99";
+        encryptedObjectSerializer.setPublicKey(EncryptionKeysUtil.importRSAPublic(publicKey));
+        Serializer.registerClass(EncryptedObject.class, encryptedObjectSerializer);
         final Client client;
         try {
             String ipAddress = args.length != 0 ? args[0] : "localhost";
@@ -279,6 +288,7 @@ public class LobbyFrame extends javax.swing.JFrame {
             }
         });
     }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;

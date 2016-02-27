@@ -239,7 +239,7 @@ public class DefaultRulesDef implements RulesDefinition {
     
     private <E extends GameEvent> void addSystem(GameEventDispatcher dispatcher, Class<E> eventClass, GameEventHandler system) {
         dispatcher.subscribe(eventClass, system);
-        builder.addHiddenBean(system);
+        builder.addPassiveBean(system);
     }
 
     @Override
