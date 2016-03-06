@@ -1,7 +1,7 @@
 package com.etherblood.cardsmatch.cardgame.events.endTurn.systems;
 
 import com.etherblood.cardsmatch.cardgame.AbstractMatchSystem;
-import com.etherblood.cardsmatch.cardgame.Autowire;
+import com.etherblood.match.Autowire;
 import com.etherblood.cardsmatch.cardgame.components.cards.cardZone.BoardCardComponent;
 import com.etherblood.cardsmatch.cardgame.components.effects.EffectTriggerEntityComponent;
 import com.etherblood.cardsmatch.cardgame.components.effects.triggers.EndTurnTriggerComponent;

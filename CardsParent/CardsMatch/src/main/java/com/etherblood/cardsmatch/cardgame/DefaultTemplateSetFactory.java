@@ -18,44 +18,43 @@ import com.etherblood.cardsmatch.cardgame.components.battle.races.MurlocComponen
 import com.etherblood.cardsmatch.cardgame.components.battle.races.PirateComponent;
 import com.etherblood.cardsmatch.cardgame.components.cards.CastTemplateComponent;
 import com.etherblood.cardsmatch.cardgame.components.cards.DeleteOnTriggerRemovedFromHand;
-import com.etherblood.cardsmatch.cardgame.components.cards.cardZone.BoardCardComponent;
 import com.etherblood.cardsmatch.cardgame.components.cards.SpellComponent;
 import com.etherblood.cardsmatch.cardgame.components.effects.effects.PlayerDefeatedEffectComponent;
 import com.etherblood.cardsmatch.cardgame.components.effects.effects.AttachTemplateEffectComponent;
 import com.etherblood.cardsmatch.cardgame.components.effects.effects.AttackEffectComponent;
 import com.etherblood.cardsmatch.cardgame.components.effects.effects.cardzone.BoardAttachEffectComponent;
-import com.etherblood.cardsmatch.cardgame.components.effects.effects.targeting.CreateSingleTargetEntityEffectComponent;
+import com.etherblood.cardsmatch.cardgame.components.effects.targeting.CreateSingleTargetEntityEffectComponent;
 import com.etherblood.cardsmatch.cardgame.components.effects.effects.DealDamageEffectComponent;
 import com.etherblood.cardsmatch.cardgame.components.effects.effects.DealRandomDamageEffectComponent;
 import com.etherblood.cardsmatch.cardgame.components.effects.effects.DrawEffectComponent;
-import com.etherblood.cardsmatch.cardgame.components.effects.effects.targeting.SelectEffectTargetsComponent;
-import com.etherblood.cardsmatch.cardgame.components.effects.effects.SetOwnerEffectComponent;
+import com.etherblood.cardsmatch.cardgame.components.effects.effects.MakeAllyEffectComponent;
 import com.etherblood.cardsmatch.cardgame.components.effects.effects.SummonEffectComponent;
 import com.etherblood.cardsmatch.cardgame.components.effects.conditions.CanAttackConditionComponent;
-import com.etherblood.cardsmatch.cardgame.components.effects.conditions.EffectPlayerTriggerConditionComponent;
 import com.etherblood.cardsmatch.cardgame.components.effects.conditions.ItsMyTurnConditionComponent;
 import com.etherblood.cardsmatch.cardgame.components.effects.effects.EndTurnEffectComponent;
+import com.etherblood.cardsmatch.cardgame.components.effects.effects.MakeEnemyEffectComponent;
 import com.etherblood.cardsmatch.cardgame.components.effects.effects.mana.PayManaCostEffectComponent;
-import com.etherblood.cardsmatch.cardgame.components.effects.effects.util.ConditionFilter;
-import com.etherblood.cardsmatch.cardgame.components.effects.effects.util.SelectionFilter;
+import com.etherblood.cardsmatch.cardgame.components.effects.targeting.EffectIsTargetedComponent;
+import com.etherblood.cardsmatch.cardgame.components.effects.targeting.EffectMinimumTargetsRequiredComponent;
+import com.etherblood.cardsmatch.cardgame.components.effects.targeting.EffectRequiresUserTargetsComponent;
+import com.etherblood.cardsmatch.cardgame.components.effects.targeting.filters.TargetAlliesComponent;
+import com.etherblood.cardsmatch.cardgame.components.effects.targeting.filters.TargetBoardComponent;
+import com.etherblood.cardsmatch.cardgame.components.effects.targeting.filters.TargetEnemiesComponent;
+import com.etherblood.cardsmatch.cardgame.components.effects.targeting.filters.TargetExcludeSelfComponent;
+import com.etherblood.cardsmatch.cardgame.components.effects.targeting.filters.TargetHeroesComponent;
+import com.etherblood.cardsmatch.cardgame.components.effects.targeting.filters.TargetMinionsComponent;
+import com.etherblood.cardsmatch.cardgame.components.effects.targeting.filters.TargetOwnerComponent;
+import com.etherblood.cardsmatch.cardgame.components.effects.targeting.filters.TargetPlayersComponent;
+import com.etherblood.cardsmatch.cardgame.components.effects.targeting.filters.TargetSelfComponent;
+import com.etherblood.cardsmatch.cardgame.components.effects.targeting.EffectTargetsSingleRandomComponent;
 import com.etherblood.cardsmatch.cardgame.components.effects.triggers.BattlecryTriggerComponent;
 import com.etherblood.cardsmatch.cardgame.components.effects.triggers.DeathrattleTriggerComponent;
 import com.etherblood.cardsmatch.cardgame.components.effects.triggers.EndTurnTriggerComponent;
 import com.etherblood.cardsmatch.cardgame.components.effects.triggers.PlayerActivationTriggerComponent;
-import com.etherblood.cardsmatch.cardgame.components.misc.OwnerComponent;
-import com.etherblood.cardsmatch.cardgame.components.player.NextTurnPlayerComponent;
-import com.etherblood.cardsmatch.cardgame.components.player.PlayerComponent;
-import com.etherblood.cardsmatch.cardgame.rng.RngFactory;
 import com.etherblood.entitysystem.data.EntityComponent;
-import com.etherblood.entitysystem.data.EntityComponentMapReadonly;
-import com.etherblood.entitysystem.data.EntityId;
-import com.etherblood.entitysystem.filters.AbstractComponentFieldValueFilter;
-import com.etherblood.entitysystem.filters.DifferentOperator;
-import com.etherblood.entitysystem.filters.FilterQuery;
-import com.etherblood.entitysystem.util.DeterministicEntityIndices;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.UUID;
 
 /**
  *
@@ -64,151 +63,19 @@ import java.util.List;
 public class DefaultTemplateSetFactory {
     public static final String ACTIVATION_ATTACK = "Activation=>Attack";
     public static final String ACTIVATION_SUMMON = "Activation=>Summon";
-//    private final Random rng = new Random();
     private final ArrayList<EntityTemplate> templates = new ArrayList<>();
 
-    private final SelectionFilter enemyMinions = new SelectionFilter() {
-        private final AbstractComponentFieldValueFilter<OwnerComponent> opponentFilter = OwnerComponent.createPlayerFilter(new DifferentOperator());
-        private final FilterQuery enemyMinionsQuery = new FilterQuery()
-                .setBaseClass(BoardCardComponent.class)
-                .addComponentFilter(opponentFilter)
-                .addComponentClassFilter(MinionComponent.class);
-
-        @Override
-        public synchronized List<EntityId> select(EntityComponentMapReadonly data, EntityId effectSource, EntityId owner, RngFactory rng) {
-            opponentFilter.setValue(owner);
-            return enemyMinionsQuery.list(data);
-        }
-
-        @Override
-        public String toString() {
-            return "enemy minions";
-        }
-    };
-    private final SelectionFilter allMinions = new SelectionFilter() {
-        private final FilterQuery enemyMinionsQuery = new FilterQuery()
-                .setBaseClass(BoardCardComponent.class)
-                .addComponentClassFilter(MinionComponent.class);
-
-        @Override
-        public synchronized List<EntityId> select(EntityComponentMapReadonly data, EntityId effectSource, EntityId owner, RngFactory rng) {
-            return enemyMinionsQuery.list(data);
-        }
-
-        @Override
-        public String toString() {
-            return "minions";
-        }
-    };
-    private final SelectionFilter enemyCharacters = new SelectionFilter() {
-        private final AbstractComponentFieldValueFilter<OwnerComponent> opponentFilter = OwnerComponent.createPlayerFilter(new DifferentOperator());
-        private final FilterQuery enemiesQuery = new FilterQuery()
-                .setBaseClass(BoardCardComponent.class)
-                .addComponentFilter(opponentFilter);
-
-        @Override
-        public synchronized List<EntityId> select(EntityComponentMapReadonly data, EntityId effectSource, EntityId owner, RngFactory rng) {
-            opponentFilter.setValue(owner);
-            return enemiesQuery.list(data);
-        }
-
-        @Override
-        public String toString() {
-            return "enemies";
-        }
-    };
-    private final SelectionFilter owner = new SelectionFilter() {
-        @Override
-        public List<EntityId> select(EntityComponentMapReadonly data, EntityId effectSource, EntityId owner, RngFactory rng) {
-            ArrayList<EntityId> list = new ArrayList<>();
-            list.add(owner);
-            return list;
-        }
-
-        @Override
-        public String toString() {
-            return "player";
-        }
-    };
-    private final SelectionFilter opponent = new SelectionFilter() {
-        @Override
-        public List<EntityId> select(EntityComponentMapReadonly data, EntityId effectSource, EntityId owner, RngFactory rng) {
-            ArrayList<EntityId> list = new ArrayList<>();
-            list.add(data.get(owner, NextTurnPlayerComponent.class).player);
-            return list;
-        }
-
-        @Override
-        public String toString() {
-            return "opponent";
-        }
-    };
-    private final SelectionFilter players = new SelectionFilter() {
-        private final FilterQuery playerQuery = new FilterQuery()
-                .setBaseClass(PlayerComponent.class);
-
-        @Override
-        public List<EntityId> select(EntityComponentMapReadonly data, EntityId effectSource, EntityId owner, RngFactory rng) {
-            return playerQuery.list(data);
-        }
-
-        @Override
-        public String toString() {
-            return "players";
-        }
-    };
-    private final SelectionFilter allCharacters = new SelectionFilter() {
-        private final FilterQuery boardQuery = new FilterQuery()
-                .setBaseClass(BoardCardComponent.class);
-
-        @Override
-        public List<EntityId> select(EntityComponentMapReadonly data, EntityId effectSource, EntityId owner, RngFactory rng) {
-            return boardQuery.list(data);
-        }
-
-        @Override
-        public String toString() {
-            return "all";
-        }
-    };
-    private final SelectionFilter self = new SelectionFilter() {
-        @Override
-        public List<EntityId> select(EntityComponentMapReadonly data, EntityId effectSource, EntityId owner, RngFactory rng) {
-            ArrayList<EntityId> result = new ArrayList<EntityId>();
-            result.add(effectSource);
-            return result;
-        }
-
-        @Override
-        public String toString() {
-            return "self";
-        }
-    };
-    private final SelectionFilter enemyHeroes = new SelectionFilter() {
-        private final AbstractComponentFieldValueFilter<OwnerComponent> opponentFilter = OwnerComponent.createPlayerFilter(new DifferentOperator());
-        private final FilterQuery enemiesQuery = new FilterQuery()
-                .setBaseClass(HeroComponent.class)
-                .addComponentClassFilter(BoardCardComponent.class)
-                .addComponentFilter(opponentFilter);
-
-        @Override
-        public synchronized List<EntityId> select(EntityComponentMapReadonly data, EntityId effectSource, EntityId owner, RngFactory rng) {
-            opponentFilter.setValue(owner);
-            return enemiesQuery.list(data);
-        }
-
-        @Override
-        public String toString() {
-            return "enemyHeroes";
-        }
-    };
+    private final EntityComponent[] targetEnemyMinions = new EntityComponent[]{new TargetEnemiesComponent(), new TargetMinionsComponent(), new TargetBoardComponent()};
+    private final EntityComponent[] targetAllMinions = new EntityComponent[]{new TargetMinionsComponent(), new TargetBoardComponent()};
+    private final EntityComponent[] targetEnemyCharacters = new EntityComponent[]{new TargetEnemiesComponent(), new TargetBoardComponent()};
+    private final EntityComponent[] targetOwner = new EntityComponent[]{new TargetOwnerComponent()};
+    private final EntityComponent[] targetOpponent = new EntityComponent[]{new TargetEnemiesComponent(), new TargetPlayersComponent()};
+    private final EntityComponent[] targetPlayers = new EntityComponent[]{new TargetPlayersComponent()};
+    private final EntityComponent[] targetAllCharacters = new EntityComponent[]{new TargetBoardComponent()};
+    private final EntityComponent[] targetSelf = new EntityComponent[]{new TargetSelfComponent()};
+    private final EntityComponent[] targetEnemyHeroes = new EntityComponent[]{new TargetEnemiesComponent(), new TargetBoardComponent(), new TargetHeroesComponent()};
     private final BattlecryTriggerComponent battlecry = new BattlecryTriggerComponent();
-    private EffectPlayerTriggerConditionComponent singleTargetCondition = new EffectPlayerTriggerConditionComponent(new ConditionFilter() {
-            @Override
-            public boolean pass(EntityComponentMapReadonly data, EntityId effectSource, EntityId owner, EntityId... targets) {
-                return targets.length == 1;
-            }
-        });
+    private final EffectMinimumTargetsRequiredComponent atLeastOneTargetRequired = new EffectMinimumTargetsRequiredComponent(1);
     
     public TemplateSet createEntityTemplates(String templatesPath) {
         
@@ -235,21 +102,15 @@ public class DefaultTemplateSetFactory {
         attackEffect.add(new NameComponent(ACTIVATION_ATTACK));
         attackEffect.add(new PlayerActivationTriggerComponent());
         attackEffect.add(new AttackEffectComponent());
-        attackEffect.add(singleTargetCondition);
+        attackEffect.add(atLeastOneTargetRequired);
         attackEffect.add(new ItsMyTurnConditionComponent());
         attackEffect.add(new CanAttackConditionComponent());
-//        attackEffect.add(new SingleTargetConditionComponent());//TODO readd
         templates.add(attackEffect);
 
         return new TemplateSet(templateListToMap());
     }
 
     private void createHeroes() {
-//        EntityTemplate attachSummonToHandCardsAura = new EntityTemplate();
-//        attachSummonToHandCardsAura.add(new NameComponent("SummonHandCardsAura"));
-//        attachSummonToHandCardsAura.add(new OwnerAttachHandTriggerComponent());
-////        attachSummonToHandCardsAura.add(new AttachTemplateEffectComponent("PayMana=>Summon"));
-//        templates.add(attachSummonToHandCardsAura);
         
         EntityTemplate template = new EntityTemplate();
         template.add(new NameComponent("Hero"));
@@ -261,7 +122,8 @@ public class DefaultTemplateSetFactory {
         endTurnEffect.setCollectible(false);
         endTurnEffect.add(new NameComponent("Activation=>EndTurn"));
         endTurnEffect.add(new PlayerActivationTriggerComponent());
-        endTurnEffect.add(new SelectEffectTargetsComponent(owner));
+        endTurnEffect.add(new EffectIsTargetedComponent());
+        endTurnEffect.add(new TargetOwnerComponent());
         endTurnEffect.add(new ItsMyTurnConditionComponent());
         endTurnEffect.add(new EndTurnEffectComponent());
         templates.add(endTurnEffect);
@@ -295,59 +157,59 @@ public class DefaultTemplateSetFactory {
         DragonComponent dragon = new DragonComponent();
         DemonComponent demon = new DemonComponent();
         PirateComponent pirate = new PirateComponent();
-
-//        createMinion("Wisp", 0, 1, 1);
-        createMinion("Target Dummy", 0, 0, 2, taunt, mech);
-        createMinion("Murloc Raider", 1, 2, 1, murloc);
-        createMinion("Stonetusk Boar", 1, 1, 1, charge, beast);
-        createMinion("Argent Squire", 1, 1, 1, divine);
-        createMinion("Voidwalker", 1, 1, 3, taunt, demon);
-        createMinion("Tournament Attendee", 1, 2, 1, taunt);
-        createMinion("Shieldbearer", 1, 0, 4, taunt);
-        createMinion("Goldshire Footman", 1, 1, 2, taunt);
-        createMinion("Bloodfen Raptor", 2, 3, 2, beast);
-        createMinion("Puddlestomper", 2, 3, 2, murloc);
-//        createMinion("River Crocolisk", 2, 2, 3, beast);
-        createMinion("Bluegill Warrior", 2, 2, 1, charge, murloc);
-        createMinion("Shielded Minibot", 2, 2, 2, divine, mech);
-        createMinion("Annoy-o-Tron", 2, 1, 2, taunt, divine, mech);
-        createMinion("Frostwolf Grunt", 2, 2, 2, taunt);
-        createMinion("Scarlet Crusader", 3, 3, 1, divine);
-        createMinion("Ice Rager", 3, 5, 2);
-        createMinion("Magma Rager", 3, 5, 1);
-        createMinion("Spider Tank", 3, 3, 4, mech);
-        createMinion("Wolfrider", 3, 3, 1, charge);
-        createMinion("Argent Horserider", 3, 2, 1, charge, divine);
-        createMinion("Gnomeregan Infantry", 3, 1, 4, taunt, charge);
-        createMinion("Silverback Patriarch", 3, 1, 4, taunt, beast);
-        createMinion("Ironfur Grizzly", 3, 3, 3, taunt, beast);
-        createMinion("Chillwind Yeti", 4, 4, 5);
-        createMinion("Kor'kron Elite", 4, 4, 3, charge);
-        createMinion("Lost Tallstrider", 4, 5, 4, beast);
-        createMinion("Silvermoon Guardian", 4, 3, 3, divine);
-        createMinion("Oasis Snapjaw", 4, 2, 7, beast);
-        createMinion("Stormwind Knight", 4, 2, 5, charge);
-        createMinion("Sen'jin Shieldmasta", 4, 3, 5, taunt);
-        createMinion("Mogu'shan Warden", 4, 1, 7, taunt);
-        createMinion("Evil Heckler", 4, 5, 4, taunt);
-        createMinion("Pit Fighter", 5, 5, 6);
-        createMinion("Salty Dog", 5, 7, 4, pirate);
-        createMinion("Booty Bay Bodyguard", 5, 5, 4, taunt);
-        createMinion("Fen Creeper", 5, 3, 6, taunt);
-        createMinion("Argent Commander", 6, 4, 2, charge, divine);
-        createMinion("Boulderfist Ogre", 6, 6, 7);
-        createMinion("Reckless Rocketeer", 6, 5, 2, charge);
-        createMinion("Lord of the Arena", 6, 6, 5, taunt);
-        createMinion("Sunwalker", 6, 4, 5, taunt, divine);
-        createMinion("Captured Jormungar", 7, 5, 9, beast);
-        createMinion("Fearsome Doomguard", 7, 6, 8, demon);
-        createMinion("Wargolem", 7, 7, 7);
-        createMinion("Core Hound", 7, 9, 5, beast);
-        createMinion("Force-Tank MAX", 8, 7, 7, divine, mech);
-        createMinion("Ironbark Protector", 8, 8, 8, taunt);
-        createMinion("King Krush", 9, 8, 8, charge, beast, legendary);
-        createMinion("Nozdormu", 9, 8, 8, dragon);
-        createMinion("Thaddius", 10, 11, 11, legendary);
+//////
+////////        createMinion("Wisp", 0, 1, 1);
+//////        createMinion("Target Dummy", 0, 0, 2, taunt, mech);
+//////        createMinion("Murloc Raider", 1, 2, 1, murloc);
+//////        createMinion("Stonetusk Boar", 1, 1, 1, charge, beast);
+//////        createMinion("Argent Squire", 1, 1, 1, divine);
+//////        createMinion("Voidwalker", 1, 1, 3, taunt, demon);
+//////        createMinion("Tournament Attendee", 1, 2, 1, taunt);
+//////        createMinion("Shieldbearer", 1, 0, 4, taunt);
+//////        createMinion("Goldshire Footman", 1, 1, 2, taunt);
+//////        createMinion("Bloodfen Raptor", 2, 3, 2, beast);
+//////        createMinion("Puddlestomper", 2, 3, 2, murloc);
+////////        createMinion("River Crocolisk", 2, 2, 3, beast);
+//////        createMinion("Bluegill Warrior", 2, 2, 1, charge, murloc);
+//////        createMinion("Shielded Minibot", 2, 2, 2, divine, mech);
+//////        createMinion("Annoy-o-Tron", 2, 1, 2, taunt, divine, mech);
+//////        createMinion("Frostwolf Grunt", 2, 2, 2, taunt);
+//////        createMinion("Scarlet Crusader", 3, 3, 1, divine);
+//////        createMinion("Ice Rager", 3, 5, 2);
+//////        createMinion("Magma Rager", 3, 5, 1);
+//////        createMinion("Spider Tank", 3, 3, 4, mech);
+//////        createMinion("Wolfrider", 3, 3, 1, charge);
+//////        createMinion("Argent Horserider", 3, 2, 1, charge, divine);
+//////        createMinion("Gnomeregan Infantry", 3, 1, 4, taunt, charge);
+//////        createMinion("Silverback Patriarch", 3, 1, 4, taunt, beast);
+//////        createMinion("Ironfur Grizzly", 3, 3, 3, taunt, beast);
+//////        createMinion("Chillwind Yeti", 4, 4, 5);
+//////        createMinion("Kor'kron Elite", 4, 4, 3, charge);
+//////        createMinion("Lost Tallstrider", 4, 5, 4, beast);
+//////        createMinion("Silvermoon Guardian", 4, 3, 3, divine);
+//////        createMinion("Oasis Snapjaw", 4, 2, 7, beast);
+//////        createMinion("Stormwind Knight", 4, 2, 5, charge);
+//////        createMinion("Sen'jin Shieldmasta", 4, 3, 5, taunt);
+//////        createMinion("Mogu'shan Warden", 4, 1, 7, taunt);
+//////        createMinion("Evil Heckler", 4, 5, 4, taunt);
+//////        createMinion("Pit Fighter", 5, 5, 6);
+//////        createMinion("Salty Dog", 5, 7, 4, pirate);
+//////        createMinion("Booty Bay Bodyguard", 5, 5, 4, taunt);
+//////        createMinion("Fen Creeper", 5, 3, 6, taunt);
+//////        createMinion("Argent Commander", 6, 4, 2, charge, divine);
+//////        createMinion("Boulderfist Ogre", 6, 6, 7);
+//////        createMinion("Reckless Rocketeer", 6, 5, 2, charge);
+//////        createMinion("Lord of the Arena", 6, 6, 5, taunt);
+//////        createMinion("Sunwalker", 6, 4, 5, taunt, divine);
+//////        createMinion("Captured Jormungar", 7, 5, 9, beast);
+//////        createMinion("Fearsome Doomguard", 7, 6, 8, demon);
+//////        createMinion("Wargolem", 7, 7, 7);
+//////        createMinion("Core Hound", 7, 9, 5, beast);
+//////        createMinion("Force-Tank MAX", 8, 7, 7, divine, mech);
+//////        createMinion("Ironbark Protector", 8, 8, 8, taunt);
+//////        createMinion("King Krush", 9, 8, 8, charge, beast, legendary);
+//////        createMinion("Nozdormu", 9, 8, 8, dragon);
+//////        createMinion("Thaddius", 10, 11, 11, legendary);
 
 
         EntityTemplate highmane = createMinion("Savannah Highmane", 6, 6, 5, beast);
@@ -376,15 +238,15 @@ public class DefaultTemplateSetFactory {
         belcher.addChild(createSpawn(createToken("Slime", 1, 1, 2, taunt).getName(), deathrattle));
 
         EntityTemplate lootHoarder = createMinion("Loot Hoarder", 2, 2, 1);
-        lootHoarder.addChild(createDrawEffect(1, owner, deathrattle));
+        lootHoarder.addChild(createDrawEffect(1, targetOwner, deathrattle));
 
         EntityTemplate dancingSwords = createMinion("Dancing Swords", 3, 4, 4);
-        dancingSwords.addChild(createDrawEffect(1, opponent, deathrattle));
+        dancingSwords.addChild(createDrawEffect(1, targetOpponent, deathrattle));
 
         EntityTemplate coldlight = createMinion("Coldlight Oracle", 3, 2, 2);
-        coldlight.addChild(createDrawEffect(2, players, battlecry));
+        coldlight.addChild(createDrawEffect(2, targetPlayers, battlecry));
 
-        String draw1Battlecry = createDrawEffect(1, owner, battlecry);
+        String draw1Battlecry = createDrawEffect(1, targetOwner, battlecry);
         
         EntityTemplate gnomishInventor = createMinion("Gnomish Inventor", 4, 2, 4);
         gnomishInventor.addChild(draw1Battlecry);
@@ -393,34 +255,34 @@ public class DefaultTemplateSetFactory {
         noviceEngineer.addChild(draw1Battlecry);
         
         EntityTemplate bladeMaster = createMinion("Injured Blademaster", 3, 4, 7);
-        bladeMaster.addChild(createFilteredDamage(4, self, battlecry));
+        bladeMaster.addChild(createFilteredDamage(4, targetSelf, battlecry));
         
         EntityTemplate kvaldir = createMinion("Injured Kvaldir", 1, 2, 4);
-        kvaldir.addChild(createFilteredDamage(3, self, battlecry));
+        kvaldir.addChild(createFilteredDamage(3, targetSelf, battlecry));
         
         EntityTemplate leperGnome = createMinion("Leper Gnome", 1, 2, 1);
-        leperGnome.addChild(createFilteredDamage(2, enemyHeroes, deathrattle));
+        leperGnome.addChild(createFilteredDamage(2, targetEnemyHeroes, deathrattle));
         
         EntityTemplate nightBlade = createMinion("Nightblade", 5, 4, 4);
-        nightBlade.addChild(createFilteredDamage(4, enemyHeroes, battlecry));
+        nightBlade.addChild(createFilteredDamage(4, targetEnemyHeroes, battlecry));
         
         EntityTemplate exploSheep = createMinion("Explosive Sheep", 2, 1, 1, mech);
-        exploSheep.addChild(createFilteredDamage(2, allMinions, deathrattle));
+        exploSheep.addChild(createFilteredDamage(2, targetAllMinions, deathrattle));
         
         EntityTemplate unstableGhoul = createMinion("Unstable Ghoul", 2, 1, 3, taunt);
-        unstableGhoul.addChild(createFilteredDamage(1, allMinions, deathrattle));
+        unstableGhoul.addChild(createFilteredDamage(1, targetAllMinions, deathrattle));
         
         EntityTemplate abomination = createMinion("Abomination", 5, 4, 4, taunt);
-        abomination.addChild(createFilteredDamage(2, allCharacters, deathrattle));
+        abomination.addChild(createFilteredDamage(2, targetAllCharacters, deathrattle));
         
         EntityTemplate dreadInfernal = createMinion("Dread Infernal", 6, 6, 6, demon);
-        dreadInfernal.addChild(createFilteredDamage(1, createExcludeSelfFilter(allCharacters), battlecry));
+        dreadInfernal.addChild(createFilteredDamage(1, targetAllCharacters, battlecry, new TargetExcludeSelfComponent()));
         
         EntityTemplate baronGeddon = createMinion("Baron Geddon", 7, 7, 5, legendary);
-        baronGeddon.addChild(createFilteredDamage(2, createExcludeSelfFilter(allCharacters), endTurn, myTurn));
+        baronGeddon.addChild(createFilteredDamage(2, targetAllCharacters, endTurn, myTurn, new TargetExcludeSelfComponent()));
         
         EntityTemplate dreadScale = createMinion("Dreadscale", 3, 4, 2, legendary, beast);
-        dreadScale.addChild(createFilteredDamage(1, createExcludeSelfFilter(allMinions), endTurn, myTurn));
+        dreadScale.addChild(createFilteredDamage(1, targetAllMinions, endTurn, myTurn, new TargetExcludeSelfComponent()));
         
         EntityTemplate hogger = createMinion("Hogger", 6, 4, 4, legendary);
         hogger.addChild(createSpawn(createToken("Gnoll", 2, 2, 2, taunt).getName(), endTurn, myTurn));
@@ -430,17 +292,17 @@ public class DefaultTemplateSetFactory {
         
         EntityTemplate impMaster = createMinion("Imp Master", 3, 1, 5);
         impMaster.addChild(createSpawn(createToken("Imp", 1, 1, 1, demon).getName(), endTurn, myTurn));
-        impMaster.addChild(createFilteredDamage(1, self, endTurn, myTurn));
+        impMaster.addChild(createFilteredDamage(1, targetSelf, endTurn, myTurn));
         
         EntityTemplate drBoom = createMinion("Dr. Boom", 7, 7, 7, legendary);
         EntityTemplate boomBot = createToken("Boom Bot", 1, 1, 1, mech);
-        boomBot.addChild(createFilteredRandomDamage(1, 4, createRandomFilter(enemyCharacters), deathrattle));
+        boomBot.addChild(createFilteredRandomDamage(1, 4, targetEnemyCharacters, deathrattle, new EffectTargetsSingleRandomComponent()));
         String spawnBoomBot = createSpawn(boomBot.getName(), battlecry);
         drBoom.addChild(spawnBoomBot);
         drBoom.addChild(spawnBoomBot);
         
         EntityTemplate bombLobber = createMinion("Bomb Lobber", 5, 3, 3);
-        bombLobber.addChild(createFilteredDamage(4, createRandomFilter(enemyMinions), battlecry));
+        bombLobber.addChild(createFilteredDamage(4, targetEnemyMinions, battlecry, new EffectTargetsSingleRandomComponent()));
         
         EntityTemplate tidehunter = createMinion("Murloc Tidehunter", 2, 2, 1, murloc);
         tidehunter.addChild(createSpawn(createToken("Murloc Scout", 1, 1, 1, murloc).getName(), battlecry));
@@ -455,47 +317,34 @@ public class DefaultTemplateSetFactory {
         silverHandKnight.addChild(createSpawn(createToken("Squire", 1, 2, 2).getName(), battlecry));
         
 //        EntityTemplate leeroy = createMinion("Leeroy Jenkins", 5, 6, 2, charge);
-        String spawnWhelp = createSpawn(/*createToken(*/"Whelp"/*, 1, 1, 1, dragon).getName()*/, battlecry, new SetOwnerEffectComponent(opponent));
+        String spawnWhelp = createSpawn(/*createToken(*/"Whelp"/*, 1, 1, 1, dragon).getName()*/, battlecry, new MakeEnemyEffectComponent());
 //        leeroy.addChild(spawnWhelp);
 //        leeroy.addChild(spawnWhelp);
     }
 
     private void createSpells() {
-        EffectPlayerTriggerConditionComponent singleBoardEntityCondition = new EffectPlayerTriggerConditionComponent(new ConditionFilter() {
-            @Override
-            public boolean pass(EntityComponentMapReadonly data, EntityId effectSource, EntityId owner, EntityId... targets) {
-                return targets.length == 1 && data.has(targets[0], BoardCardComponent.class);
-            }
-        });
-        EffectPlayerTriggerConditionComponent singleBoardMinionCondition = new EffectPlayerTriggerConditionComponent(new ConditionFilter() {
-            @Override
-            public boolean pass(EntityComponentMapReadonly data, EntityId effectSource, EntityId owner, EntityId... targets) {
-                return targets.length == 1 && data.has(targets[0], BoardCardComponent.class) && data.has(targets[0], MinionComponent.class);
-            }
-        });
-
-        createSpell("Flamestrike", 7, createFilteredDamage(4, enemyMinions, battlecry));
-        createSpell("Consecration", 4, createFilteredDamage(2, enemyCharacters, battlecry));
-        createSpell("Arcane Explosion", 2, createFilteredDamage(1, enemyMinions, battlecry));
-        createSpell("Whirlwind", 1, createFilteredDamage(1, allMinions, battlecry));
-        createSpell("Hellfire", 4, createFilteredDamage(3, allCharacters, battlecry));
-        createSpell("Flamecannon", 2, createFilteredDamage(4, createRandomFilter(enemyMinions), battlecry));
-        createSpell("Sinister Strike", 1, createFilteredDamage(3, enemyHeroes, battlecry));
+        createSpell("Flamestrike", 7, createFilteredDamage(4, targetEnemyMinions, battlecry));
+        createSpell("Consecration", 4, createFilteredDamage(2, targetEnemyCharacters, battlecry));
+        createSpell("Arcane Explosion", 2, createFilteredDamage(1, targetEnemyMinions, battlecry));
+        createSpell("Whirlwind", 1, createFilteredDamage(1, targetAllMinions, battlecry));
+        createSpell("Hellfire", 4, createFilteredDamage(3, targetAllCharacters, battlecry));
+        createSpell("Flamecannon", 2, createFilteredDamage(4, targetEnemyMinions, atLeastOneTargetRequired, battlecry, new EffectTargetsSingleRandomComponent()));
+        createSpell("Sinister Strike", 1, createFilteredDamage(3, targetEnemyHeroes, battlecry));
         
-        //TODO: AI cant handle targeting
-//        createSpell("Starfire", 6, createDrawEffect(1, owner, battlecry), createUserTargetedDamage(5, singleBoardEntityCondition));
-//        createSpell("Hammer of Wrath", 4, createDrawEffect(1, owner, battlecry), createUserTargetedDamage(3, singleBoardEntityCondition));
-//        createSpell("Shiv", 2, createDrawEffect(1, owner, battlecry), createUserTargetedDamage(1, singleBoardEntityCondition));
-//        createSpell("Pyroblast", 10, createUserTargetedDamage(10, singleBoardEntityCondition));
-//        createSpell("Fireball", 4, createUserTargetedDamage(6, singleBoardEntityCondition));
-//        createSpell("Darkbomb", 2, createUserTargetedDamage(3, singleBoardEntityCondition));
-//        createSpell("Arcane Shot", 1, createUserTargetedDamage(2, singleBoardEntityCondition));
-//        createSpell("Holy Smite", 1, createUserTargetedDamage(2, singleBoardEntityCondition));
+        createSpell("Starfire", 6, createDrawEffect(1, targetOwner, battlecry), createUserTargetedDamage(5, targetAllCharacters, atLeastOneTargetRequired));
+        createSpell("Hammer of Wrath", 4, createDrawEffect(1, targetOwner, battlecry), createUserTargetedDamage(3, targetAllCharacters, atLeastOneTargetRequired));
+        createSpell("Shiv", 2, createDrawEffect(1, targetOwner, battlecry), createUserTargetedDamage(1, targetAllCharacters, atLeastOneTargetRequired));
+        createSpell("Pyroblast", 10, createUserTargetedDamage(10, targetAllCharacters, atLeastOneTargetRequired));
+        createSpell("Fireball", 4, createUserTargetedDamage(6, targetAllCharacters, atLeastOneTargetRequired));
+        createSpell("Darkbomb", 2, createUserTargetedDamage(3, targetAllCharacters, atLeastOneTargetRequired));
+        createSpell("Arcane Shot", 1, createUserTargetedDamage(2, targetAllCharacters, atLeastOneTargetRequired));
+        createSpell("Holy Smite", 1, createUserTargetedDamage(2, targetAllCharacters, atLeastOneTargetRequired));
+        createSpell("Flame Lance", 5, createUserTargetedDamage(8, targetAllMinions, atLeastOneTargetRequired));
         
-        createSpell("Arcane Intellect", 3, createDrawEffect(2, owner, battlecry));
-        createSpell("Sprint", 7, createDrawEffect(4, owner, battlecry));
-        createSpell("Fan of Knives", 3, createFilteredDamage(1, enemyMinions, battlecry), createDrawEffect(1, owner, battlecry));
-        String randomDamage = createFilteredDamage(1, createRandomFilter(enemyCharacters), battlecry);
+        createSpell("Arcane Intellect", 3, createDrawEffect(2, targetOwner, battlecry));
+        createSpell("Sprint", 7, createDrawEffect(4, targetOwner, battlecry));
+        createSpell("Fan of Knives", 3, createFilteredDamage(1, targetEnemyMinions, battlecry), createDrawEffect(1, targetOwner, battlecry));
+        String randomDamage = createFilteredDamage(1, targetEnemyCharacters, battlecry, new EffectTargetsSingleRandomComponent());
         createSpell("Arcane Missles", 1, randomDamage, randomDamage, randomDamage);
     }
 
@@ -516,10 +365,11 @@ public class DefaultTemplateSetFactory {
         return template;
     }
 
-    private String createFilteredDamage(int damage, SelectionFilter filter, EntityComponent triggerComponent, EntityComponent... conditions) {
+    private String createFilteredDamage(int damage, EntityComponent[] filter, EntityComponent triggerComponent, EntityComponent... conditions) {
         EntityTemplate aoe = new EntityTemplate();
         aoe.setCollectible(false);
-        aoe.add(new SelectEffectTargetsComponent(filter));
+        aoe.add(new EffectIsTargetedComponent());
+        aoe.addAll(filter);
         aoe.add(new DealDamageEffectComponent(damage));
         aoe.add(triggerComponent);
         String name = triggerName(triggerComponent) + "=>Damage" + damage + " [" + filter.toString() + "]";
@@ -527,14 +377,18 @@ public class DefaultTemplateSetFactory {
             aoe.add(condition);
             name += " {" + conditionName(condition) + "}";
         }
+        name += UUID.randomUUID();
         aoe.add(new NameComponent(name));
         templates.add(aoe);
         return name;
     }
 
-    private String createUserTargetedDamage(int damage, EntityComponent... conditions) {
+    private String createUserTargetedDamage(int damage, EntityComponent[] filter, EntityComponent... conditions) {
         EntityTemplate effect = new EntityTemplate();
         effect.setCollectible(false);
+        effect.add(new EffectIsTargetedComponent());
+        effect.add(new EffectRequiresUserTargetsComponent());
+        effect.addAll(filter);
         effect.add(new DealDamageEffectComponent(damage));
         effect.add(battlecry);
         String name = triggerName(battlecry) + "=>Damage" + damage;
@@ -542,18 +396,22 @@ public class DefaultTemplateSetFactory {
             effect.add(condition);
             name += " {" + conditionName(condition) + "}";
         }
+        name += UUID.randomUUID();
         effect.add(new NameComponent(name));
         templates.add(effect);
         return name;
     }
     
-    private String createFilteredRandomDamage(int offset, int rngRange, SelectionFilter filter, EntityComponent triggerComponent) {
+    private String createFilteredRandomDamage(int offset, int rngRange, EntityComponent[] filter, EntityComponent triggerComponent, EntityComponent... components) {
         EntityTemplate aoe = new EntityTemplate();
         aoe.setCollectible(false);
-        aoe.add(new SelectEffectTargetsComponent(filter));
+        aoe.add(new EffectIsTargetedComponent());
+        aoe.addAll(filter);
+        aoe.addAll(components);
         aoe.add(new DealRandomDamageEffectComponent(offset, rngRange));
         aoe.add(triggerComponent);
         String name = triggerName(triggerComponent) + "=>Damage" + offset + "-" + (offset + rngRange - 1) + " [" + filter.toString() + "]";
+        name += UUID.randomUUID();
         aoe.add(new NameComponent(name));
         templates.add(aoe);
         return name;
@@ -589,8 +447,6 @@ public class DefaultTemplateSetFactory {
         template.add(new HealthComponent(health));
         template.add(new MinionComponent());
         template.add(new CastTemplateComponent(ACTIVATION_SUMMON));
-//        template.addChild(PLAYER_ACTIVATION_ATTACK);
-//        template.addChild(PAY_MANA_SUMMON);
         templates.add(template);
         return template;
     }
@@ -600,7 +456,7 @@ public class DefaultTemplateSetFactory {
         template.setCollectible(false);
         template.add(new CreateSingleTargetEntityEffectComponent());
         template.add(new AttachTemplateEffectComponent(templateName));
-        template.add(new SetOwnerEffectComponent(owner));
+        template.add(new MakeAllyEffectComponent());
         template.add(new BoardAttachEffectComponent());
         template.add(triggerComponent);
         String name = triggerName(triggerComponent) + "=>" + templateName;
@@ -613,62 +469,36 @@ public class DefaultTemplateSetFactory {
         return name;
     }
 
-    private String createDrawEffect(int numCards, SelectionFilter filter, EntityComponent triggerComponent) {
+    private String createDrawEffect(int numCards, EntityComponent[] filter, EntityComponent triggerComponent) {
         EntityTemplate draw = new EntityTemplate();
         draw.setCollectible(false);
         draw.add(triggerComponent);
-        draw.add(new SelectEffectTargetsComponent(filter));
+        draw.add(new EffectIsTargetedComponent());
+        draw.addAll(filter);
         draw.add(new DrawEffectComponent(numCards));
-        draw.add(new NameComponent(triggerName(triggerComponent) + "=>Draw" + numCards + " [" + filter.toString() + "]"));
+        String name = triggerName(triggerComponent) + "=>Draw" + numCards + " [" + filter.toString() + "]";
+        name += UUID.randomUUID();
+        draw.add(new NameComponent(name));
         templates.add(draw);
         return draw.getName();
     }
     
-    private SelectionFilter createRandomFilter(final SelectionFilter filter) {
-        return new SelectionFilter() {
-            private final DeterministicEntityIndices indices = new DeterministicEntityIndices();
-            @Override
-            public List<EntityId> select(EntityComponentMapReadonly data, EntityId effectSource, EntityId owner, RngFactory rng) {
-                List<EntityId> list = filter.select(data, effectSource, owner, rng);
-                if(!list.isEmpty()) {
-                    EntityId result = indices.getEntityForDeterministicIndex(list, rng.nextInt(list.size()));
-                    list.clear();
-                    list.add(result);
-                }
-                return list;
-            }
-
-            @Override
-            public String toString() {
-                return "random from: " + filter.toString();
-            }
-        };
-    }
-    
-    private SelectionFilter createExcludeSelfFilter(final SelectionFilter filter) {
-        return new SelectionFilter() {
-            @Override
-            public List<EntityId> select(EntityComponentMapReadonly data, EntityId effectSource, EntityId owner, RngFactory rng) {
-                List<EntityId> list = filter.select(data, effectSource, owner, rng);
-                list.remove(effectSource);
-                return list;
-            }
-
-            @Override
-            public String toString() {
-                return "exclude self from: " + filter.toString();
-            }
-        };
-    }
+//    private SelectEffectTargetsComponent createRandomFilter(SelectEffectTargetsComponent filter) {
+//        return new SelectEffectTargetsComponent(filter.selection.and(TargetFilters.RANDOM));
+//    }
+//    
+//    private SelectEffectTargetsComponent createExcludeSelfFilter(SelectEffectTargetsComponent filter) {
+//        return new SelectEffectTargetsComponent(filter.selection.and(TargetFilters.EXCLUDE_SELF));
+//    }
 
     private HashMap<String, EntityTemplate> templateListToMap() {
         HashMap<String, EntityTemplate> result = new HashMap<>();
         for (EntityTemplate template : templates) {
             result.put(template.getName(), template);
         }
-//        for (String template : result.keySet()) {
-//            System.out.println("registered template: " + template);
-//        }
+        for (String template : result.keySet()) {
+            System.out.println("registered template: " + template);
+        }
         System.out.println(result.size() + " templates");
         int collectibles = 0;
         for (EntityTemplate entityTemplate : result.values()) {

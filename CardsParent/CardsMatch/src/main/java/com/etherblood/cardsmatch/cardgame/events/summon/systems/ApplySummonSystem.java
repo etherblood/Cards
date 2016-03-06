@@ -5,7 +5,7 @@
 package com.etherblood.cardsmatch.cardgame.events.summon.systems;
 
 import com.etherblood.cardsmatch.cardgame.AbstractMatchSystem;
-import com.etherblood.cardsmatch.cardgame.Autowire;
+import com.etherblood.match.Autowire;
 import com.etherblood.cardsmatch.cardgame.components.battle.MinionComponent;
 import com.etherblood.cardsmatch.cardgame.components.cards.SpellComponent;
 import com.etherblood.cardsmatch.cardgame.events.cardZones.CardZone;

@@ -5,7 +5,7 @@
 package com.etherblood.cardsmatch.cardgame.events.damage.systems;
 
 import com.etherblood.cardsmatch.cardgame.AbstractMatchSystem;
-import com.etherblood.cardsmatch.cardgame.Autowire;
+import com.etherblood.match.Autowire;
 import com.etherblood.cardsmatch.cardgame.components.battle.buffs.DivineShieldComponent;
 import com.etherblood.cardsmatch.cardgame.events.damage.SetDivineShieldEvent;
 import com.etherblood.cardsmatch.cardgame.events.damage.DamageEvent;

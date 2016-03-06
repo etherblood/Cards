@@ -160,8 +160,8 @@
                 <castEffect template="Activation=>Summon"/>
             </components>
             <childs>
-                <child>Battlecry=>Whelp {SetOwnerEffectComponent}</child>
-                <child>Battlecry=>Whelp {SetOwnerEffectComponent}</child>
+                <child>Battlecry=>Whelp {MakeEnemyEffectComponent}</child>
+                <child>Battlecry=>Whelp {MakeEnemyEffectComponent}</child>
             </childs>
             
             <image>

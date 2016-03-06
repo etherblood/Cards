@@ -1,7 +1,7 @@
 package com.etherblood.cardsmatch.cardgame.events.startTurn.systems;
 
 import com.etherblood.cardsmatch.cardgame.AbstractMatchSystem;
-import com.etherblood.cardsmatch.cardgame.Autowire;
+import com.etherblood.match.Autowire;
 import com.etherblood.cardsmatch.cardgame.components.battle.buffs.RegenerationComponent;
 import com.etherblood.cardsmatch.cardgame.components.battle.stats.HealthComponent;
 import com.etherblood.cardsmatch.cardgame.components.cards.cardZone.BoardCardComponent;

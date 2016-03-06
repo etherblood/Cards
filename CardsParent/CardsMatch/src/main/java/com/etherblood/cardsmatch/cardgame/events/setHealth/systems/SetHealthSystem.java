@@ -5,7 +5,7 @@
 package com.etherblood.cardsmatch.cardgame.events.setHealth.systems;
 
 import com.etherblood.cardsmatch.cardgame.AbstractMatchSystem;
-import com.etherblood.cardsmatch.cardgame.Autowire;
+import com.etherblood.match.Autowire;
 import com.etherblood.cardsmatch.cardgame.components.battle.stats.HealthComponent;
 import com.etherblood.cardsmatch.cardgame.events.setHealth.SetHealthEvent;
 import com.etherblood.entitysystem.data.EntityComponentMap;

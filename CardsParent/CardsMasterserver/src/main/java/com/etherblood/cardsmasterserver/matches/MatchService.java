@@ -15,6 +15,8 @@ import com.etherblood.cardsmasterserver.network.events.UserLogoutEvent;
 import com.etherblood.cardsmasterserver.network.messages.MessageHandler;
 import com.etherblood.cardsmasterserver.system.SystemTaskEvent;
 import com.etherblood.cardsmasterserver.users.UserService;
+import com.etherblood.cardsmatch.cardgame.ValidEffectTargetsSelector;
+import com.etherblood.cardsmatch.cardgame.bot.monteCarlo.CommandGenerator;
 import com.etherblood.cardsmatch.cardgame.bot.monteCarlo.MonteCarloController;
 import com.etherblood.cardsmatch.cardgame.client.SystemsEventHandler;
 import com.etherblood.cardsnetworkshared.master.commands.MatchRequest;
@@ -169,7 +171,7 @@ public class MatchService {
 //                endTurnCommandFactory.data = wrapper.getData();
 //                ai.setBot(new EndTurnBot(endTurnCommandFactory));
                 MatchContext simulationContext = new DefaultRulesDef(templateService.getAll()).getBuilder().build();
-                MonteCarloController monteCarloBot = new MonteCarloController(context, simulationContext, player1.getPlayer());
+                MonteCarloController monteCarloBot = new MonteCarloController(context, simulationContext, new CommandGenerator(), player1.getPlayer());
                 ai.setBot(monteCarloBot);
             }
         }

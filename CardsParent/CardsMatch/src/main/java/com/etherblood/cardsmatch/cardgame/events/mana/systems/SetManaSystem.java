@@ -5,7 +5,7 @@
 package com.etherblood.cardsmatch.cardgame.events.mana.systems;
 
 import com.etherblood.cardsmatch.cardgame.AbstractMatchSystem;
-import com.etherblood.cardsmatch.cardgame.Autowire;
+import com.etherblood.match.Autowire;
 import com.etherblood.cardsmatch.cardgame.components.player.ManaComponent;
 import com.etherblood.cardsmatch.cardgame.events.mana.SetManaEvent;
 import com.etherblood.entitysystem.data.EntityComponentMap;

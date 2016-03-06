@@ -4,6 +4,7 @@
  */
 package com.etherblood.cardsmatch.cardgame;
 
+import com.etherblood.match.Autowire;
 import com.etherblood.eventsystem.GameEvent;
 import com.etherblood.eventsystem.GameEventDataStack;
 import com.etherblood.eventsystem.GameEventHandler;

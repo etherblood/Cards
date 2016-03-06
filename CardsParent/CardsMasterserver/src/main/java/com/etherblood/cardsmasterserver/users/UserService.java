@@ -8,6 +8,8 @@ import com.etherblood.cardsmasterserver.users.model.Password;
 import com.etherblood.cardsmasterserver.users.model.UserAccount;
 import com.etherblood.cardsnetworkshared.master.commands.UserRegistration;
 import java.security.SecureRandom;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.bind.DatatypeConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -47,6 +49,11 @@ public class UserService {
         Password password = user.getPassword();
         String passwordHash = calcPasswordHash(plaintextPassword, password.getSalt());
         if (!password.getHash().equals(passwordHash)) {
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException ex) {
+                ex.printStackTrace(System.err);
+            }
             throw new RuntimeException("invalid password");
         }
         return user;

@@ -1,7 +1,7 @@
 package com.etherblood.cardsmatch.cardgame.events.effects.systems;
 
 import com.etherblood.cardsmatch.cardgame.AbstractMatchSystem;
-import com.etherblood.cardsmatch.cardgame.Autowire;
+import com.etherblood.match.Autowire;
 import com.etherblood.cardsmatch.cardgame.components.effects.EffectTriggerEntityComponent;
 import com.etherblood.cardsmatch.cardgame.components.effects.effects.AttackEffectComponent;
 import com.etherblood.cardsmatch.cardgame.eventData.EffectTargets;

@@ -1,9 +1,7 @@
 package com.etherblood.match;
 
-import com.etherblood.cardsmatch.cardgame.Autowire;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**

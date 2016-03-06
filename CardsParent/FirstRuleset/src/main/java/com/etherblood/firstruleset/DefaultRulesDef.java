@@ -1,9 +1,9 @@
 package com.etherblood.firstruleset;
 
+import com.etherblood.cardsmatch.cardgame.ValidEffectTargetsSelectorImpl;
 import com.etherblood.cardsmatch.cardgame.MatchGameEventDispatcher;
 import com.etherblood.cardsmatch.cardgame.rng.RngFactoryImpl;
 import com.etherblood.cardsmatch.cardgame.TemplateSet;
-import com.etherblood.cardsmatch.cardgame.client.SystemsEventHandler;
 import com.etherblood.cardsmatch.cardgame.components.misc.NameComponent;
 import com.etherblood.cardsmatch.cardgame.components.player.PlayerComponent;
 import com.etherblood.cardsmatch.cardgame.events.gamestart.ShuffleLibraryEvent;
@@ -57,13 +57,11 @@ import com.etherblood.cardsmatch.cardgame.events.effects.systems.DrawEffectSyste
 import com.etherblood.cardsmatch.cardgame.events.effects.systems.EndTurnEffectSystem;
 import com.etherblood.cardsmatch.cardgame.events.effects.systems.HandDetachEffectSystem;
 import com.etherblood.cardsmatch.cardgame.events.effects.systems.PlayerLostEffectSystem;
-import com.etherblood.cardsmatch.cardgame.events.effects.systems.SetSameOwnerAsTriggerEffectSystem;
+import com.etherblood.cardsmatch.cardgame.events.effects.systems.SetOwnerEffectSystem;
 import com.etherblood.cardsmatch.cardgame.events.effects.systems.SummonEffectSystem;
 import com.etherblood.cardsmatch.cardgame.events.effects.systems.conditions.CanAttackConditionSystem;
-import com.etherblood.cardsmatch.cardgame.events.effects.systems.conditions.EffectPlayerTriggerConditionSystem;
 import com.etherblood.cardsmatch.cardgame.events.effects.systems.conditions.ItsMyTurnConditionSystem;
 import com.etherblood.cardsmatch.cardgame.events.effects.systems.conditions.PayManaCostEffectSystem;
-import com.etherblood.cardsmatch.cardgame.events.effects.systems.conditions.TriggerConditionEffectSystem;
 import com.etherblood.cardsmatch.cardgame.events.effects.systems.triggers.CreateSingleTargetEntityEffectSystem;
 import com.etherblood.cardsmatch.cardgame.events.effects.systems.triggers.SelectTargetsEffectSystem;
 import com.etherblood.cardsmatch.cardgame.events.effects.systems.triggers.TargetedTriggerEffectSystem;
@@ -128,6 +126,7 @@ import com.etherblood.match.PlayerDefinition;
 import com.etherblood.match.RulesDefinition;
 import com.etherblood.cardsmatch.cardgame.client.SystemsEventHandlerDispatcher;
 import com.etherblood.cardsmatch.cardgame.components.player.NextTurnPlayerComponent;
+import com.etherblood.cardsmatch.cardgame.events.entities.systems.CopyBattlecryConditionsSystem;
 import com.etherblood.cardsmatch.cardgame.events.startTurn.RemoveSummonSicknessEvent;
 import com.etherblood.cardsmatch.cardgame.events.startTurn.systems.RemoveSummonSicknessSystem;
 import java.util.List;
@@ -152,9 +151,11 @@ public class DefaultRulesDef implements RulesDefinition {
         builder.addBean(new IncrementalEntityIdFactory());
         builder.addBean(new RngFactoryImpl());
         builder.addBean(templates);
+        builder.addBean(new ValidEffectTargetsSelectorImpl());
         
         addSystem(dispatcher, ApplyEndTurnEvent.class, new ApplyEndTurnSystem());
         addSystem(dispatcher, AttachTemplateEvent.class, new AttachTemplateSystem());
+        addSystem(dispatcher, AttachTemplateEvent.class, new CopyBattlecryConditionsSystem());
         addSystem(dispatcher, AttackEvent.class, new IncreaseAttackCountSystem());
         addSystem(dispatcher, AttackEvent.class, new ApplyAttackSystem());
         addSystem(dispatcher, BoardAttachEvent.class, new BoardAttachSystem());
@@ -175,12 +176,12 @@ public class DefaultRulesDef implements RulesDefinition {
 
         addSystem(dispatcher, EffectEvent.class, new ItsMyTurnConditionSystem());
         addSystem(dispatcher, EffectEvent.class, new CanAttackConditionSystem());
-        addSystem(dispatcher, EffectEvent.class, new TriggerConditionEffectSystem());
+//        addSystem(dispatcher, EffectEvent.class, new TriggerConditionEffectSystem());
         addSystem(dispatcher, EffectEvent.class, new PayManaCostEffectSystem());
         
         addSystem(dispatcher, EffectEvent.class, new AttachTemplateEffectSystem());
         addSystem(dispatcher, EffectEvent.class, new DrawEffectSystem());
-        addSystem(dispatcher, EffectEvent.class, new SetSameOwnerAsTriggerEffectSystem());
+        addSystem(dispatcher, EffectEvent.class, new SetOwnerEffectSystem());
         addSystem(dispatcher, EffectEvent.class, new SummonEffectSystem());
         addSystem(dispatcher, EffectEvent.class, new HandDetachEffectSystem());
         addSystem(dispatcher, EffectEvent.class, new BoardAttachEffectSystem());
@@ -233,11 +234,11 @@ public class DefaultRulesDef implements RulesDefinition {
         addSystem(dispatcher, TargetedTriggerEffectEvent.class, new TargetedTriggerEffectSystem());
         addSystem(dispatcher, TriggerEffectEvent.class, new CreateSingleTargetEntityEffectSystem());
         addSystem(dispatcher, TriggerEffectEvent.class, new SelectTargetsEffectSystem());
-        addSystem(dispatcher, TriggerEffectEvent.class, new EffectPlayerTriggerConditionSystem());
+//        addSystem(dispatcher, TriggerEffectEvent.class, new EffectPlayerTriggerConditionSystem());
         addSystem(dispatcher, TriggerEffectEvent.class, new TriggerEffectSystem());
     }
     
-    private <E extends GameEvent> void addSystem(GameEventDispatcher dispatcher, Class<E> eventClass, GameEventHandler system) {
+    private <E extends GameEvent> void addSystem(GameEventDispatcher dispatcher, Class<E> eventClass, GameEventHandler<E> system) {
         dispatcher.subscribe(eventClass, system);
         builder.addPassiveBean(system);
     }

@@ -6,7 +6,7 @@ package com.etherblood.cardsmatch.cardgame.events.entities.systems;
 
 import com.etherblood.cardsmatch.cardgame.EntityTemplate;
 import com.etherblood.cardsmatch.cardgame.AbstractMatchSystem;
-import com.etherblood.cardsmatch.cardgame.Autowire;
+import com.etherblood.match.Autowire;
 import com.etherblood.cardsmatch.cardgame.TemplateSet;
 import com.etherblood.cardsmatch.cardgame.components.effects.EffectTriggerEntityComponent;
 import com.etherblood.cardsmatch.cardgame.events.entities.AttachTemplateEvent;
@@ -46,7 +46,9 @@ public class AttachTemplateSystem extends AbstractMatchSystem<AttachTemplateEven
             events.fireEvent(new SetOwnerEvent(event.target, event.owner));
         }
         if(event.parent != null) {//template instanceof TriggerEntityTemplate) {
-            if(template.isCollectible()) throw new IllegalStateException();//remove if intended
+            if(template.isCollectible()) {
+                throw new IllegalStateException();//remove if intended
+            }
             data.set(event.target, new EffectTriggerEntityComponent(event.parent));
         }
         for (String childName : template.getChildTemplates()) {

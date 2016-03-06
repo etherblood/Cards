@@ -5,9 +5,9 @@
 package com.etherblood.cardsmatch.cardgame.events.effects.systems;
 
 import com.etherblood.cardsmatch.cardgame.AbstractMatchSystem;
-import com.etherblood.cardsmatch.cardgame.Autowire;
+import com.etherblood.match.Autowire;
 import com.etherblood.cardsmatch.cardgame.components.effects.EffectTriggerEntityComponent;
-import com.etherblood.cardsmatch.cardgame.components.effects.effects.SetOwnerEffectComponent;
+import com.etherblood.cardsmatch.cardgame.components.effects.effects.MakeAllyEffectComponent;
 import com.etherblood.cardsmatch.cardgame.components.misc.OwnerComponent;
 import com.etherblood.cardsmatch.cardgame.eventData.EffectTargets;
 import com.etherblood.cardsmatch.cardgame.events.effects.EffectEvent;
@@ -20,24 +20,24 @@ import com.etherblood.entitysystem.data.EntityId;
  *
  * @author Philipp
  */
-public class SetSameOwnerAsTriggerEffectSystem extends AbstractMatchSystem<EffectEvent> {
+public class SetOwnerEffectSystem extends AbstractMatchSystem<EffectEvent> {
+
     @Autowire
     private EntityComponentMapReadonly data;
-    @Autowire
-    private RngFactory rng;
 
     @Override
     public EffectEvent handle(EffectEvent event) {
-        SetOwnerEffectComponent ownerFilterComponent = data.get(event.effect, SetOwnerEffectComponent.class);
-        if(ownerFilterComponent != null) {
-            EntityId trigger = data.get(event.effect, EffectTriggerEntityComponent.class).entity;
-            EntityId owner = ownerFilterComponent.filter.select(data, event.effect, data.get(trigger, OwnerComponent.class).player, rng).get(0);//data.get(trigger, OwnerComponent.class).player;
-            for (EntityId target : eventData().get(EffectTargets.class).targets) {
-//            for (EntityId target : data.get(event.effect, EffectTargetsComponent.class).targets) {
-                enqueueEvent(new SetOwnerEvent(target, owner));
-            }
+        EntityId owner;
+        if (data.has(event.effect, MakeAllyEffectComponent.class)) {
+            owner = data.get(event.effect, OwnerComponent.class).player;
+        } else if (data.has(event.effect, MakeAllyEffectComponent.class)) {
+            owner = data.get(event.effect, OwnerComponent.class).player;
+        } else {
+            return event;
+        }
+        for (EntityId target : eventData().get(EffectTargets.class).targets) {
+            enqueueEvent(new SetOwnerEvent(target, owner));
         }
         return event;
     }
-    
 }

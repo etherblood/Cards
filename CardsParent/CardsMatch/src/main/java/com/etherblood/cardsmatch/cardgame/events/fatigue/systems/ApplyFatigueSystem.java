@@ -5,7 +5,7 @@
 package com.etherblood.cardsmatch.cardgame.events.fatigue.systems;
 
 import com.etherblood.cardsmatch.cardgame.AbstractMatchSystem;
-import com.etherblood.cardsmatch.cardgame.Autowire;
+import com.etherblood.match.Autowire;
 import com.etherblood.cardsmatch.cardgame.components.battle.hero.HeroComponent;
 import com.etherblood.cardsmatch.cardgame.components.misc.OwnerComponent;
 import com.etherblood.cardsmatch.cardgame.components.player.FatigueCounterComponent;

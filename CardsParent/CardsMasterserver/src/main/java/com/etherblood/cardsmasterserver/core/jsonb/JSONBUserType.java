@@ -1,8 +1,7 @@
 /**
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * the License at http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
@@ -12,9 +11,8 @@
  */
 package com.etherblood.cardsmasterserver.core.jsonb;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.io.Serializable;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -34,73 +32,60 @@ import org.postgresql.util.PGobject;
  * Unlike the default JPA object mapping, {@code JSONBUserType} can also be used
  * for properties that do not implement {@link Serializable}.
  * <p>
- * Users intending to use this type for mutable non-<code>Collection</code>
- * objects should override {@link #deepCopyValue(Object)} to correctly return a
+ * Users intending to use this type for mutable non-
+ * <code>Collection</code> objects should override
+ * {@link #deepCopyValue(Object)} to correctly return a
  * <u>copy</u> of the object.
  */
-public class JSONBUserType extends CollectionUserType implements
-    ParameterizedType {
+public class JSONBUserType extends CollectionUserType implements ParameterizedType {
 
-  private static final ObjectMapper MAPPER = new ObjectMapper();
-  private static final String JSONB_TYPE = "jsonb";
-  public static final String CLASS = "CLASS";
-  private Class returnedClass;
+    private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
+    private static final String JSONB_TYPE = "jsonb";
+    public static final String CLASS = "CLASS";
+    private Class returnedClass;
 
-  @Override
-  public Class<Object> returnedClass() {
-    return Object.class;
-  }
-
-  @Override
-  public int[] sqlTypes() {
-    return new int[]{Types.JAVA_OBJECT};
-  }
-
-  @Override
-  public Object nullSafeGet(ResultSet resultSet, String[] names,
-      SessionImplementor session, Object owner)
-      throws HibernateException, SQLException {
-    try {
-      final String json = resultSet.getString(names[0]);
-      return json == null
-          ? null
-          : MAPPER.readValue(json, returnedClass);
-    } catch (IOException ex) {
-      throw new HibernateException(ex);
+    @Override
+    public Class<Object> returnedClass() {
+        return Object.class;
     }
-  }
 
-  @Override
-  public void nullSafeSet(PreparedStatement st, Object value, int index,
-      SessionImplementor session) throws HibernateException, SQLException {
-    try {
-      final String json = value == null
-          ? null
-          : MAPPER.writeValueAsString(value);
-      // otherwise PostgreSQL won't recognize the type
-      PGobject pgo = new PGobject();
-      pgo.setType(JSONB_TYPE);
-      pgo.setValue(json);
-      st.setObject(index, pgo);
-    } catch (JsonProcessingException ex) {
-      throw new HibernateException(ex);
+    @Override
+    public int[] sqlTypes() {
+        return new int[]{Types.JAVA_OBJECT};
     }
-  }
 
-  @Override
-  protected Object deepCopyValue(Object value) {
-    return value;
-  }
-
-  @Override
-  public void setParameterValues(Properties parameters) {
-    final String clazz = (String) parameters.get(CLASS);
-    try {
-      returnedClass = ReflectHelper.classForName(clazz, getClass());
-    } catch (ClassNotFoundException e) {
-      throw new IllegalArgumentException("Class: " + clazz
-          + " is not a known class type.");
+    @Override
+    public Object nullSafeGet(ResultSet resultSet, String[] names, SessionImplementor session, Object owner) throws HibernateException, SQLException {
+        final String json = resultSet.getString(names[0]);
+        return json == null
+                ? null
+                : GSON.fromJson(json, returnedClass);
     }
-  }
 
+    @Override
+    public void nullSafeSet(PreparedStatement st, Object value, int index, SessionImplementor session) throws HibernateException, SQLException {
+        final String json = value == null
+                ? null
+                : GSON.toJson(value);
+        // otherwise PostgreSQL won't recognize the type
+        PGobject pgo = new PGobject();
+        pgo.setType(JSONB_TYPE);
+        pgo.setValue(json);
+        st.setObject(index, pgo);
+    }
+
+    @Override
+    protected Object deepCopyValue(Object value) {
+        return value;
+    }
+
+    @Override
+    public void setParameterValues(Properties parameters) {
+        final String clazz = (String) parameters.get(CLASS);
+        try {
+            returnedClass = ReflectHelper.classForName(clazz, getClass());
+        } catch (ClassNotFoundException e) {
+            throw new IllegalArgumentException("Class: " + clazz + " is not a known class type.", e);
+        }
+    }
 }

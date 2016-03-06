@@ -5,7 +5,7 @@
 package com.etherblood.cardsmatch.cardgame.events.death.systems;
 
 import com.etherblood.cardsmatch.cardgame.AbstractMatchSystem;
-import com.etherblood.cardsmatch.cardgame.Autowire;
+import com.etherblood.match.Autowire;
 import com.etherblood.cardsmatch.cardgame.components.effects.EffectTriggerEntityComponent;
 import com.etherblood.cardsmatch.cardgame.components.effects.triggers.DeathrattleTriggerComponent;
 import com.etherblood.cardsmatch.cardgame.events.death.DeathEvent;

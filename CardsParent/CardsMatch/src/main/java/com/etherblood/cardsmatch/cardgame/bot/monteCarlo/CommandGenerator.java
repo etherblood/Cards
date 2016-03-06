@@ -1,5 +1,6 @@
 package com.etherblood.cardsmatch.cardgame.bot.monteCarlo;
 
+import com.etherblood.cardsmatch.cardgame.ValidEffectTargetsSelector;
 import com.etherblood.cardsmatch.cardgame.bot.commands.Command;
 import com.etherblood.cardsmatch.cardgame.components.battle.buffs.AttackCountComponent;
 import com.etherblood.cardsmatch.cardgame.components.battle.buffs.ChargeComponent;
@@ -14,9 +15,12 @@ import com.etherblood.cardsmatch.cardgame.components.effects.EffectTriggerEntity
 import com.etherblood.cardsmatch.cardgame.components.effects.effects.AttackEffectComponent;
 import com.etherblood.cardsmatch.cardgame.components.effects.effects.EndTurnEffectComponent;
 import com.etherblood.cardsmatch.cardgame.components.effects.effects.SummonEffectComponent;
+import com.etherblood.cardsmatch.cardgame.components.effects.targeting.EffectMinimumTargetsRequiredComponent;
+import com.etherblood.cardsmatch.cardgame.components.effects.targeting.EffectRequiresUserTargetsComponent;
 import com.etherblood.cardsmatch.cardgame.components.misc.OwnerComponent;
 import com.etherblood.cardsmatch.cardgame.components.player.ItsMyTurnComponent;
 import com.etherblood.cardsmatch.cardgame.components.player.ManaComponent;
+import com.etherblood.entitysystem.data.EntityComponent;
 import com.etherblood.entitysystem.data.EntityComponentMapReadonly;
 import com.etherblood.entitysystem.data.EntityId;
 import com.etherblood.entitysystem.filters.AbstractComponentFieldValueFilter;
@@ -26,6 +30,7 @@ import com.etherblood.entitysystem.util.DeterministicEntityIndices;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -33,9 +38,9 @@ import java.util.Set;
  * @author Philipp
  */
 public class CommandGenerator {
-    //TODO: generalize effects so that casting and attacking can be handled identically
-    private final DeterministicEntityIndices indexing = new DeterministicEntityIndices();
+    //TODO: generalize effects so that casting and attacking can be handled identically?
 
+    private final DeterministicEntityIndices indexing = new DeterministicEntityIndices();
     private final AbstractComponentFieldValueFilter<OwnerComponent> ownerFilter = OwnerComponent.createPlayerFilter(new EqualityOperator());
     private final AbstractComponentFieldValueFilter<EffectTriggerEntityComponent> triggerFilter = EffectTriggerEntityComponent.createTriggerFilter(new EqualityOperator());
     private final FilterQuery handMinions = new FilterQuery()
@@ -50,11 +55,11 @@ public class CommandGenerator {
             .setBaseClass(EndTurnEffectComponent.class)
             .addComponentFilter(ownerFilter);
 
-    public Command generate(EntityComponentMapReadonly data, MoveSelector selector) {
+    public Command generate(EntityComponentMapReadonly data, ValidEffectTargetsSelector targetSelector, MoveSelector selector) {
         EntityId currentPlayer = currentQuery.first(data);
 
         ArrayList<EntityId> attackers = attackersList(data, currentPlayer);
-        ArrayList<EntityId> castables = castablesList(data, currentPlayer);
+        ArrayList<EntityId> castables = castablesList(data, targetSelector, currentPlayer);
 
         int count = attackers.size() + castables.size() + 1;
         int move = selector.selectMove(count);
@@ -67,7 +72,7 @@ public class CommandGenerator {
 
         if (move < castables.size()) {
             EntityId castable = indexing.getEntityForDeterministicIndex(castables, move);
-            return generateCast(data, selector, castable);
+            return generateCast(data, targetSelector, selector, castable);
         }
         move -= castables.size();
 
@@ -80,9 +85,17 @@ public class CommandGenerator {
         return new Command(endTurnQuery.first(data));
     }
 
-    private Command generateCast(EntityComponentMapReadonly data, MoveSelector selector, EntityId card) {
-        //TODO add targeting
-        return new Command(card);
+    private Command generateCast(EntityComponentMapReadonly data, ValidEffectTargetsSelector targetSelector, MoveSelector selector, EntityId effect) {
+        if (data.has(effect, EffectRequiresUserTargetsComponent.class)) {
+            //TODO add multi-targeting
+            List<EntityId> targets = targetSelector.selectTargets(effect);
+            assert !targets.isEmpty();
+            int move = selector.selectMove(targets.size());
+            EntityId target = indexing.getEntityForDeterministicIndex(targets, move);
+            return new Command(effect, target);//only single target selection supported
+        } else {
+            return new Command(effect);
+        }
     }
 
     private Command generateAttack(EntityComponentMapReadonly data, MoveSelector selector, EntityId attacker) {
@@ -93,10 +106,10 @@ public class CommandGenerator {
         return new Command(attacker, defender);
     }
 
-    public void applyCommand(EntityComponentMapReadonly data, EntityId source, EntityId[] targets, MoveConsumer consumer) {
+    public void applyCommand(EntityComponentMapReadonly data, ValidEffectTargetsSelector targetSelector, EntityId source, EntityId[] targets, MoveConsumer consumer) {
         EntityId currentPlayer = currentQuery.first(data);
         ArrayList<EntityId> attackersList = attackersList(data, currentPlayer);
-        ArrayList<EntityId> castablesList = castablesList(data, currentPlayer);
+        ArrayList<EntityId> castablesList = castablesList(data, targetSelector, currentPlayer);
 
         int count = attackersList.size() + castablesList.size() + 1;
         int index = indexing.getDeterministicIndexForEntity(attackersList, source);
@@ -112,10 +125,14 @@ public class CommandGenerator {
         }
         index = indexing.getDeterministicIndexForEntity(castablesList, source);
         if (index != -1) {
-            if (targets.length != 0) {
-                throw new IllegalArgumentException();
-            }
             consumer.applyMove(attackersList.size() + index, count);
+            if(targets.length != 0) {
+                assert data.has(source, EffectRequiresUserTargetsComponent.class);
+                assert targets.length == 1;//multitarget not supported yet
+                List<EntityId> selectTargets = targetSelector.selectTargets(source);
+                index = indexing.getDeterministicIndexForEntity(selectTargets, targets[0]);
+                consumer.applyMove(index, selectTargets.size());
+            }
             return;
         }
         ownerFilter.setValue(currentQuery.first(data));
@@ -146,7 +163,7 @@ public class CommandGenerator {
         return attackers;
     }
 
-    private ArrayList<EntityId> castablesList(EntityComponentMapReadonly data, EntityId currentPlayer) {
+    private ArrayList<EntityId> castablesList(EntityComponentMapReadonly data, ValidEffectTargetsSelector targetSelector, EntityId currentPlayer) {
         ArrayList<EntityId> castables = new ArrayList<>();
         ownerFilter.setValue(currentPlayer);
         ManaComponent manaComp = data.get(currentPlayer, ManaComponent.class);
@@ -157,7 +174,10 @@ public class CommandGenerator {
             if (mana >= cost) {
                 triggerFilter.setValue(minion);
                 EntityId effect = summonQuery.first(data);
-                castables.add(effect);
+                EffectMinimumTargetsRequiredComponent minimumTargetsComponent = data.get(effect, EffectMinimumTargetsRequiredComponent.class);
+                if (minimumTargetsComponent == null || targetSelector.selectTargets(effect).size() >= minimumTargetsComponent.count) {
+                    castables.add(effect);
+                }
             }
         }
         return castables;
@@ -183,5 +203,4 @@ public class CommandGenerator {
         }
         return defenders;
     }
-
 }

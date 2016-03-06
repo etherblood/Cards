@@ -1,5 +1,6 @@
 package com.etherblood.cardsmatch.cardgame.bot.monteCarlo;
 
+import com.etherblood.cardsmatch.cardgame.ValidEffectTargetsSelector;
 import com.etherblood.cardsmatch.cardgame.bot.Bot;
 import com.etherblood.cardsmatch.cardgame.bot.commands.Command;
 import com.etherblood.cardsmatch.cardgame.client.SystemsEventHandler;
@@ -32,12 +33,12 @@ import java.util.Set;
  */
 public class MonteCarloController implements Bot {
 
-    long millis = 5000;
+    long millis = 2000;
     private final EntityId player1Entity;
     private final MonteCarloControls controls = new MonteCarloControls();
     private final MatchContext state;
     private final MatchContext simulationState;
-    private final CommandGenerator generator = new CommandGenerator();
+    private final CommandGenerator generator;
     private final MoveSelector simulationMoveSelector = new MoveSelector() {
         @Override
         public int selectMove(int count) {
@@ -57,9 +58,10 @@ public class MonteCarloController implements Bot {
         }
     };
 
-    public MonteCarloController(MatchContext state, MatchContext simulationState, EntityId player1) {
+    public MonteCarloController(MatchContext state, MatchContext simulationState, CommandGenerator commandGenerator, EntityId player1) {
         this.state = state;
         this.simulationState = simulationState;
+        this.generator = commandGenerator;
         this.player1Entity = player1;
         RngListener rngListener = new RngListener() {
             @Override
@@ -85,7 +87,7 @@ public class MonteCarloController implements Bot {
             public <T extends GameEvent> void onEvent(Class<GameEventHandler<T>> systemClass, T gameEvent) {
                 if (TargetedTriggerEffectSystem.class.equals(systemClass)) {
                     TargetedTriggerEffectEvent event = (TargetedTriggerEffectEvent) gameEvent;
-                    generator.applyCommand(MonteCarloController.this.state.getBean(EntityComponentMapReadonly.class), event.effect, event.targets, moveConsumer);
+                    generator.applyCommand(MonteCarloController.this.state.getBean(EntityComponentMapReadonly.class), MonteCarloController.this.state.getBean(ValidEffectTargetsSelector.class), event.effect, event.targets, moveConsumer);
                 }
             }
         });
@@ -115,7 +117,7 @@ public class MonteCarloController implements Bot {
             iteration();
         }
         MonteCarloNode root = controls.startWalk();
-        Command command = generator.generate(state.getBean(EntityComponentMapReadonly.class), orginalMoveSelector);
+        Command command = generator.generate(state.getBean(EntityComponentMapReadonly.class), state.getBean(ValidEffectTargetsSelector.class), orginalMoveSelector);
         controls.endWalk(root);
         return command;
     }
@@ -130,8 +132,9 @@ public class MonteCarloController implements Bot {
 
     private void playWhileInState(MonteCarloState loopState) {
         EntityComponentMapReadonly simulationData = simulationState.getBean(EntityComponentMapReadonly.class);
+        ValidEffectTargetsSelector targetSelector = simulationState.getBean(ValidEffectTargetsSelector.class);
         while (controls.state() == loopState) {
-            Command command = generator.generate(simulationData, simulationMoveSelector);
+            Command command = generator.generate(simulationData, targetSelector, simulationMoveSelector);
             applyCommand(simulationState, command);
 
             int victor = getVictoryState(simulationData);

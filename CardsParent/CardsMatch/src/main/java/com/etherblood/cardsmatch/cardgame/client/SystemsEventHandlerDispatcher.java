@@ -1,6 +1,5 @@
 package com.etherblood.cardsmatch.cardgame.client;
 
-import com.etherblood.cardsmatch.cardgame.client.SystemsEventHandler;
 import com.etherblood.eventsystem.GameEvent;
 import java.util.ArrayList;
 import java.util.List;

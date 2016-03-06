@@ -5,7 +5,7 @@
 package com.etherblood.cardsmatch.cardgame.events.cardZones.systems;
 
 import com.etherblood.cardsmatch.cardgame.AbstractMatchSystem;
-import com.etherblood.cardsmatch.cardgame.Autowire;
+import com.etherblood.match.Autowire;
 import com.etherblood.cardsmatch.cardgame.components.cards.cardZone.HandCardComponent;
 import com.etherblood.cardsmatch.cardgame.events.cardZones.HandAttachEvent;
 import com.etherblood.entitysystem.data.EntityComponentMap;

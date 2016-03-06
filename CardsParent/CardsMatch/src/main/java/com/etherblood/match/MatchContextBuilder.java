@@ -1,6 +1,9 @@
 package com.etherblood.match;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import javax.annotation.PostConstruct;
 
 /**
  *
@@ -20,6 +23,24 @@ public class MatchContextBuilder {
     public MatchContext build() {
         MatchContext context = new MatchContext(beans);
         context.populateAll(passiveBeans);
+        for (Object object : beans) {
+            postConstruct(object);
+        }
+        for (Object object : passiveBeans) {
+            postConstruct(object);
+        }
         return context;
+    }
+    
+    private void postConstruct(Object bean) {
+        for (Method method : bean.getClass().getMethods()) {
+            if(method.isAnnotationPresent(PostConstruct.class)) {
+                try {
+                    method.invoke(bean);
+                } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        }
     }
 }

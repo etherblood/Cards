@@ -2,7 +2,6 @@ package com.etherblood.cardsmatch.cardgame;
 
 import com.etherblood.cardsmatch.cardgame.components.misc.NameComponent;
 import com.etherblood.entitysystem.data.EntityComponent;
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;

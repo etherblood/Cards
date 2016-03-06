@@ -5,7 +5,7 @@
 package com.etherblood.cardsmatch.cardgame.events.endTurn.systems;
 
 import com.etherblood.cardsmatch.cardgame.AbstractMatchSystem;
-import com.etherblood.cardsmatch.cardgame.Autowire;
+import com.etherblood.match.Autowire;
 import com.etherblood.cardsmatch.cardgame.components.player.NextTurnPlayerComponent;
 import com.etherblood.cardsmatch.cardgame.events.endTurn.EndTurnEvent;
 import com.etherblood.cardsmatch.cardgame.events.startTurn.StartTurnEvent;

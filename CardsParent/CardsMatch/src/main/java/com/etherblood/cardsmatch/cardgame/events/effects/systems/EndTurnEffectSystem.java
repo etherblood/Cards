@@ -5,7 +5,7 @@
 package com.etherblood.cardsmatch.cardgame.events.effects.systems;
 
 import com.etherblood.cardsmatch.cardgame.AbstractMatchSystem;
-import com.etherblood.cardsmatch.cardgame.Autowire;
+import com.etherblood.match.Autowire;
 import com.etherblood.cardsmatch.cardgame.components.effects.effects.EndTurnEffectComponent;
 import com.etherblood.cardsmatch.cardgame.components.player.ItsMyTurnComponent;
 import com.etherblood.cardsmatch.cardgame.components.player.PlayerComponent;
@@ -29,7 +29,7 @@ public class EndTurnEffectSystem extends AbstractMatchSystem<EffectEvent> {
         if(data.has(event.effect, EndTurnEffectComponent.class)) {
             EntityId[] targets = eventData().get(EffectTargets.class).targets;
             if(targets.length != 1) {
-                throw new IllegalStateException("cannot end turn of different targets-length than 1");
+                throw new IllegalStateException("cannot end turn of different targets-length than 1, actual length is " + targets.length);
             }
             enqueueEvent(new EndTurnEvent(targets[0]));
         }

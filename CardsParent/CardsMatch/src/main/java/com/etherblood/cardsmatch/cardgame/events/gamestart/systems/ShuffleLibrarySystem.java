@@ -1,7 +1,7 @@
 package com.etherblood.cardsmatch.cardgame.events.gamestart.systems;
 
 import com.etherblood.cardsmatch.cardgame.AbstractMatchSystem;
-import com.etherblood.cardsmatch.cardgame.Autowire;
+import com.etherblood.match.Autowire;
 import com.etherblood.cardsmatch.cardgame.rng.RngFactory;
 import com.etherblood.cardsmatch.cardgame.components.cards.cardZone.LibraryCardComponent;
 import com.etherblood.cardsmatch.cardgame.components.misc.OwnerComponent;

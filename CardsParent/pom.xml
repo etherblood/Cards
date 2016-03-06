@@ -19,8 +19,8 @@
         <module>AnnotationProcessors</module>
         <module>MonteCarloTreeSearch</module>
         <module>FirstRuleset</module>
-    <module>CardsSharedResources</module>
-  </modules>
+        <module>CardsSharedResources</module>
+    </modules>
     
     <url>http://maven.apache.org</url>
 

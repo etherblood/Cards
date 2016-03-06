@@ -1,7 +1,7 @@
 package com.etherblood.cardsmatch.cardgame.events.gameover.systems;
 
 import com.etherblood.cardsmatch.cardgame.AbstractMatchSystem;
-import com.etherblood.cardsmatch.cardgame.Autowire;
+import com.etherblood.match.Autowire;
 import com.etherblood.cardsmatch.cardgame.components.misc.MatchEndedComponent;
 import com.etherblood.cardsmatch.cardgame.components.player.PlayerComponent;
 import com.etherblood.cardsmatch.cardgame.components.player.WinnerComponent;

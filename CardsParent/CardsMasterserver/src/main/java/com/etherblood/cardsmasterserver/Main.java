@@ -14,7 +14,7 @@ import java.util.Scanner;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-public class Main {
+public class Main implements Runnable {
 
     private static final String SPRING_CONTEXT_FILEPATH = "main_spring_context.xml";
 
@@ -23,7 +23,8 @@ public class Main {
         new Main().run();
     }
 
-    private void run() {
+    @Override
+    public void run() {
         try (ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(SPRING_CONTEXT_FILEPATH)) {
             context.registerShutdownHook();
             DefaultAuthentication adminAuthentication = new DefaultAuthentication(DefaultAuthentication.LOCAL_ADMIN_PRINCIPAL, null, UserRoles.ADMIN);

@@ -1,6 +1,6 @@
 package com.etherblood.cardsmatch.cardgame.bot.commands;
 
-import com.etherblood.cardsmatch.cardgame.Autowire;
+import com.etherblood.match.Autowire;
 import com.etherblood.cardsmatch.cardgame.components.effects.effects.EndTurnEffectComponent;
 import com.etherblood.cardsmatch.cardgame.components.misc.OwnerComponent;
 import com.etherblood.cardsmatch.cardgame.components.player.ItsMyTurnComponent;

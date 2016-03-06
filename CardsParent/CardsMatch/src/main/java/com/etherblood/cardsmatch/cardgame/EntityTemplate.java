@@ -7,6 +7,7 @@ package com.etherblood.cardsmatch.cardgame;
 import com.etherblood.cardsmatch.cardgame.components.misc.NameComponent;
 import com.etherblood.entitysystem.data.EntityComponent;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  *
@@ -19,6 +20,10 @@ public class EntityTemplate {
 
     public void add(EntityComponent component) {
         components.add(component);
+    }
+    
+    public void addAll(EntityComponent... components) {
+        this.components.addAll(Arrays.asList(components));
     }
     
     public void addChild(String template) {
