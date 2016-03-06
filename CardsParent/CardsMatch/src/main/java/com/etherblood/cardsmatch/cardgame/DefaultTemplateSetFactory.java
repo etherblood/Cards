@@ -157,85 +157,85 @@ public class DefaultTemplateSetFactory {
         DragonComponent dragon = new DragonComponent();
         DemonComponent demon = new DemonComponent();
         PirateComponent pirate = new PirateComponent();
-//////
-////////        createMinion("Wisp", 0, 1, 1);
-//////        createMinion("Target Dummy", 0, 0, 2, taunt, mech);
-//////        createMinion("Murloc Raider", 1, 2, 1, murloc);
-//////        createMinion("Stonetusk Boar", 1, 1, 1, charge, beast);
-//////        createMinion("Argent Squire", 1, 1, 1, divine);
-//////        createMinion("Voidwalker", 1, 1, 3, taunt, demon);
-//////        createMinion("Tournament Attendee", 1, 2, 1, taunt);
-//////        createMinion("Shieldbearer", 1, 0, 4, taunt);
-//////        createMinion("Goldshire Footman", 1, 1, 2, taunt);
-//////        createMinion("Bloodfen Raptor", 2, 3, 2, beast);
-//////        createMinion("Puddlestomper", 2, 3, 2, murloc);
-////////        createMinion("River Crocolisk", 2, 2, 3, beast);
-//////        createMinion("Bluegill Warrior", 2, 2, 1, charge, murloc);
-//////        createMinion("Shielded Minibot", 2, 2, 2, divine, mech);
-//////        createMinion("Annoy-o-Tron", 2, 1, 2, taunt, divine, mech);
-//////        createMinion("Frostwolf Grunt", 2, 2, 2, taunt);
-//////        createMinion("Scarlet Crusader", 3, 3, 1, divine);
-//////        createMinion("Ice Rager", 3, 5, 2);
-//////        createMinion("Magma Rager", 3, 5, 1);
-//////        createMinion("Spider Tank", 3, 3, 4, mech);
-//////        createMinion("Wolfrider", 3, 3, 1, charge);
-//////        createMinion("Argent Horserider", 3, 2, 1, charge, divine);
-//////        createMinion("Gnomeregan Infantry", 3, 1, 4, taunt, charge);
-//////        createMinion("Silverback Patriarch", 3, 1, 4, taunt, beast);
-//////        createMinion("Ironfur Grizzly", 3, 3, 3, taunt, beast);
-//////        createMinion("Chillwind Yeti", 4, 4, 5);
-//////        createMinion("Kor'kron Elite", 4, 4, 3, charge);
-//////        createMinion("Lost Tallstrider", 4, 5, 4, beast);
-//////        createMinion("Silvermoon Guardian", 4, 3, 3, divine);
-//////        createMinion("Oasis Snapjaw", 4, 2, 7, beast);
-//////        createMinion("Stormwind Knight", 4, 2, 5, charge);
-//////        createMinion("Sen'jin Shieldmasta", 4, 3, 5, taunt);
-//////        createMinion("Mogu'shan Warden", 4, 1, 7, taunt);
-//////        createMinion("Evil Heckler", 4, 5, 4, taunt);
-//////        createMinion("Pit Fighter", 5, 5, 6);
-//////        createMinion("Salty Dog", 5, 7, 4, pirate);
-//////        createMinion("Booty Bay Bodyguard", 5, 5, 4, taunt);
-//////        createMinion("Fen Creeper", 5, 3, 6, taunt);
-//////        createMinion("Argent Commander", 6, 4, 2, charge, divine);
-//////        createMinion("Boulderfist Ogre", 6, 6, 7);
-//////        createMinion("Reckless Rocketeer", 6, 5, 2, charge);
-//////        createMinion("Lord of the Arena", 6, 6, 5, taunt);
-//////        createMinion("Sunwalker", 6, 4, 5, taunt, divine);
-//////        createMinion("Captured Jormungar", 7, 5, 9, beast);
-//////        createMinion("Fearsome Doomguard", 7, 6, 8, demon);
-//////        createMinion("Wargolem", 7, 7, 7);
-//////        createMinion("Core Hound", 7, 9, 5, beast);
-//////        createMinion("Force-Tank MAX", 8, 7, 7, divine, mech);
-//////        createMinion("Ironbark Protector", 8, 8, 8, taunt);
-//////        createMinion("King Krush", 9, 8, 8, charge, beast, legendary);
-//////        createMinion("Nozdormu", 9, 8, 8, dragon);
-//////        createMinion("Thaddius", 10, 11, 11, legendary);
+
+//        createMinion("Wisp", 0, 1, 1);
+        createMinion("Target Dummy", 0, 0, 2, taunt, mech);
+        createMinion("Murloc Raider", 1, 2, 1, murloc);
+        createMinion("Stonetusk Boar", 1, 1, 1, charge, beast);
+        createMinion("Argent Squire", 1, 1, 1, divine);
+        createMinion("Voidwalker", 1, 1, 3, taunt, demon);
+        createMinion("Tournament Attendee", 1, 2, 1, taunt);
+        createMinion("Shieldbearer", 1, 0, 4, taunt);
+        createMinion("Goldshire Footman", 1, 1, 2, taunt);
+        createMinion("Bloodfen Raptor", 2, 3, 2, beast);
+        createMinion("Puddlestomper", 2, 3, 2, murloc);
+//        createMinion("River Crocolisk", 2, 2, 3, beast);
+        createMinion("Bluegill Warrior", 2, 2, 1, charge, murloc);
+        createMinion("Shielded Minibot", 2, 2, 2, divine, mech);
+        createMinion("Annoy-o-Tron", 2, 1, 2, taunt, divine, mech);
+        createMinion("Frostwolf Grunt", 2, 2, 2, taunt);
+        createMinion("Scarlet Crusader", 3, 3, 1, divine);
+        createMinion("Ice Rager", 3, 5, 2);
+        createMinion("Magma Rager", 3, 5, 1);
+        createMinion("Spider Tank", 3, 3, 4, mech);
+        createMinion("Wolfrider", 3, 3, 1, charge);
+        createMinion("Argent Horserider", 3, 2, 1, charge, divine);
+        createMinion("Gnomeregan Infantry", 3, 1, 4, taunt, charge);
+        createMinion("Silverback Patriarch", 3, 1, 4, taunt, beast);
+        createMinion("Ironfur Grizzly", 3, 3, 3, taunt, beast);
+        createMinion("Chillwind Yeti", 4, 4, 5);
+        createMinion("Kor'kron Elite", 4, 4, 3, charge);
+        createMinion("Lost Tallstrider", 4, 5, 4, beast);
+        createMinion("Silvermoon Guardian", 4, 3, 3, divine);
+        createMinion("Oasis Snapjaw", 4, 2, 7, beast);
+        createMinion("Stormwind Knight", 4, 2, 5, charge);
+        createMinion("Sen'jin Shieldmasta", 4, 3, 5, taunt);
+        createMinion("Mogu'shan Warden", 4, 1, 7, taunt);
+        createMinion("Evil Heckler", 4, 5, 4, taunt);
+        createMinion("Pit Fighter", 5, 5, 6);
+        createMinion("Salty Dog", 5, 7, 4, pirate);
+        createMinion("Booty Bay Bodyguard", 5, 5, 4, taunt);
+        createMinion("Fen Creeper", 5, 3, 6, taunt);
+        createMinion("Argent Commander", 6, 4, 2, charge, divine);
+        createMinion("Boulderfist Ogre", 6, 6, 7);
+        createMinion("Reckless Rocketeer", 6, 5, 2, charge);
+        createMinion("Lord of the Arena", 6, 6, 5, taunt);
+        createMinion("Sunwalker", 6, 4, 5, taunt, divine);
+        createMinion("Captured Jormungar", 7, 5, 9, beast);
+        createMinion("Fearsome Doomguard", 7, 6, 8, demon);
+        createMinion("Wargolem", 7, 7, 7);
+        createMinion("Core Hound", 7, 9, 5, beast);
+        createMinion("Force-Tank MAX", 8, 7, 7, divine, mech);
+        createMinion("Ironbark Protector", 8, 8, 8, taunt);
+        createMinion("King Krush", 9, 8, 8, charge, beast, legendary);
+        createMinion("Nozdormu", 9, 8, 8, dragon);
+        createMinion("Thaddius", 10, 11, 11, legendary);
 
 
         EntityTemplate highmane = createMinion("Savannah Highmane", 6, 6, 5, beast);
-        String hyenaDeathrattle = createSpawn(createToken("Hyena", 2, 2, 2, beast).getName(), deathrattle);
+        String hyenaDeathrattle = createAllySpawn(createToken("Hyena", 2, 2, 2, beast).getName(), deathrattle);
         highmane.addChild(hyenaDeathrattle);
         highmane.addChild(hyenaDeathrattle);
 
         EntityTemplate dreadSteed = createMinion("Dreadsteed", 4, 1, 1, demon);
-        dreadSteed.addChild(createSpawn("Dreadsteed", deathrattle));
+        dreadSteed.addChild(createAllySpawn("Dreadsteed", deathrattle));
 
         EntityTemplate cairne = createMinion("Cairne Bloodhoof", 6, 4, 5, legendary);
-        cairne.addChild(createSpawn(createToken("Baine Bloodhoof", 4, 4, 5, legendary).getName(), deathrattle));
+        cairne.addChild(createAllySpawn(createToken("Baine Bloodhoof", 4, 4, 5, legendary).getName(), deathrattle));
 
         EntityTemplate hauntedCreeper = createMinion("Haunted Creeper", 2, 1, 2, beast);
-        String spectralSpiderDeathrattle = createSpawn(createToken("Spectral Spider", 1, 1, 1).getName(), deathrattle);
+        String spectralSpiderDeathrattle = createAllySpawn(createToken("Spectral Spider", 1, 1, 1).getName(), deathrattle);
         hauntedCreeper.addChild(spectralSpiderDeathrattle);
         hauntedCreeper.addChild(spectralSpiderDeathrattle);
 
         EntityTemplate nerubianEgg = createMinion("Nerubian Egg", 2, 0, 2);
-        nerubianEgg.addChild(createSpawn(createToken("Nerubian", 3, 4, 4).getName(), deathrattle));
+        nerubianEgg.addChild(createAllySpawn(createToken("Nerubian", 3, 4, 4).getName(), deathrattle));
 
         EntityTemplate harvestGolem = createMinion("Harvest Golem", 3, 2, 3, mech);
-        harvestGolem.addChild(createSpawn(createToken("Damaged Golem", 1, 2, 1, mech).getName(), deathrattle));
+        harvestGolem.addChild(createAllySpawn(createToken("Damaged Golem", 1, 2, 1, mech).getName(), deathrattle));
 
         EntityTemplate belcher = createMinion("Sludge Belcher", 5, 3, 5, taunt);
-        belcher.addChild(createSpawn(createToken("Slime", 1, 1, 2, taunt).getName(), deathrattle));
+        belcher.addChild(createAllySpawn(createToken("Slime", 1, 1, 2, taunt).getName(), deathrattle));
 
         EntityTemplate lootHoarder = createMinion("Loot Hoarder", 2, 2, 1);
         lootHoarder.addChild(createDrawEffect(1, targetOwner, deathrattle));
@@ -285,19 +285,19 @@ public class DefaultTemplateSetFactory {
         dreadScale.addChild(createFilteredDamage(1, targetAllMinions, endTurn, myTurn, new TargetExcludeSelfComponent()));
         
         EntityTemplate hogger = createMinion("Hogger", 6, 4, 4, legendary);
-        hogger.addChild(createSpawn(createToken("Gnoll", 2, 2, 2, taunt).getName(), endTurn, myTurn));
+        hogger.addChild(createAllySpawn(createToken("Gnoll", 2, 2, 2, taunt).getName(), endTurn, myTurn));
         
         EntityTemplate obsiDestroyer = createMinion("Obsidian Destroyer", 7, 7, 7);
-        obsiDestroyer.addChild(createSpawn(createToken("Scarab", 1, 1, 1, taunt).getName(), endTurn, myTurn));
+        obsiDestroyer.addChild(createAllySpawn(createToken("Scarab", 1, 1, 1, taunt).getName(), endTurn, myTurn));
         
         EntityTemplate impMaster = createMinion("Imp Master", 3, 1, 5);
-        impMaster.addChild(createSpawn(createToken("Imp", 1, 1, 1, demon).getName(), endTurn, myTurn));
+        impMaster.addChild(createAllySpawn(createToken("Imp", 1, 1, 1, demon).getName(), endTurn, myTurn));
         impMaster.addChild(createFilteredDamage(1, targetSelf, endTurn, myTurn));
         
         EntityTemplate drBoom = createMinion("Dr. Boom", 7, 7, 7, legendary);
         EntityTemplate boomBot = createToken("Boom Bot", 1, 1, 1, mech);
         boomBot.addChild(createFilteredRandomDamage(1, 4, targetEnemyCharacters, deathrattle, new EffectTargetsSingleRandomComponent()));
-        String spawnBoomBot = createSpawn(boomBot.getName(), battlecry);
+        String spawnBoomBot = createAllySpawn(boomBot.getName(), battlecry);
         drBoom.addChild(spawnBoomBot);
         drBoom.addChild(spawnBoomBot);
         
@@ -305,21 +305,21 @@ public class DefaultTemplateSetFactory {
         bombLobber.addChild(createFilteredDamage(4, targetEnemyMinions, battlecry, new EffectTargetsSingleRandomComponent()));
         
         EntityTemplate tidehunter = createMinion("Murloc Tidehunter", 2, 2, 1, murloc);
-        tidehunter.addChild(createSpawn(createToken("Murloc Scout", 1, 1, 1, murloc).getName(), battlecry));
+        tidehunter.addChild(createAllySpawn(createToken("Murloc Scout", 1, 1, 1, murloc).getName(), battlecry));
         
         EntityTemplate razorfen = createMinion("Razorfen Hunter", 3, 2, 3);
-        razorfen.addChild(createSpawn(createToken("Boar", 1, 1, 1, beast).getName(), battlecry));
+        razorfen.addChild(createAllySpawn(createToken("Boar", 1, 1, 1, beast).getName(), battlecry));
         
         EntityTemplate dragonMechanic = createMinion("Dragonling Mechanic", 4, 2, 4);
-        dragonMechanic.addChild(createSpawn(createToken("Mechanical Dragonling", 1, 2, 1, mech).getName(), battlecry));
+        dragonMechanic.addChild(createAllySpawn(createToken("Mechanical Dragonling", 1, 2, 1, mech).getName(), battlecry));
         
         EntityTemplate silverHandKnight = createMinion("Silver Hand Knight", 5, 4, 4);
-        silverHandKnight.addChild(createSpawn(createToken("Squire", 1, 2, 2).getName(), battlecry));
+        silverHandKnight.addChild(createAllySpawn(createToken("Squire", 1, 2, 2).getName(), battlecry));
         
 //        EntityTemplate leeroy = createMinion("Leeroy Jenkins", 5, 6, 2, charge);
-        String spawnWhelp = createSpawn(/*createToken(*/"Whelp"/*, 1, 1, 1, dragon).getName()*/, battlecry, new MakeEnemyEffectComponent());
-//        leeroy.addChild(spawnWhelp);
-//        leeroy.addChild(spawnWhelp);
+        String spawnWhelp = createEnemySpawn(/*createToken(*/"Whelp"/*, 1, 1, 1, dragon).getName()*/, battlecry);
+        //        leeroy.addChild(spawnWhelp);
+        //        leeroy.addChild(spawnWhelp);
     }
 
     private void createSpells() {
@@ -451,12 +451,23 @@ public class DefaultTemplateSetFactory {
         return template;
     }
 
-    private String createSpawn(String templateName, EntityComponent triggerComponent, EntityComponent... conditions) {
+    private String createAllySpawn(String templateName, EntityComponent triggerComponent, EntityComponent... conditions) {
+        EntityTemplate template = createSpawn(templateName, triggerComponent, conditions);
+        template.add(new MakeAllyEffectComponent());
+        return template.getName();
+    }
+
+    private String createEnemySpawn(String templateName, EntityComponent triggerComponent, EntityComponent... conditions) {
+        EntityTemplate template = createSpawn(templateName, triggerComponent, conditions);
+        template.add(new MakeEnemyEffectComponent());
+        return template.getName();
+    }
+    
+    private EntityTemplate createSpawn(String templateName, EntityComponent triggerComponent, EntityComponent... conditions) {
         EntityTemplate template = new EntityTemplate();
         template.setCollectible(false);
         template.add(new CreateSingleTargetEntityEffectComponent());
         template.add(new AttachTemplateEffectComponent(templateName));
-        template.add(new MakeAllyEffectComponent());
         template.add(new BoardAttachEffectComponent());
         template.add(triggerComponent);
         String name = triggerName(triggerComponent) + "=>" + templateName;
@@ -466,7 +477,7 @@ public class DefaultTemplateSetFactory {
         }
         template.add(new NameComponent(name));
         templates.add(template);
-        return name;
+        return template;
     }
 
     private String createDrawEffect(int numCards, EntityComponent[] filter, EntityComponent triggerComponent) {

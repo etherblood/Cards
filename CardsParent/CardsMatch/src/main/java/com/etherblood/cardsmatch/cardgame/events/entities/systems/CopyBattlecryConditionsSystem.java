@@ -2,10 +2,7 @@ package com.etherblood.cardsmatch.cardgame.events.entities.systems;
 
 import com.etherblood.cardsmatch.cardgame.AbstractMatchSystem;
 import com.etherblood.cardsmatch.cardgame.DefaultTemplateSetFactory;
-import com.etherblood.cardsmatch.cardgame.EntityTemplate;
-import com.etherblood.cardsmatch.cardgame.TemplateSet;
 import com.etherblood.cardsmatch.cardgame.components.effects.EffectTriggerEntityComponent;
-import com.etherblood.cardsmatch.cardgame.components.effects.effects.SummonEffectComponent;
 import com.etherblood.cardsmatch.cardgame.components.effects.targeting.EffectIsTargetedComponent;
 import com.etherblood.cardsmatch.cardgame.components.effects.targeting.EffectMinimumTargetsRequiredComponent;
 import com.etherblood.cardsmatch.cardgame.components.effects.targeting.EffectRequiresUserTargetsComponent;
@@ -20,9 +17,7 @@ import com.etherblood.cardsmatch.cardgame.components.effects.targeting.filters.T
 import com.etherblood.cardsmatch.cardgame.components.effects.targeting.filters.TargetPlayersComponent;
 import com.etherblood.cardsmatch.cardgame.components.effects.targeting.filters.TargetSelfComponent;
 import com.etherblood.cardsmatch.cardgame.components.effects.triggers.BattlecryTriggerComponent;
-import com.etherblood.cardsmatch.cardgame.components.effects.triggers.PlayerActivationTriggerComponent;
 import com.etherblood.cardsmatch.cardgame.components.misc.NameComponent;
-import com.etherblood.cardsmatch.cardgame.events.cardZones.HandAttachEvent;
 import com.etherblood.cardsmatch.cardgame.events.entities.AttachTemplateEvent;
 import com.etherblood.entitysystem.data.EntityComponent;
 import com.etherblood.entitysystem.data.EntityComponentMap;
@@ -63,19 +58,12 @@ public class CopyBattlecryConditionsSystem extends AbstractMatchSystem<AttachTem
             AbstractComponentFieldValueFilter<EffectTriggerEntityComponent> triggerFilter = EffectTriggerEntityComponent.createTriggerFilter(new EqualityOperator());
             triggerFilter.setValue(event.parent);
             FilterQuery battlecryQuery = new FilterQuery()
-                    .setBaseClass(EffectRequiresUserTargetsComponent.class)
-                    .addComponentClassFilter(BattlecryTriggerComponent.class)
-                    .addComponentFilter(triggerFilter);
+                    .setBaseClass(BattlecryTriggerComponent.class)
+                    .addComponentFilter(triggerFilter)
+                    .addComponentClassFilter(EffectMinimumTargetsRequiredComponent.class);
             List<EntityId> list = battlecryQuery.list(data);
-            if (list.size() == 1) {
-                for (EntityId source : list) {
-                    copyConditionComponents(source, event.target);
-                }
-            } else if (!list.isEmpty()) {
-                System.out.println("WARNING, skipped attaching following conditions to " + data.get(event.parent, NameComponent.class).name + ":");
-                for (EntityId entityId : list) {
-                    System.out.println(data.get(entityId, NameComponent.class).name);
-                }
+            for (EntityId source : list) {
+                copyConditionComponents(source, event.target);
             }
         }
         return event;
@@ -85,7 +73,9 @@ public class CopyBattlecryConditionsSystem extends AbstractMatchSystem<AttachTem
         for (Class<? extends EntityComponent> class1 : copyComponentClasses) {
             EntityComponent component = data.get(source, class1);
             if (component != null) {
-                data.set(dest, component);
+                if (data.set(dest, component) != null) {
+                    throw new IllegalStateException(class1.getName() + " of castEffect was overwritten.");
+                }
             }
         }
     }

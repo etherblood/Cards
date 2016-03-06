@@ -8,7 +8,9 @@ import com.etherblood.cardsmatch.cardgame.AbstractMatchSystem;
 import com.etherblood.match.Autowire;
 import com.etherblood.cardsmatch.cardgame.components.effects.EffectTriggerEntityComponent;
 import com.etherblood.cardsmatch.cardgame.components.effects.effects.MakeAllyEffectComponent;
+import com.etherblood.cardsmatch.cardgame.components.effects.effects.MakeEnemyEffectComponent;
 import com.etherblood.cardsmatch.cardgame.components.misc.OwnerComponent;
+import com.etherblood.cardsmatch.cardgame.components.player.NextTurnPlayerComponent;
 import com.etherblood.cardsmatch.cardgame.eventData.EffectTargets;
 import com.etherblood.cardsmatch.cardgame.events.effects.EffectEvent;
 import com.etherblood.cardsmatch.cardgame.events.setOwner.SetOwnerEvent;
@@ -30,8 +32,8 @@ public class SetOwnerEffectSystem extends AbstractMatchSystem<EffectEvent> {
         EntityId owner;
         if (data.has(event.effect, MakeAllyEffectComponent.class)) {
             owner = data.get(event.effect, OwnerComponent.class).player;
-        } else if (data.has(event.effect, MakeAllyEffectComponent.class)) {
-            owner = data.get(event.effect, OwnerComponent.class).player;
+        } else if (data.has(event.effect, MakeEnemyEffectComponent.class)) {
+            owner = data.get(data.get(event.effect, OwnerComponent.class).player, NextTurnPlayerComponent.class).player;
         } else {
             return event;
         }

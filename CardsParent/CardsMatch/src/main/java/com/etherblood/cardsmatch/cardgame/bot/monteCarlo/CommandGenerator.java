@@ -17,6 +17,7 @@ import com.etherblood.cardsmatch.cardgame.components.effects.effects.EndTurnEffe
 import com.etherblood.cardsmatch.cardgame.components.effects.effects.SummonEffectComponent;
 import com.etherblood.cardsmatch.cardgame.components.effects.targeting.EffectMinimumTargetsRequiredComponent;
 import com.etherblood.cardsmatch.cardgame.components.effects.targeting.EffectRequiresUserTargetsComponent;
+import com.etherblood.cardsmatch.cardgame.components.misc.NameComponent;
 import com.etherblood.cardsmatch.cardgame.components.misc.OwnerComponent;
 import com.etherblood.cardsmatch.cardgame.components.player.ItsMyTurnComponent;
 import com.etherblood.cardsmatch.cardgame.components.player.ManaComponent;
@@ -43,12 +44,12 @@ public class CommandGenerator {
     private final DeterministicEntityIndices indexing = new DeterministicEntityIndices();
     private final AbstractComponentFieldValueFilter<OwnerComponent> ownerFilter = OwnerComponent.createPlayerFilter(new EqualityOperator());
     private final AbstractComponentFieldValueFilter<EffectTriggerEntityComponent> triggerFilter = EffectTriggerEntityComponent.createTriggerFilter(new EqualityOperator());
-    private final FilterQuery handMinions = new FilterQuery()
+    private final FilterQuery handCards = new FilterQuery()
             .setBaseClass(HandCardComponent.class)
             .addComponentFilter(ownerFilter);
     private final FilterQuery currentQuery = new FilterQuery()
             .setBaseClass(ItsMyTurnComponent.class);
-    private final FilterQuery summonQuery = new FilterQuery()
+    private final FilterQuery castEffectQuery = new FilterQuery()
             .setBaseClass(SummonEffectComponent.class)
             .addComponentFilter(triggerFilter);
     private final FilterQuery endTurnQuery = new FilterQuery()
@@ -168,14 +169,17 @@ public class CommandGenerator {
         ownerFilter.setValue(currentPlayer);
         ManaComponent manaComp = data.get(currentPlayer, ManaComponent.class);
         int mana = manaComp == null ? 0 : manaComp.mana;
-        for (EntityId minion : handMinions.list(data)) {
-            ManaCostComponent costComp = data.get(minion, ManaCostComponent.class);
+        for (EntityId card : handCards.list(data)) {
+            ManaCostComponent costComp = data.get(card, ManaCostComponent.class);
             int cost = costComp == null ? 0 : costComp.mana;
             if (mana >= cost) {
-                triggerFilter.setValue(minion);
-                EntityId effect = summonQuery.first(data);
+                triggerFilter.setValue(card);
+                EntityId effect = castEffectQuery.first(data);
                 EffectMinimumTargetsRequiredComponent minimumTargetsComponent = data.get(effect, EffectMinimumTargetsRequiredComponent.class);
                 if (minimumTargetsComponent == null || targetSelector.selectTargets(effect).size() >= minimumTargetsComponent.count) {
+                    if(data.get(card, NameComponent.class).name.equals("Flamecannon")) {
+                        int a = 9;
+                    }
                     castables.add(effect);
                 }
             }

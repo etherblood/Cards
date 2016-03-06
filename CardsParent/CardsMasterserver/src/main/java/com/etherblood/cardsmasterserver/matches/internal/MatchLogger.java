@@ -45,7 +45,7 @@ public class MatchLogger implements SystemsEventHandler {
             System.out.println(toString(damage.target) + " took " + damage.damage + " damage");
         } else if(systemClass == ApplySummonSystem.class) {
             SummonEvent damage = (SummonEvent) gameEvent;
-            String summoned = data.has(damage.minion, MinionComponent.class)? " summoned ": " casted ";
+            String summoned = data.has(damage.minion, MinionComponent.class)? " summoned ": " cast ";
             System.out.println(toString(data.get(damage.minion, OwnerComponent.class).player) + summoned + toString(damage.minion));
         } else if(systemClass == ApplyDeathSystem.class) {
             DeathEvent damage = (DeathEvent) gameEvent;
