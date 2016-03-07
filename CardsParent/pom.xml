@@ -20,6 +20,7 @@
         <module>MonteCarloTreeSearch</module>
         <module>FirstRuleset</module>
         <module>CardsSharedResources</module>
+        <module>CardsJmeClient</module>
     </modules>
     
     <url>http://maven.apache.org</url>

@@ -49,7 +49,7 @@ public class UserConnectionService {
     @PostConstruct
     @PreAuthorize("denyAll")
     public void init() throws IOException {
-        server = Network.createServer(port);
+        server = new ExtendedDefaultServer(port);//Network.createServer(port);
         server.addConnectionListener(new ConnectionListener() {
             @Override
             public void connectionAdded(Server server, HostedConnection connection) {
