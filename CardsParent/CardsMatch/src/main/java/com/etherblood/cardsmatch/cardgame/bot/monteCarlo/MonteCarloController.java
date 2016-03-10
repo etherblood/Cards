@@ -71,7 +71,7 @@ public class MonteCarloController implements Bot {
         };
         state.getBean(RngFactoryImpl.class).addListener(rngListener);
         simulationState.getBean(RngFactoryImpl.class).addListener(rngListener);
-        
+
         SystemsEventHandlerDispatcher dispatcher = state.getBean(SystemsEventHandlerDispatcher.class);
         List<SystemsEventHandler> handlers = dispatcher.getHandlers();
         handlers.add(new SystemsEventHandler() {
@@ -87,16 +87,26 @@ public class MonteCarloController implements Bot {
             public <T extends GameEvent> void onEvent(Class<GameEventHandler<T>> systemClass, T gameEvent) {
                 if (TargetedTriggerEffectSystem.class.equals(systemClass)) {
                     TargetedTriggerEffectEvent event = (TargetedTriggerEffectEvent) gameEvent;
-                    generator.applyCommand(MonteCarloController.this.state.getBean(EntityComponentMapReadonly.class), MonteCarloController.this.state.getBean(ValidEffectTargetsSelector.class), event.effect, event.targets, moveConsumer);
+                    try {
+                        generator.applyCommand(MonteCarloController.this.state.getBean(EntityComponentMapReadonly.class), MonteCarloController.this.state.getBean(ValidEffectTargetsSelector.class), event.effect, event.targets, moveConsumer);
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("skipping bot state update because of exception:");
+                        e.printStackTrace(System.out);
+                    }
                 }
             }
         });
     }
 
+    @Override
+    public void clearCache() {
+        controls.clear();
+    }
+
     private void resetSimulationState() {
         assert simulationState.getBean(GameEventQueueImpl.class).isEmpty();
         assert state.getBean(GameEventQueueImpl.class).isEmpty();
-        
+
         assert simulationState.getBean(GameEventDataStack.class).isEmpty();
         assert state.getBean(GameEventDataStack.class).isEmpty();
 

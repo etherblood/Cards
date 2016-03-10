@@ -1,11 +1,13 @@
 package com.etherblood.cardsmatch.cardgame.components.battle.buffs;
 
+import com.etherblood.cardsmatch.cardgame.components.ComponentAlias;
 import com.etherblood.entitysystem.data.EntityComponent;
 
 /**
  *
  * @author Philipp
  */
+@ComponentAlias(name="regeneration")
 public class RegenerationComponent implements EntityComponent {
     public final int heal;
 

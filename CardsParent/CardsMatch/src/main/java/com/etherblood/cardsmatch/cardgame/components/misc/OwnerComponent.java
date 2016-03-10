@@ -4,6 +4,7 @@
  */
 package com.etherblood.cardsmatch.cardgame.components.misc;
 
+import com.etherblood.cardsmatch.cardgame.components.ComponentAlias;
 import com.etherblood.entitysystem.data.EntityComponent;
 import com.etherblood.entitysystem.data.EntityId;
 import com.etherblood.entitysystem.filters.AbstractComponentFieldValueFilter;
@@ -16,6 +17,7 @@ import java.lang.reflect.Field;
  *
  * @author Philipp
  */
+@ComponentAlias(name="owner")
 public class OwnerComponent implements EntityComponent {
     public static final Field PLAYER_FIELD;
     public static AbstractComponentFieldValueFilter<OwnerComponent> createPlayerFilter(BinaryOperator operator) {

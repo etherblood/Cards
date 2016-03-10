@@ -127,12 +127,13 @@ public class CommandGenerator {
         index = indexing.getDeterministicIndexForEntity(castablesList, source);
         if (index != -1) {
             consumer.applyMove(attackersList.size() + index, count);
-            if(targets.length != 0) {
-                assert data.has(source, EffectRequiresUserTargetsComponent.class);
+            if(data.has(source, EffectRequiresUserTargetsComponent.class)) {
                 assert targets.length == 1;//multitarget not supported yet
                 List<EntityId> selectTargets = targetSelector.selectTargets(source);
                 index = indexing.getDeterministicIndexForEntity(selectTargets, targets[0]);
                 consumer.applyMove(index, selectTargets.size());
+            } else {
+                System.out.println("WARNING: targets were passed to bot when none were expected");
             }
             return;
         }

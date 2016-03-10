@@ -1,19 +1,31 @@
 package com.etherblood.cardsjmeclient;
 
+import com.etherblood.cardsnetworkshared.ExtendedDefaultClient;
+import com.etherblood.cardsjmeclient.appscreens.ArrangeMatchScreen;
+import com.etherblood.cardsjmeclient.appscreens.LoginScreen;
+import com.etherblood.cardsjmeclient.appscreens.MatchScreen;
+import com.etherblood.cardsjmeclient.events.AppStartedEvent;
+import com.etherblood.cardsjmeclient.events.EventListener;
+import com.etherblood.cardsjmeclient.events.Eventbus;
+import com.etherblood.cardsjmeclient.events.EventbusImpl;
+import com.etherblood.cardsjmeclient.match.cards.Card;
+import com.etherblood.cardsjmeclient.match.cards.TemplatesReader;
+import com.etherblood.cardsnetworkshared.DefaultMessage;
+import com.etherblood.cardsnetworkshared.EncryptedMessage;
 import com.etherblood.cardsnetworkshared.SerializerInit;
 import com.jme3.app.SimpleApplication;
-import com.jme3.material.Material;
-import com.jme3.math.ColorRGBA;
+import com.jme3.input.event.MouseButtonEvent;
+import com.jme3.math.Quaternion;
+import com.jme3.network.AbstractMessage;
 import com.jme3.network.Client;
-import com.jme3.network.Network;
+import com.jme3.network.Message;
+import com.jme3.network.MessageListener;
 import com.jme3.renderer.RenderManager;
-import com.jme3.scene.Geometry;
-import com.jme3.scene.shape.Box;
-import com.simsilica.lemur.Button;
-import com.simsilica.lemur.Command;
-import com.simsilica.lemur.Container;
+import com.jme3.scene.Spatial;
+import com.jme3.system.AppSettings;
 import com.simsilica.lemur.GuiGlobals;
-import com.simsilica.lemur.Label;
+import com.simsilica.lemur.event.DefaultMouseListener;
+import com.simsilica.lemur.style.BaseStyles;
 
 /**
  * test
@@ -23,14 +35,61 @@ import com.simsilica.lemur.Label;
 public class Main extends SimpleApplication {
 
     private static final int PORT = 6145;
+    private Client client;
+    private Card testCard;
+    
+    private final Eventbus eventbus = new EventbusImpl();
 
     public static void main(String[] args) throws Exception {
         SerializerInit.init();
-//        String ipAddress = args.length != 0 ? args[0] : "localhost";
-//        Client client = Network.connectToServer(ipAddress, PORT);
-
-        Main app = new Main();
+        
+        try {
+            TemplatesReader.INSTANCE.read("");
+        } catch(Exception e) {
+            e.printStackTrace(System.out);
+        }
+        
+        String ipAddress = args.length != 0 ? args[0] : "localhost";
+        final Main app = new Main();
+        app.client = ExtendedDefaultClient.connectToServer(ipAddress, PORT);//Network.connectToServer(ipAddress, PORT);
+        
+        final MessageListener<Client> defaultMessageListener = new MessageListener<Client>() {
+            @Override
+            public void messageReceived(Client source, Message m) {
+                DefaultMessage message = (DefaultMessage) m;
+                app.fireSyncedEvent(message.getData());
+            }
+        };
+        final MessageListener<Client> encryptedMessageListener = new MessageListener<Client>() {
+            @Override
+            public void messageReceived(Client connection, Message message) {
+                defaultMessageListener.messageReceived(connection, ((EncryptedMessage)message).getMessage());
+            }
+        };
+        app.client.addMessageListener(defaultMessageListener, DefaultMessage.class);
+        app.client.addMessageListener(encryptedMessageListener, EncryptedMessage.class);
+        app.eventbus.subscribe(AbstractMessage.class, new EventListener<AbstractMessage>() {
+            @Override
+            public void onEvent(AbstractMessage event) {
+                app.client.send(event);
+            }
+        });
+        app.client.start();
+        AppSettings appSettings = new AppSettings(true);
+        appSettings.setFrameRate(200);
+        appSettings.setResolution(1600, 1000);
+        app.setShowSettings(false);
+        app.setSettings(appSettings);
         app.start();
+    }
+    
+    public void fireSyncedEvent(final Object event) {
+        enqueue(new Runnable() {
+            @Override
+            public void run() {
+                eventbus.sendEvent(event);
+            }
+        });
     }
 
     @Override
@@ -38,44 +97,47 @@ public class Main extends SimpleApplication {
         // Initialize the globals access so that the default
         // components can find what they need.
         GuiGlobals.initialize(this);
-
-
-//        Box b = new Box(1, 1, 1);
-//        Geometry geom = new Geometry("Box", b);
-//
-//        Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-//        mat.setColor("Color", ColorRGBA.Blue);
-//        geom.setMaterial(mat);
-//
-//        rootNode.attachChild(geom);
-
-
-        // Create a simple container for our elements
-        Container myWindow = new Container();
-        guiNode.attachChild(myWindow);
-
-// Put it somewhere that we will see it.
-// Note: Lemur GUI elements grow down from the upper left corner.
-        myWindow.setLocalTranslation(300, 300, 0);
-
-// Add some elements
-        myWindow.addChild(new Label("Hello, World."));
-        Button clickMe = myWindow.addChild(new Button("Click Me"));
-        clickMe.addClickCommands(new Command<Button>() {
+        // Load the 'glass' style
+        BaseStyles.loadGlassStyle();
+        // Set 'glass' as the default style when not specified
+        GuiGlobals.getInstance().getStyles().setDefaultStyle("glass");
+        
+        new LoginScreen().bind(eventbus, getGuiNode());
+        new ArrangeMatchScreen().bind(eventbus, getGuiNode());
+        new MatchScreen().bind(eventbus, getGuiNode());
+//        LoginAppstate loginAppstate = new LoginAppstate(eventbus);
+//        ArrangeMatchAppstate arrangeMatchAppstate = new ArrangeMatchAppstate(eventbus);
+        testCard  = new Card();
+        testCard.setLocalTranslation(500, 500, -50);
+//        testCard.setLocalScale(0.1f);
+        getGuiNode().attachChild(testCard);
+        testCard.setCardName("Wisp");
+        testCard.setAttack(1);
+        testCard.setCost(1);
+        testCard.setHealth(1);
+        testCard.addMouseListener(new DefaultMouseListener() {
             @Override
-            public void execute(Button source) {
-                System.out.println("The world is yours.");
+            protected void click(MouseButtonEvent event, Spatial target, Spatial capture) {
+                System.out.println("hurrdurr");
             }
+            
         });
+        fireSyncedEvent(new AppStartedEvent());
     }
 
     @Override
     public void simpleUpdate(float tpf) {
-        //TODO: add update code
+        testCard.setLocalRotation(testCard.getLocalRotation().mult(new Quaternion().fromAngles(tpf, -tpf, 0)));
     }
 
     @Override
     public void simpleRender(RenderManager rm) {
         //TODO: add render code
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        client.close();
     }
 }

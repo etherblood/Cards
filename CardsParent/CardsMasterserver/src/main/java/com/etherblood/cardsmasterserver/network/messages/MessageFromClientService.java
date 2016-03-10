@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class MessageFromClientService implements BeanDefinitionRegistryPostProcessor, ApplicationContextAware {
 
-    private final HashMap<Class, List<UserMessageHandler>> messageHandlers = new HashMap<Class, List<UserMessageHandler>>();
+    private final HashMap<Class, List<UserMessageHandler>> messageHandlers = new HashMap<>();
     private ApplicationContext context;
 
     @PreAuthorize("permitAll")

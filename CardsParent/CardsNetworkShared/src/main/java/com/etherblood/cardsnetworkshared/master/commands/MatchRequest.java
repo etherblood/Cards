@@ -1,6 +1,5 @@
 package com.etherblood.cardsnetworkshared.master.commands;
 
-import com.etherblood.cardsnetworkshared.master.misc.LobbyCommand;
 import com.jme3.network.serializing.Serializable;
 
 /**
@@ -8,7 +7,7 @@ import com.jme3.network.serializing.Serializable;
  * @author Philipp
  */
 @Serializable
-public class MatchRequest extends LobbyCommand {
+public class MatchRequest {
     private boolean versusBot;
 
     public MatchRequest() {

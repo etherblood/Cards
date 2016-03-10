@@ -31,6 +31,9 @@ import com.etherblood.match.MatchContext;
 import com.etherblood.match.PlayerDefinition;
 import com.etherblood.match.RulesDefinition;
 import com.etherblood.cardsmatch.cardgame.client.SystemsEventHandlerDispatcher;
+import com.etherblood.cardsnetworkshared.match.updates.JoinedMatchUpdate;
+import com.etherblood.entitysystem.data.EntityComponentMap;
+import com.etherblood.entitysystem.version.VersionedEntityComponentMapImpl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +55,7 @@ import org.springframework.stereotype.Service;
 public class MatchService {
 
     private final ConcurrentHashMap<Long, HumanPlayer> matchMap = new ConcurrentHashMap<>();
-    private AtomicReference<Long> pendingUserId = new AtomicReference<>(null);
+    private final AtomicReference<Long> pendingUserId = new AtomicReference<>(null);
     
     private Map<Class, UpdateBuilder> updateBuilders;
     @Autowired
@@ -122,7 +125,9 @@ public class MatchService {
         }
         playerDefs.add(def2);
 
-        RulesDefinition rules = new DefaultRulesDef(templateService.getAll());
+        DefaultRulesDef rules = new DefaultRulesDef(templateService.getAll());
+        final EntityComponentMap data = rules.getBuilder().removeBean(EntityComponentMap.class);
+        rules.getBuilder().addBean(new VersionedEntityComponentMapImpl(data));
         final MatchContext context = rules.start(playerDefs);
         
         HumanPlayer player1 = new HumanPlayer(user1, def1.getEntity());
@@ -143,7 +148,7 @@ public class MatchService {
 
         SystemsEventHandlerDispatcher dispatcher = context.getBean(SystemsEventHandlerDispatcher.class);
         List<SystemsEventHandler> handlers = dispatcher.getHandlers();
-        final EntityComponentMapReadonly data = context.getBean(EntityComponentMapReadonly.class);
+//        final EntityComponentMapReadonly data = context.getBean(EntityComponentMapReadonly.class);
         handlers.add(new MatchLogger(data));
         for (final HumanPlayer human : humans) {
             handlers.add(new SystemsEventHandler() {
@@ -180,6 +185,7 @@ public class MatchService {
         assert wrapper.getCurrentPlayer() != null;
         for (HumanPlayer human : humans) {
             matchMap.put(human.getUserId(), human);
+            human.send(new JoinedMatchUpdate());
         }
         updateMatch(wrapper);
     }

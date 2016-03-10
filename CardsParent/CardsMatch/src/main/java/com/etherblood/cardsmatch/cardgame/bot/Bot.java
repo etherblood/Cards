@@ -13,5 +13,7 @@ import com.etherblood.cardsmatch.cardgame.bot.commands.Command;
 public interface Bot {
 
     Command think();
+
+    void clearCache();
     
 }

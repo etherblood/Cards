@@ -13,6 +13,21 @@ public class MatchContextBuilder {
     private final ArrayList<Object> beans = new ArrayList<>();
     private final ArrayList<Object> passiveBeans = new ArrayList<>();
     
+    public <T> T removeBean(Class<T> beanClass) {
+        for (Object bean : beans) {
+            if(beanClass.isInstance(bean)) {
+                beans.remove(bean);
+                return (T) bean;
+            }
+        }
+        for (Object bean : passiveBeans) {
+            if(beanClass.isInstance(bean)) {
+                passiveBeans.remove(bean);
+                return (T) bean;
+            }
+        }
+        return null;
+    }
     public void addBean(Object bean) {
         beans.add(bean);
     }

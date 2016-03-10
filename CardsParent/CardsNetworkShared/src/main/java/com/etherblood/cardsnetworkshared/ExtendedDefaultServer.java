@@ -1,4 +1,4 @@
-package com.etherblood.cardsmasterserver.network.connections;
+package com.etherblood.cardsnetworkshared;
 
 import java.io.IOException;
 import com.jme3.network.Network;

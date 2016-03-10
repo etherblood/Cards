@@ -1,22 +1,22 @@
 package com.etherblood.cardsjsonclient;
 
 import com.etherblood.cardsnetworkshared.DefaultMessage;
-import com.etherblood.cardsnetworkshared.EncryptedObject;
-import com.etherblood.cardsnetworkshared.EncryptedObjectSerializer;
-import com.etherblood.cardsnetworkshared.EncryptionKeysUtil;
+import com.etherblood.cardsnetworkshared.EncryptedMessage;
+import com.etherblood.cardsnetworkshared.ExtendedDefaultClient;
 import com.etherblood.cardsnetworkshared.SerializerInit;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 import com.jme3.network.Client;
 import com.jme3.network.Message;
 import com.jme3.network.MessageListener;
 import com.jme3.network.Network;
-import com.jme3.network.serializing.Serializer;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Scanner;
+import javax.crypto.NoSuchPaddingException;
 
 /**
  * Hello world!
@@ -30,26 +30,30 @@ public class App {
     private static Client client;
     public static final String COMMAND_END = ";";
 
-    public static void main(String[] args) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    public static void main(String[] args) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException {
         SerializerInit.init();
         try {
             String ipAddress = args.length != 0 ? args[0] : "localhost";
-            client = Network.connectToServer(ipAddress, PORT);
+            client = ExtendedDefaultClient.connectToServer(ipAddress, PORT);//Network.connectToServer(ipAddress, PORT);
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
-
-        client.addMessageListener(new MessageListener<Client>() {
+        
+        final MessageListener<Client> defaultMessageListener = new MessageListener<Client>() {
             @Override
-            public void messageReceived(Client source, Message m) {
-                DefaultMessage message = (DefaultMessage) m;
-                Object data = message.getData();
-                if (data instanceof EncryptedObject) {
-                    data = ((EncryptedObject)data).getObject();
-                }
+            public void messageReceived(Client connection, Message message) {
+                Object data = ((DefaultMessage) message).getData();
                 System.out.println(data.getClass().getName() + NEW_LINE + GSON.toJson(data));
             }
-        }, DefaultMessage.class);
+        };
+        final MessageListener<Client> encryptedMessageListener = new MessageListener<Client>() {
+            @Override
+            public void messageReceived(Client connection, Message message) {
+                defaultMessageListener.messageReceived(connection, ((EncryptedMessage)message).getMessage());
+            }
+        };
+        client.addMessageListener(defaultMessageListener, DefaultMessage.class);
+        client.addMessageListener(encryptedMessageListener, EncryptedMessage.class);
         client.start();
 
         Scanner scanner = new Scanner(System.in);
@@ -83,11 +87,12 @@ public class App {
             Class type = Class.forName(className);
             String json = command.substring(start);
             Object data = GSON.fromJson(json, type);
+            Message message = new DefaultMessage(data);
             if(encrypted) {
-                data = new EncryptedObject(data);
+                message = new EncryptedMessage(message);
             }
-            client.send(new DefaultMessage(data));
-        } catch (Exception e) {
+            client.send(message);
+        } catch (ClassNotFoundException | JsonSyntaxException e) {
             e.printStackTrace(System.err);
         }
     }

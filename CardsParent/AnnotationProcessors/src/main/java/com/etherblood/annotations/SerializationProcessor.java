@@ -2,8 +2,10 @@ package com.etherblood.annotations;
 
 import java.io.BufferedWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Set;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
@@ -20,7 +22,7 @@ import javax.tools.StandardLocation;
  *
  * @author Philipp
  */
-@SupportedAnnotationTypes("com.jme3.network.serializing.Serializable")
+@SupportedAnnotationTypes({"com.jme3.network.serializing.Serializable","com.etherblood.cardsmatch.cardgame.components.ComponentAlias"})
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class SerializationProcessor extends AbstractProcessor {
 
@@ -36,6 +38,9 @@ public class SerializationProcessor extends AbstractProcessor {
     }
 
     private boolean process(Set<? extends Element> elements, TypeElement annotation) {
+        if(elements.isEmpty()) {
+            return true;
+        }
         ArrayList<TypeElement> types = new ArrayList<>();
         for (Element element : elements) {
             types.add((TypeElement) element);

@@ -1,5 +1,6 @@
 package com.etherblood.cardsmasterserver.network.connections;
 
+import com.etherblood.cardsnetworkshared.ExtendedDefaultServer;
 import com.etherblood.cardsmasterserver.network.events.UserLogoutEvent;
 import com.etherblood.cardsmasterserver.users.UserRoles;
 import com.etherblood.cardsmasterserver.network.messages.MessageFromClientService;
@@ -10,12 +11,12 @@ import com.etherblood.cardsmasterserver.users.model.UserAccount;
 import com.etherblood.cardsnetworkshared.master.commands.UserLogin;
 import com.etherblood.cardsnetworkshared.master.commands.UserLogout;
 import com.etherblood.cardsnetworkshared.DefaultMessage;
-import com.etherblood.cardsnetworkshared.EncryptedObject;
+import com.etherblood.cardsnetworkshared.EncryptedMessage;
+import com.etherblood.cardsnetworkshared.master.updates.LoginSuccess;
 import com.jme3.network.ConnectionListener;
 import com.jme3.network.HostedConnection;
 import com.jme3.network.Message;
 import com.jme3.network.MessageListener;
-import com.jme3.network.Network;
 import com.jme3.network.Server;
 import java.io.IOException;
 import javax.annotation.PostConstruct;
@@ -63,21 +64,26 @@ public class UserConnectionService {
                 System.out.println("connection removed");
             }
         });
-        server.addMessageListener(new MessageListener<HostedConnection>() {
+        final MessageListener<HostedConnection> defaultMessageListener = new MessageListener<HostedConnection>() {
             @Override
             public void messageReceived(HostedConnection connection, Message message) {
                 try {
                     attachAuthentication(connection);
                     Object data = ((DefaultMessage) message).getData();
-                    if(data instanceof EncryptedObject) {
-                        data = ((EncryptedObject)data).getObject();
-                    }
                     messageService.dispatchMessage(data);
                 } finally {
                     detachAuthentication();
                 }
             }
-        }, DefaultMessage.class);
+        };
+        final MessageListener<HostedConnection> encryptedMessageListener = new MessageListener<HostedConnection>() {
+            @Override
+            public void messageReceived(HostedConnection connection, Message message) {
+                defaultMessageListener.messageReceived(connection, ((EncryptedMessage)message).getMessage());
+            }
+        };
+        server.addMessageListener(defaultMessageListener, DefaultMessage.class);
+        server.addMessageListener(encryptedMessageListener, EncryptedMessage.class);
         server.start();
     }
 
@@ -89,7 +95,7 @@ public class UserConnectionService {
 
     @MessageHandler
     @PreAuthorize("hasRole('ROLE_ANONYMOUS')")
-    public void login(UserLogin userLogin) {
+    public LoginSuccess login(UserLogin userLogin) {
         UserAccount user = userService.authenticateUser(userLogin.getUsername(), userLogin.getPlaintextPassword());
         HostedConnection previousConnection = findUserConnection(user.getId());
         if (previousConnection != null) {
@@ -99,6 +105,7 @@ public class UserConnectionService {
         HostedConnection connection = getCurrentConnection();
         setAuthentication(connection, new DefaultAuthentication(connection, user.getId(), user.getRoles()));
         System.out.println(connection.getAddress() + " logged in as " + user.getUsername());
+        return new LoginSuccess(user.getUsername());
     }
 
     @MessageHandler
@@ -120,7 +127,7 @@ public class UserConnectionService {
         findUserConnection(userId).send(message);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_USER')")
+    @PreAuthorize("permitAll()")
     public void returnMessage(Message message) {
         getCurrentConnection().send(message);
     }

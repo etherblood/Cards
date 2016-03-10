@@ -1,13 +1,17 @@
 package com.etherblood.cardsnetworkshared;
 
+import com.etherblood.cardsnetworkshared.encryption.EncryptionKeysUtil;
+import com.etherblood.cardsnetworkshared.encryption.EncryptedMessageSerializer;
 import com.jme3.network.serializing.Serializable;
 import com.jme3.network.serializing.Serializer;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.Scanner;
+import javax.crypto.NoSuchPaddingException;
 
 /**
  *
@@ -18,18 +22,19 @@ public class SerializerInit {
     private static final String PUBLIC_KEY_PATH = "/publicKey.txt";
     private static final String SERIALIZABLES_PATH = "/META-INF/" + Serializable.class.getName() + ".txt";
     
-    public static void init() throws NoSuchAlgorithmException, InvalidKeySpecException {
+    public static void init() throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException {
         Serializer.registerClasses(readClasses(SERIALIZABLES_PATH));
-        EncryptedObjectSerializer encryptedObjectSerializer = new EncryptedObjectSerializer();
+        EncryptedMessageSerializer encryptedMessageSerializer = new EncryptedMessageSerializer();
         String privateKey = readKey(PRIVATE_KEY_PATH);
         if(privateKey != null) {
-            encryptedObjectSerializer.setPrivateKey(EncryptionKeysUtil.importRSAPrivate(privateKey));
+            encryptedMessageSerializer.setPrivateKey(EncryptionKeysUtil.importRSAPrivate(privateKey));
         }
         String publicKey = readKey(PUBLIC_KEY_PATH);
         if(publicKey != null) {
-            encryptedObjectSerializer.setPublicKey(EncryptionKeysUtil.importRSAPublic(publicKey));
+            encryptedMessageSerializer.setPublicKey(EncryptionKeysUtil.importRSAPublic(publicKey));
         }
-        Serializer.registerClass(EncryptedObject.class, encryptedObjectSerializer);
+        Serializer.registerClass(EncryptedMessage.class, encryptedMessageSerializer);
+        Serializer.setReadOnly(true);
     }
 
     private static Class[] readClasses(String path) {

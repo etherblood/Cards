@@ -25,7 +25,7 @@ public class SystemTaskService {
     @Autowired
     private ApplicationEventPublisher eventPublisher;
     private ExecutorService executor;
-    private DefaultAuthentication systemAuthentication = new DefaultAuthentication(DefaultAuthentication.SYSTEM_PRINCIPAL, null, UserRoles.SYSTEM);
+    private final DefaultAuthentication systemAuthentication = new DefaultAuthentication(DefaultAuthentication.SYSTEM_PRINCIPAL, null, UserRoles.SYSTEM);
     
     @PreAuthorize("permitAll")
     @TransactionalEventListener(fallbackExecution=true)

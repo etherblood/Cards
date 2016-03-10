@@ -7,9 +7,6 @@ import com.etherblood.cardsmasterserver.users.UserService;
 import com.etherblood.cardsmasterserver.users.model.UserAccount;
 import com.etherblood.cardsnetworkshared.SerializerInit;
 import com.etherblood.cardsnetworkshared.master.commands.UserRegistration;
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.util.Scanner;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,7 +15,7 @@ public class Main implements Runnable {
 
     private static final String SPRING_CONTEXT_FILEPATH = "main_spring_context.xml";
 
-    public static void main(String[] args) throws InterruptedException, NoSuchAlgorithmException, InvalidKeySpecException, IOException {
+    public static void main(String[] args) throws Exception {
         SerializerInit.init();
         new Main().run();
     }

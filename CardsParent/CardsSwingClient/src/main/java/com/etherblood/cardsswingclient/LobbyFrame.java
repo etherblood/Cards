@@ -4,10 +4,10 @@ import com.etherblood.cardsnetworkshared.master.commands.CardCollectionRequest;
 import com.etherblood.cardsnetworkshared.master.commands.MatchRequest;
 import com.etherblood.cardsnetworkshared.master.commands.SetLibraryRequest;
 import com.etherblood.cardsnetworkshared.master.commands.UserLogin;
-import com.etherblood.cardsnetworkshared.master.misc.LobbyUpdate;
 import com.etherblood.cardsnetworkshared.master.updates.CardCollectionUpdate;
 import com.etherblood.cardsnetworkshared.DefaultMessage;
-import com.etherblood.cardsnetworkshared.EncryptedObject;
+import com.etherblood.cardsnetworkshared.EncryptedMessage;
+import com.etherblood.cardsnetworkshared.ExtendedDefaultClient;
 import com.etherblood.cardsnetworkshared.SerializerInit;
 import com.etherblood.cardsswingdisplay.MainJFrame;
 import com.jme3.network.Client;
@@ -15,8 +15,6 @@ import com.jme3.network.Message;
 import com.jme3.network.MessageListener;
 import com.jme3.network.Network;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
 import java.util.Comparator;
 import javax.swing.DefaultListModel;
@@ -42,35 +40,40 @@ public class LobbyFrame extends javax.swing.JFrame {
         initComponents();
         jList2.setModel(modelLibrary);
         jList1.setModel(modelTemplates);
-
-        client.addMessageListener(new MessageListener<Client>() {
+        final MessageListener<Client> defaultMessageListener = new MessageListener<Client>() {
             @Override
             public void messageReceived(Client source, Message m) {
                 DefaultMessage message = (DefaultMessage) m;
-                if (message.getData() instanceof LobbyUpdate) {
-                    LobbyUpdate update = (LobbyUpdate) message.getData();
-                    if (update instanceof CardCollectionUpdate) {
-                        modelTemplates.clear();
-                        String[] templates = ((CardCollectionUpdate) update).getCards();
-                        Arrays.sort(templates, new Comparator<String>() {
-                            @Override
-                            public int compare(String o1, String o2) {
-                                return o1.compareTo(o2);
-                            }
-                        });
-                        for (String card : templates) {
-                            modelTemplates.addElement(card);
-                        }
-                    }
-                    SwingUtilities.invokeLater(new Runnable() {
+                Object update = message.getData();
+                if (update instanceof CardCollectionUpdate) {
+                    modelTemplates.clear();
+                    String[] templates = ((CardCollectionUpdate) update).getCards();
+                    Arrays.sort(templates, new Comparator<String>() {
                         @Override
-                        public void run() {
-                            jList1.repaint();
+                        public int compare(String o1, String o2) {
+                            return o1.compareTo(o2);
                         }
                     });
+                    for (String card : templates) {
+                        modelTemplates.addElement(card);
+                    }
                 }
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        jList1.repaint();
+                    }
+                });
             }
-        }, DefaultMessage.class);
+        };
+        final MessageListener<Client> encryptedMessageListener = new MessageListener<Client>() {
+            @Override
+            public void messageReceived(Client connection, Message message) {
+                defaultMessageListener.messageReceived(connection, ((EncryptedMessage) message).getMessage());
+            }
+        };
+        client.addMessageListener(defaultMessageListener, DefaultMessage.class);
+        client.addMessageListener(encryptedMessageListener, EncryptedMessage.class);
         CardsSwingClient cardsSwingClient = new CardsSwingClient(frame.getController());
         cardsSwingClient.bind(client);
         client.start();
@@ -233,19 +236,19 @@ public class LobbyFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jList2MouseClicked
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        client.send(new DefaultMessage(new EncryptedObject(new UserLogin(jTextField1.getText(), jTextField2.getText()))));
+        client.send(new EncryptedMessage(new DefaultMessage(new UserLogin(jTextField1.getText(), jTextField2.getText()))));
         client.send(new DefaultMessage(new CardCollectionRequest()));
     }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
+    public static void main(String args[]) throws Exception {
         SerializerInit.init();
         final Client client;
         try {
             String ipAddress = args.length != 0 ? args[0] : "localhost";
-            client = Network.connectToServer(ipAddress, PORT);
+            client = ExtendedDefaultClient.connectToServer(ipAddress, PORT);//Network.connectToServer(ipAddress, PORT);
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
@@ -281,7 +284,7 @@ public class LobbyFrame extends javax.swing.JFrame {
             }
         });
     }
-    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;

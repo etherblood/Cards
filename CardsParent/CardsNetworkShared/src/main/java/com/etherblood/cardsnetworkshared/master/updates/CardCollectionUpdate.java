@@ -1,6 +1,5 @@
 package com.etherblood.cardsnetworkshared.master.updates;
 
-import com.etherblood.cardsnetworkshared.master.misc.LobbyUpdate;
 import com.jme3.network.serializing.Serializable;
 
 /**
@@ -8,7 +7,7 @@ import com.jme3.network.serializing.Serializable;
  * @author Philipp
  */
 @Serializable
-public class CardCollectionUpdate extends LobbyUpdate {
+public class CardCollectionUpdate {
     private String[] cards;
 
     public CardCollectionUpdate() {

@@ -17,17 +17,6 @@
     
     <url>http://maven.apache.org</url>
 
-    <repositories>
-        <repository>
-            <id>jme3</id>
-            <url>http://updates.jmonkeyengine.org/maven/</url>
-        </repository>
-    </repositories>
-    
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
     <build>
         <plugins>
             <plugin>

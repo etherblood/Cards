@@ -18,4 +18,8 @@ public class EndTurnBot implements Bot {
         return factory.generateEndTurnCommand();
     }
 
+    @Override
+    public void clearCache() {
+    }
+
 }

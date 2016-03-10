@@ -4,7 +4,7 @@
         <template name="Elf">
             <collectible/>
             <components>
-                <cost cost="6"/>
+                <manaCost cost="6"/>
                 <attack attack="4"/>
                 <health health="10"/>
                 <minion/>
@@ -23,7 +23,7 @@
         <template name="Orc">
             <collectible/>
             <components>
-                <cost cost="6"/>
+                <manaCost cost="6"/>
                 <attack attack="10"/>
                 <health health="4"/>
                 <minion/>
@@ -42,7 +42,7 @@
         <template name="Test">
             <collectible/>
             <components>
-                <cost cost="6"/>
+                <manaCost cost="6"/>
                 <attack attack="7"/>
                 <health health="7"/>
                 <minion/>
@@ -61,7 +61,7 @@
         <template name="Wisp">
             <collectible/>
             <components>
-                <cost cost="1"/>
+                <manaCost cost="1"/>
                 <attack attack="1"/>
                 <health health="2"/>
                 <minion/>
@@ -75,7 +75,7 @@
         <template name="Mirth">
             <collectible/>
             <components>
-                <cost cost="3"/>
+                <manaCost cost="3"/>
                 <attack attack="3"/>
                 <health health="2"/>
                 <charge/>
@@ -90,12 +90,12 @@
         <template name="Faerie Dragon">
             <collectible/>
             <components>
-                <cost cost="3"/>
+                <manaCost cost="3"/>
                 <attack attack="3"/>
                 <health health="2"/>
                 <minion/>
                 <dragon/>
-                <divine/>
+                <divineShield/>
                 <castEffect template="Activation=>Summon"/>
             </components>
             <image>
@@ -105,13 +105,13 @@
         <template name="Black Dragon">
             <collectible/>
             <components>
-                <cost cost="6"/>
+                <manaCost cost="6"/>
                 <attack attack="5"/>
                 <health health="5"/>
                 <minion/>
                 <dragon/>
                 <taunt/>
-                <divine/>
+                <divineShield/>
                 <castEffect template="Activation=>Summon"/>
             </components>
             <image>
@@ -121,7 +121,7 @@
         <template name="River Crocolisk">
             <collectible/>
             <components>
-                <cost cost="2"/>
+                <manaCost cost="2"/>
                 <attack attack="2"/>
                 <health health="3"/>
                 <beast/>
@@ -136,7 +136,7 @@
         <template name="Dunno">
             <collectible/>
             <components>
-                <cost cost="4"/>
+                <manaCost cost="4"/>
                 <attack attack="4"/>
                 <health health="3"/>
                 <beast/>
@@ -152,7 +152,7 @@
         <template name="Leeroy Jenkins">
             <collectible/>
             <components>
-                <cost cost="5"/>
+                <manaCost cost="5"/>
                 <attack attack="6"/>
                 <health health="2"/>
                 <charge/>
@@ -184,7 +184,7 @@
         </template>
         <template name="Whelp">
             <components>
-                <cost cost="1"/>
+                <manaCost cost="1"/>
                 <attack attack="1"/>
                 <health health="1"/>
                 <dragon/>
@@ -197,16 +197,4 @@
             </image>
         </template>
     </templates>
-    <aliases>
-        <alias key="health" value="com.etherblood.cardsmatch.cardgame.components.battle.stats.HealthComponent"/>
-        <alias key="attack" value="com.etherblood.cardsmatch.cardgame.components.battle.stats.AttackComponent"/>
-        <alias key="cost" value="com.etherblood.cardsmatch.cardgame.components.battle.stats.ManaCostComponent"/>
-        <alias key="minion" value="com.etherblood.cardsmatch.cardgame.components.battle.MinionComponent"/>
-        <alias key="charge" value="com.etherblood.cardsmatch.cardgame.components.battle.buffs.ChargeComponent"/>
-        <alias key="divine" value="com.etherblood.cardsmatch.cardgame.components.battle.buffs.DivineShieldComponent"/>
-        <alias key="taunt" value="com.etherblood.cardsmatch.cardgame.components.battle.buffs.TauntComponent"/>
-        <alias key="castEffect" value="com.etherblood.cardsmatch.cardgame.components.cards.CastTemplateComponent"/>
-        <alias key="beast" value="com.etherblood.cardsmatch.cardgame.components.battle.races.BeastComponent"/>
-        <alias key="dragon" value="com.etherblood.cardsmatch.cardgame.components.battle.races.DragonComponent"/>
-    </aliases>
 </root>

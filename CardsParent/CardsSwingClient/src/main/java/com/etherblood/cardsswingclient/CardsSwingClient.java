@@ -2,7 +2,6 @@ package com.etherblood.cardsswingclient;
 
 import com.etherblood.cardsnetworkshared.match.commands.TriggerEffectRequest;
 import com.etherblood.cardsnetworkshared.DefaultMessage;
-import com.etherblood.cardsnetworkshared.match.misc.MatchUpdate;
 import com.etherblood.cardsnetworkshared.match.updates.AttachEffect;
 import com.etherblood.cardsnetworkshared.match.updates.AttackUpdate;
 import com.etherblood.cardsnetworkshared.match.updates.CreateEntity;
@@ -34,9 +33,11 @@ import javax.swing.SwingUtilities;
  * @author Philipp
  */
 public class CardsSwingClient {
+
     private static final int PORT = 6145;
     private final HashMap<Class, UpdateHandler> updateHandlers = new HashMap<>();
     private final GameController controller;
+
     /**
      * @param args the command line arguments
      */
@@ -91,7 +92,7 @@ public class CardsSwingClient {
         updateHandlers.put(GameOver.class, new UpdateHandler<GameOver>() {
             @Override
             public void handle(GameOver update) {
-                ((JFrame)SwingUtilities.windowForComponent(controller.getGamePanel())).setTitle(update.getWinner().longValue() == 0L? "You won!": "You lost...");
+                ((JFrame) SwingUtilities.windowForComponent(controller.getGamePanel())).setTitle(update.getWinner().longValue() == 0L ? "You won!" : "You lost...");
             }
         });
         updateHandlers.put(AttachEffect.class, new UpdateHandler<AttachEffect>() {
@@ -130,18 +131,15 @@ public class CardsSwingClient {
         client.addMessageListener(new MessageListener<Client>() {
             @Override
             public void messageReceived(Client source, Message m) {
-                Object data = ((DefaultMessage)m).getData();
-                if(data instanceof MatchUpdate) {
-                final MatchUpdate update = (MatchUpdate) data;
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            updateHandlers.get(update.getClass()).handle(update);
-                            controller.getGamePanel().validate();
-                            controller.getGamePanel().repaint();
-                        }
-                    });
-                }
+                final Object data = ((DefaultMessage) m).getData();
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateHandlers.get(data.getClass()).handle(data);
+                        controller.getGamePanel().validate();
+                        controller.getGamePanel().repaint();
+                    }
+                });
             }
         }, DefaultMessage.class);
         client.addErrorListener(new ErrorListener<Client>() {

@@ -1,4 +1,4 @@
-package com.etherblood.cardsnetworkshared;
+package com.etherblood.cardsnetworkshared.encryption;
 
 import java.math.BigInteger;
 import java.security.KeyFactory;

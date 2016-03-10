@@ -4,12 +4,14 @@
  */
 package com.etherblood.cardsmatch.cardgame.components.battle.buffs;
 
+import com.etherblood.cardsmatch.cardgame.components.ComponentAlias;
 import com.etherblood.entitysystem.data.EntityComponent;
 
 /**
  *
  * @author Philipp
  */
+@ComponentAlias(name="divineShield")
 public class DivineShieldComponent implements EntityComponent {
     
 }

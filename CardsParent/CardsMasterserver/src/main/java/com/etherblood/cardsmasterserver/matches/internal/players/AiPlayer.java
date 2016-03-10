@@ -18,6 +18,10 @@ public class AiPlayer extends AbstractPlayer {
     public AiPlayer(EntityId player) {
         super(player);
     }
+    
+    public void clearCache() {
+        bot.clearCache();
+    }
 
     public void compute() {
         MatchContextWrapper matchWrapper = getMatch();

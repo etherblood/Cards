@@ -1,14 +1,17 @@
 package com.etherblood.cardsmasterserver;
 
-import com.etherblood.cardsnetworkshared.EncryptedObject;
-import com.etherblood.cardsnetworkshared.EncryptedObjectSerializer;
-import com.etherblood.cardsnetworkshared.EncryptionKeysUtil;
-import com.etherblood.cardsnetworkshared.RSAKeyPair;
+import com.etherblood.cardsnetworkshared.DefaultMessage;
+import com.etherblood.cardsnetworkshared.EncryptedMessage;
+import com.etherblood.cardsnetworkshared.encryption.EncryptedMessageSerializer;
+import com.etherblood.cardsnetworkshared.encryption.EncryptionKeysUtil;
+import com.etherblood.cardsnetworkshared.encryption.RSAKeyPair;
 import com.etherblood.cardsnetworkshared.SerializerInit;
 import com.etherblood.cardsnetworkshared.master.commands.UserLogin;
+import com.jme3.network.Message;
 import com.jme3.network.serializing.Serializer;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import static junit.framework.Assert.assertEquals;
@@ -20,23 +23,24 @@ import junit.framework.TestCase;
  */
 public class EncryptionTest extends TestCase {
 
-    public static void main(String[] args) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
+    public static void main(String[] args) throws Exception {
         new EncryptionTest().testEncryptedObjectSerializer();
     }
 
-    public void testEncryptedObjectSerializer() throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
+    public void testEncryptedObjectSerializer() throws Exception {
         SerializerInit.init();
         RSAKeyPair keys = EncryptionKeysUtil.generateKeys();
-        EncryptedObjectSerializer encryptedObjectSerializer = (EncryptedObjectSerializer) Serializer.getExactSerializer(EncryptedObject.class);
+        EncryptedMessageSerializer encryptedObjectSerializer = (EncryptedMessageSerializer) Serializer.getExactSerializer(EncryptedMessage.class);
         encryptedObjectSerializer.setPublicKey(keys.publicKey());
         encryptedObjectSerializer.setPrivateKey(keys.privateKey());
 
         ByteBuffer buffer = ByteBuffer.allocate(1024);
 
         UserLogin login = new UserLogin("myname", "mypassword");
-        encryptedObjectSerializer.writeObject(buffer, new EncryptedObject(login));
+        encryptedObjectSerializer.writeObject(buffer, new EncryptedMessage(new DefaultMessage(login)));
         buffer.flip();
-        UserLogin result = (UserLogin) encryptedObjectSerializer.readObject(buffer, EncryptedObject.class).getObject();
+        final Message message = encryptedObjectSerializer.readObject(buffer, EncryptedMessage.class).getMessage();
+        UserLogin result = ((DefaultMessage<UserLogin>)message).getData();
         assertEquals(login.getUsername(), result.getUsername());
         assertEquals(login.getPlaintextPassword(), result.getPlaintextPassword());
     }
