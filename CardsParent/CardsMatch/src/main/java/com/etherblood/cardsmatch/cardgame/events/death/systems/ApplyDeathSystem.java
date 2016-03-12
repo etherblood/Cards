@@ -23,9 +23,8 @@ public class ApplyDeathSystem extends AbstractMatchSystem<DeathEvent> {
 
     @Override
     public DeathEvent handle(DeathEvent event) {
-        if(data.has(event.entity, BoardCardComponent.class)) {
-            enqueueEvent(new CardZoneMoveEvent(event.entity, CardZone.BOARD, CardZone.GRAVEYARD));
-        }
+        assert data.has(event.entity, BoardCardComponent.class);
+        enqueueEvent(new CardZoneMoveEvent(event.entity, CardZone.BOARD, CardZone.GRAVEYARD));
         return event;
     }
 }

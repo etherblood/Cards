@@ -1,5 +1,6 @@
 package com.etherblood.cardsmasterserver.matches.internal;
 
+import com.etherblood.EntityUtils;
 import com.etherblood.cardsmatch.cardgame.client.SystemsEventHandler;
 import com.etherblood.cardsmatch.cardgame.components.battle.MinionComponent;
 import com.etherblood.cardsmatch.cardgame.components.misc.NameComponent;
@@ -68,7 +69,7 @@ public class MatchLogger implements SystemsEventHandler {
     }
     
     private String toString(EntityId entity) {
-        return entity.toString() + "_" + data.get(entity, NameComponent.class).name;
+        return EntityUtils.toString(data, entity);
     }
 
 }

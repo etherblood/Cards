@@ -13,6 +13,7 @@ import java.util.HashMap;
  * @author Philipp
  */
 public class MatchGameEventDispatcher implements GameEventDispatcher {
+
     private final HashMap<Class, ArrayList<GameEventHandler>> handlersMap = new HashMap<>();
     @Autowire
     private SystemsEventHandler systemsEventHandler = null;
@@ -20,26 +21,21 @@ public class MatchGameEventDispatcher implements GameEventDispatcher {
     @Override
     public void dispatch(GameEvent event) {
         ArrayList<GameEventHandler> handlers = handlersMap.get(event.getClass());
-        if(handlers == null) {
+        if (handlers == null) {
             return;
         }
         for (GameEventHandler handler : handlers) {
             event = handleEvent(handler, event);
-            if(event == null) {
+            if (event == null) {
                 return;
             }
         }
     }
 
     private <T extends GameEvent> T handleEvent(GameEventHandler<T> handler, T event) {
-//        try {
-            T result = handler.handle(event);
-//        } catch(Exception ex) {
-//            //TODO: add interface which makes rollbacks possible?
-//            Logger.getLogger(GameEventDispatcherImpl.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-        if(systemsEventHandler != null) {
-            systemsEventHandler.onEvent((Class<GameEventHandler<T>>)handler.getClass(), event);
+        T result = handler.handle(event);
+        if (systemsEventHandler != null) {
+            systemsEventHandler.onEvent((Class<GameEventHandler<T>>) handler.getClass(), event);
         }
         return result;
     }
@@ -53,15 +49,15 @@ public class MatchGameEventDispatcher implements GameEventDispatcher {
     public void unsubscribe(Class eventClass, GameEventHandler handler) {
         ArrayList<GameEventHandler> handlers = createGetHandlers(eventClass);
         handlers.remove(handler);
-        if(handlers.isEmpty()) {
+        if (handlers.isEmpty()) {
             handlersMap.remove(eventClass);
         }
     }
-    
+
     private ArrayList<GameEventHandler> createGetHandlers(Class eventClass) {
         ArrayList<GameEventHandler> handlers = handlersMap.get(eventClass);
-        if(handlers == null) {
-            handlers = new ArrayList<GameEventHandler>();
+        if (handlers == null) {
+            handlers = new ArrayList<>();
             handlersMap.put(eventClass, handlers);
         }
         return handlers;

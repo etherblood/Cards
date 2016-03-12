@@ -59,7 +59,8 @@ public class GameController {
                 dragSource.setSelected(false);
                 dragSource = null;
             }
-            gamePanel.setAction(getSelectedAbility(), Collections.<Card>emptyList());
+            gamePanel.select(dragSource);
+//            gamePanel.setAction(getSelectedAbility(), Collections.<Card>emptyList());
         }
 
     };
@@ -113,7 +114,8 @@ public class GameController {
                     dragSource.setSelected(false);
                 }
                 dragSource = null;
-                gamePanel.setAction(getSelectedAbility(), Collections.<Card>emptyList());
+                gamePanel.select(dragSource);
+//                gamePanel.setAction(getSelectedAbility(), Collections.<Card>emptyList());
             }
         });
     }
@@ -130,7 +132,8 @@ public class GameController {
                 zonePanel.clearChildren();
             }
         }
-        gamePanel.setAction(getSelectedAbility(), Collections.<Card>emptyList());
+        gamePanel.select(dragSource);
+//        gamePanel.setAction(getSelectedAbility(), Collections.<Card>emptyList());
     }
 
     private Ability getSelectedAbility() {
@@ -180,21 +183,12 @@ public class GameController {
     }
 
     public void setCardProperty(Long card, String key, boolean value) {
-//        Card cardPanel = cards.get(card);
-//        JPopupMenu abilities = cardPanel.getAbilityMenu();
-//        if (value) {
-//            abilities.add(new JMenuItem(key));
-//        } else {
-//            for (Component component : abilities.getComponents()) {
-//                if (component instanceof JMenuItem) {
-//                    JMenuItem label = (JMenuItem) component;
-//                    if (key.equals(label.getText())) {
-//                        abilities.remove(component);
-//                        return;
-//                    }
-//                }
-//            }
-//        }
+        Card cardPanel = cards.get(card);
+        if (value) {
+            cardPanel.getProperties().add(key);
+        } else {
+            cardPanel.getProperties().remove(key);
+        }
     }
 
     public void attachCardEffect(Long card, final Ability ability) {

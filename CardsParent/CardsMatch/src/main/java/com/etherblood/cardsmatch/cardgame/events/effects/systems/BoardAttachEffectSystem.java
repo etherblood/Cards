@@ -18,20 +18,19 @@ import com.etherblood.entitysystem.data.EntityId;
  * @author Philipp
  */
 public class BoardAttachEffectSystem extends AbstractMatchSystem<EffectEvent> {
+
     @Autowire
     private EntityComponentMapReadonly data;
 
     @Override
     public EffectEvent handle(EffectEvent event) {
-        if(data.has(event.effect, BoardAttachEffectComponent.class)) {
+        if (data.has(event.effect, BoardAttachEffectComponent.class)) {
             EffectTargets targets = eventData().get(EffectTargets.class);
-            if(targets != null) {
-                for (EntityId target : targets.targets) {
-                    enqueueEvent(new BoardAttachEvent(target));
-                }
+            for (EntityId target : targets.targets) {
+                enqueueEvent(new BoardAttachEvent(target));
             }
         }
         return event;
     }
-    
+
 }

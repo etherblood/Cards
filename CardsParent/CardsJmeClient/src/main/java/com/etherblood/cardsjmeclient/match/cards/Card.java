@@ -29,7 +29,8 @@ public class Card extends Container {
     private final Panel artPanel = new Panel();
     private CardZone zone = CardZone.None;
     private Long owner = null;
-    private ArrayList<Ability> abilities = new ArrayList<>();
+    private final ArrayList<Ability> abilities = new ArrayList<>();
+    private final ArrayList<String> properties = new ArrayList<>();
 
     public Card() {
         setSize(new Vector3f(150, 225, 0));
@@ -106,6 +107,27 @@ public class Card extends Container {
     public void setHealth(int health) {
         healthLabel.setText("" + health);
     }
+    
+    public int getAttack() {
+        if(attackLabel.getText().isEmpty()) {
+            return 0;
+        }
+        return Integer.parseInt(attackLabel.getText());
+    }
+    
+    public int getHealth() {
+        if(healthLabel.getText().isEmpty()) {
+            return 0;
+        }
+        return Integer.parseInt(healthLabel.getText());
+    }
+    
+    public int getCost() {
+        if(manaLabel.getText().isEmpty()) {
+            return 0;
+        }
+        return Integer.parseInt(manaLabel.getText());
+    }
 
     public CardZone getZone() {
         return zone;
@@ -138,5 +160,9 @@ public class Card extends Container {
 
     public ArrayList<Ability> getAbilities() {
         return abilities;
+    }
+
+    public ArrayList<String> getProperties() {
+        return properties;
     }
 }

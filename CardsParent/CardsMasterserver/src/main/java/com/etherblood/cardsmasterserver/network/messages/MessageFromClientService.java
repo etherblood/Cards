@@ -33,8 +33,8 @@ public class MessageFromClientService implements BeanDefinitionRegistryPostProce
             try {
                 messageHandler.onMessage(message);
             } catch (Exception e) {
-//            System.out.println(e);
-                throw new RuntimeException("exception when dispatching " + message + " to " + messageHandler, e);
+                e.printStackTrace(System.out);
+//                throw new RuntimeException("exception when dispatching " + message + " to " + messageHandler, e);
             }
         }
     }

@@ -19,6 +19,10 @@ public class AiPlayer extends AbstractPlayer {
         super(player);
     }
     
+    public void moveNotification(EntityId effect, EntityId... targets) {
+        bot.moveNotification(effect, targets);
+    }
+    
     public void clearCache() {
         bot.clearCache();
     }

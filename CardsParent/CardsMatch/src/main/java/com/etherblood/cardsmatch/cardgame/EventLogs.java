@@ -11,11 +11,9 @@ import java.util.ArrayList;
 public class EventLogs implements SystemsEventHandler {
     private final ArrayList<GameEvent> events = new ArrayList<>();
     private final ArrayList<Class> systems = new ArrayList<>();
-    private boolean enabled = true;
 
     @Override
     public void onEvent(Class systemClass, GameEvent gameEvent) {
-        assert enabled;
         systems.add(systemClass);
         events.add(gameEvent);
 //            System.out.println(gameEvent.getClass().getSimpleName() + " => " + systemClass.getSimpleName());

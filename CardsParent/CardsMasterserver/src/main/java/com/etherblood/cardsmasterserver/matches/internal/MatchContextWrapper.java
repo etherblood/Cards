@@ -43,6 +43,7 @@ public class MatchContextWrapper {
             if (ownerComponent != null && ownerComponent.player.equals(player)) {
                 int checkpoint = getData().getVersion();
                 try {
+                    notifyBots(source, targets);//notify first to ensure event chains are in correct order
                     getEvents().fireEvent(new TargetedTriggerEffectEvent(source, targets));
                     getEvents().handleEvents();
                 } catch (Exception e) {
@@ -58,6 +59,12 @@ public class MatchContextWrapper {
                     throw e;
                 }
             }
+        }
+    }
+
+    private void notifyBots(EntityId source, EntityId[] targets) {
+        for (AiPlayer bot : getPlayers(AiPlayer.class)) {
+            bot.moveNotification(source, targets);
         }
     }
     

@@ -2,6 +2,7 @@ package com.etherblood.cardsmatch.cardgame.bot;
 
 import com.etherblood.cardsmatch.cardgame.bot.commands.Command;
 import com.etherblood.cardsmatch.cardgame.bot.commands.EndTurnCommandFactory;
+import com.etherblood.entitysystem.data.EntityId;
 
 /**
  *
@@ -20,6 +21,10 @@ public class EndTurnBot implements Bot {
 
     @Override
     public void clearCache() {
+    }
+
+    @Override
+    public void moveNotification(EntityId effect, EntityId... targets) {
     }
 
 }

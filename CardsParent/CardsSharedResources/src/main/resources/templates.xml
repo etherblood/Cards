@@ -160,8 +160,8 @@
                 <castEffect template="Activation=>Summon"/>
             </components>
             <childs>
-                <child>Battlecry=>Whelp {MakeEnemyEffectComponent}</child>
-                <child>Battlecry=>Whelp {MakeEnemyEffectComponent}</child>
+                <child>Battlecry=>EnemyWhelp</child>
+                <child>Battlecry=>EnemyWhelp</child>
             </childs>
             
             <image>
@@ -181,6 +181,15 @@
                     <path>/sounds/Leeroy Jenkins/Attack.wav</path>
                 </attack>
             </audio>
+        </template>
+        <template name="Battlecry=>EnemyWhelp">
+            <components>
+                <onBattlecry/>
+                <createEntity/>
+                <attachTemplate template="Whelp"/>
+                <makeEnemy/>
+                <attachToBoard/>
+            </components>
         </template>
         <template name="Whelp">
             <components>

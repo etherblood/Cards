@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+    <infoTexts>
+        <taunt>
+            <displayName>Taunt</displayName>
+            <text>Enemies can only attack Minions with Taunt.</text>
+        </taunt>
+        <divineShield>
+            <displayName>Divine Shield</displayName>
+            <text>Prevent the next Damage that would be dealt to this Minion</text>
+        </divineShield>
+        <charge>
+            <displayName>Charge</displayName>
+            <text>This Minion can attack with Sickness.</text>
+        </charge>
+        <sickness>
+            <displayName>Sickness</displayName>
+            <text>This Minion can't attack this Turn unless it has Charge.</text>
+        </sickness>
+    </infoTexts>
+</root>

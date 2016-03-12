@@ -318,7 +318,7 @@ public class DefaultTemplateSetFactory {
         silverHandKnight.addChild(createAllySpawn(createToken("Squire", 1, 2, 2).getName(), battlecry));
 
 //        EntityTemplate leeroy = createMinion("Leeroy Jenkins", 5, 6, 2, charge);
-        String spawnWhelp = createEnemySpawn(/*createToken(*/"Whelp"/*, 1, 1, 1, dragon).getName()*/, battlecry);
+//        String spawnWhelp = createEnemySpawn(/*createToken(*/"Whelp"/*, 1, 1, 1, dragon).getName()*/, battlecry);
         //        leeroy.addChild(spawnWhelp);
         //        leeroy.addChild(spawnWhelp);
     }

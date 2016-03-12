@@ -16,8 +16,8 @@ public class MonteCarloControls {
     public static final int DRAW = 2;
     public static final int ONGOING = 3;
 
-    private final static float epsilon = 1e-6f;
-    private final static float constant = (float) Math.sqrt(2);
+    private final static float EPSILON = 1e-6f;
+    private final static float CONSTANT = (float) Math.sqrt(2);
     private final Random rng = new Random();
     private boolean verbose = true;
     private int playoutsResult = -1;
@@ -128,15 +128,19 @@ public class MonteCarloControls {
                 }
             }
             scores = scores.replaceFirst(", ", "");
-            System.out.println("simulation-strength: " + current.visitScore() / 2);
+            System.out.println("simulation-strength: " + simulationStrength());
             System.out.println(scores);
         }
         assert 0 <= best && best < current.numChilds();
         return best;
     }
+    
+    public int simulationStrength() {
+        return current.visitScore() / 2;
+    }
 
     public void move(int move, int moveCount) {
-        assert 0 <= move && move < moveCount;
+        assert 0 <= move && move < moveCount: move + ", " + moveCount;
         switch (state) {
             case SELECT:
                 if (current.isLeaf()) {
@@ -170,7 +174,7 @@ public class MonteCarloControls {
         for (int i = 0; i < current.numChilds(); i++) {
             MonteCarloNode child = current.getChild(i);
             float uctValue = calcUtc(current.visitScore(), child.visitScore(), child.playerScore(player));
-            uctValue += epsilon * rng.nextFloat();
+            uctValue += EPSILON * rng.nextFloat();
             if (uctValue > bestValue) {
                 bestValue = uctValue;
                 best = i;
@@ -181,10 +185,10 @@ public class MonteCarloControls {
     }
 
     private float calcUtc(float totalScore, float childTotal, float childScore) {
-        childTotal += epsilon;
+        childTotal += EPSILON;
         totalScore += 1;
         float exploitation = childScore / childTotal;
-        float exploration = constant * (float) (Math.sqrt(Math.log(totalScore) / childTotal));
+        float exploration = CONSTANT * (float) (Math.sqrt(Math.log(totalScore) / childTotal));
         float uctValue = exploitation + exploration;
         return uctValue;
     }

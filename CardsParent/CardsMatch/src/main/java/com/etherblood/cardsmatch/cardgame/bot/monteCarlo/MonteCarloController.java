@@ -3,28 +3,22 @@ package com.etherblood.cardsmatch.cardgame.bot.monteCarlo;
 import com.etherblood.cardsmatch.cardgame.ValidEffectTargetsSelector;
 import com.etherblood.cardsmatch.cardgame.bot.Bot;
 import com.etherblood.cardsmatch.cardgame.bot.commands.Command;
-import com.etherblood.cardsmatch.cardgame.client.SystemsEventHandler;
-import com.etherblood.cardsmatch.cardgame.client.SystemsEventHandlerDispatcher;
 import com.etherblood.cardsmatch.cardgame.components.misc.MatchEndedComponent;
 import com.etherblood.cardsmatch.cardgame.components.player.ItsMyTurnComponent;
 import com.etherblood.cardsmatch.cardgame.components.player.WinnerComponent;
 import com.etherblood.cardsmatch.cardgame.events.effects.TargetedTriggerEffectEvent;
-import com.etherblood.cardsmatch.cardgame.events.effects.systems.triggers.TargetedTriggerEffectSystem;
 import com.etherblood.cardsmatch.cardgame.rng.RngFactoryImpl;
 import com.etherblood.cardsmatch.cardgame.rng.RngListener;
 import com.etherblood.entitysystem.data.EntityComponentMap;
 import com.etherblood.entitysystem.data.EntityComponentMapReadonly;
 import com.etherblood.entitysystem.data.EntityId;
 import com.etherblood.entitysystem.data.IncrementalEntityIdFactory;
-import com.etherblood.eventsystem.GameEvent;
 import com.etherblood.eventsystem.GameEventDataStack;
-import com.etherblood.eventsystem.GameEventHandler;
 import com.etherblood.eventsystem.GameEventQueueImpl;
 import com.etherblood.match.MatchContext;
 import com.etherblood.montecarlotreesearch.MonteCarloControls;
 import com.etherblood.montecarlotreesearch.MonteCarloNode;
 import com.etherblood.montecarlotreesearch.MonteCarloState;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -57,6 +51,13 @@ public class MonteCarloController implements Bot {
             return move;
         }
     };
+    private final MoveConsumer moveConsumer = new MoveConsumer() {
+        @Override
+        public void applyMove(int move, int count) {
+            assert controls.state() == MonteCarloState.DISABLED;
+            controls.move(move, count);
+        }
+    };
 
     public MonteCarloController(MatchContext state, MatchContext simulationState, CommandGenerator commandGenerator, EntityId player1) {
         this.state = state;
@@ -71,31 +72,6 @@ public class MonteCarloController implements Bot {
         };
         state.getBean(RngFactoryImpl.class).addListener(rngListener);
         simulationState.getBean(RngFactoryImpl.class).addListener(rngListener);
-
-        SystemsEventHandlerDispatcher dispatcher = state.getBean(SystemsEventHandlerDispatcher.class);
-        List<SystemsEventHandler> handlers = dispatcher.getHandlers();
-        handlers.add(new SystemsEventHandler() {
-            private MoveConsumer moveConsumer = new MoveConsumer() {
-                @Override
-                public void applyMove(int move, int count) {
-                    assert controls.state() == MonteCarloState.DISABLED;
-                    controls.move(move, count);
-                }
-            };
-
-            @Override
-            public <T extends GameEvent> void onEvent(Class<GameEventHandler<T>> systemClass, T gameEvent) {
-                if (TargetedTriggerEffectSystem.class.equals(systemClass)) {
-                    TargetedTriggerEffectEvent event = (TargetedTriggerEffectEvent) gameEvent;
-                    try {
-                        generator.applyCommand(MonteCarloController.this.state.getBean(EntityComponentMapReadonly.class), MonteCarloController.this.state.getBean(ValidEffectTargetsSelector.class), event.effect, event.targets, moveConsumer);
-                    } catch (IllegalArgumentException e) {
-                        System.out.println("skipping bot state update because of exception:");
-                        e.printStackTrace(System.out);
-                    }
-                }
-            }
-        });
     }
 
     @Override
@@ -123,7 +99,8 @@ public class MonteCarloController implements Bot {
     @Override
     public Command think() {
         long endMillis = System.currentTimeMillis() + millis;
-        while (System.currentTimeMillis() < endMillis) {
+        while (controls.simulationStrength() < 5000) {
+//        while (System.currentTimeMillis() < endMillis) {
             iteration();
         }
         MonteCarloNode root = controls.startWalk();
@@ -175,5 +152,12 @@ public class MonteCarloController implements Bot {
 
     private int currentPlayer(EntityComponentMapReadonly simulationData) {
         return player1Entity.equals(simulationData.entities(ItsMyTurnComponent.class).iterator().next()) ? 0 : 1;
+    }
+
+    @Override
+    public void moveNotification(EntityId effect, EntityId... targets) {
+        EntityComponentMapReadonly data = MonteCarloController.this.state.getBean(EntityComponentMapReadonly.class);
+        ValidEffectTargetsSelector targetSelector = MonteCarloController.this.state.getBean(ValidEffectTargetsSelector.class);
+        generator.applyCommand(data, targetSelector, effect, targets, moveConsumer);
     }
 }

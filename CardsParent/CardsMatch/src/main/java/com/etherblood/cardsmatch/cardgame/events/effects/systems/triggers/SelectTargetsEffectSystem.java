@@ -1,5 +1,6 @@
 package com.etherblood.cardsmatch.cardgame.events.effects.systems.triggers;
 
+import com.etherblood.EntityUtils;
 import com.etherblood.cardsmatch.cardgame.AbstractMatchSystem;
 import com.etherblood.cardsmatch.cardgame.ValidEffectTargetsSelector;
 import com.etherblood.cardsmatch.cardgame.components.effects.EffectTriggerEntityComponent;
@@ -34,6 +35,8 @@ public class SelectTargetsEffectSystem extends AbstractMatchSystem<TriggerEffect
             if (data.has(event.effect, EffectRequiresUserTargetsComponent.class)) {
                 EffectTargets userTargets = eventData().get(EffectTargets.class);
                 if (!list.containsAll(Arrays.asList(userTargets.targets))) {
+                    System.out.println("selected: " + EntityUtils.toString(data, userTargets.targets));
+                    System.out.println("expected any of: " + EntityUtils.toString(data, list));
                     throw new IllegalStateException("selected user targets are not valid");
                 }
             } else {

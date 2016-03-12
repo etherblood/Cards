@@ -25,7 +25,7 @@ public final class GameEventDispatcherImpl implements GameEventDispatcher {
     public void subscribe(Class eventClass, GameEventHandler handler) {
         ArrayList<GameEventHandler> handlers = handlersMap.get(eventClass);
         if (handlers == null) {
-            handlers = new ArrayList<GameEventHandler>();
+            handlers = new ArrayList<>();
             handlersMap.put(eventClass, handlers);
         }
         handlers.add(handler);

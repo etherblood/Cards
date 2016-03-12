@@ -1,5 +1,6 @@
 package com.etherblood.cardsmatch.cardgame.bot.monteCarlo;
 
+import com.etherblood.EntityUtils;
 import com.etherblood.cardsmatch.cardgame.ValidEffectTargetsSelector;
 import com.etherblood.cardsmatch.cardgame.bot.commands.Command;
 import com.etherblood.cardsmatch.cardgame.components.battle.buffs.AttackCountComponent;
@@ -21,7 +22,6 @@ import com.etherblood.cardsmatch.cardgame.components.misc.NameComponent;
 import com.etherblood.cardsmatch.cardgame.components.misc.OwnerComponent;
 import com.etherblood.cardsmatch.cardgame.components.player.ItsMyTurnComponent;
 import com.etherblood.cardsmatch.cardgame.components.player.ManaComponent;
-import com.etherblood.entitysystem.data.EntityComponent;
 import com.etherblood.entitysystem.data.EntityComponentMapReadonly;
 import com.etherblood.entitysystem.data.EntityId;
 import com.etherblood.entitysystem.filters.AbstractComponentFieldValueFilter;
@@ -29,7 +29,6 @@ import com.etherblood.entitysystem.filters.EqualityOperator;
 import com.etherblood.entitysystem.filters.FilterQuery;
 import com.etherblood.entitysystem.util.DeterministicEntityIndices;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -127,13 +126,14 @@ public class CommandGenerator {
         index = indexing.getDeterministicIndexForEntity(castablesList, source);
         if (index != -1) {
             consumer.applyMove(attackersList.size() + index, count);
-            if(data.has(source, EffectRequiresUserTargetsComponent.class)) {
+            if (data.has(source, EffectRequiresUserTargetsComponent.class)) {
                 assert targets.length == 1;//multitarget not supported yet
                 List<EntityId> selectTargets = targetSelector.selectTargets(source);
                 index = indexing.getDeterministicIndexForEntity(selectTargets, targets[0]);
                 consumer.applyMove(index, selectTargets.size());
-            } else {
+            } else if (targets.length != 0) {
                 System.out.println("WARNING: targets were passed to bot when none were expected");
+                System.out.println(EntityUtils.toString(data, targets));
             }
             return;
         }
@@ -178,9 +178,6 @@ public class CommandGenerator {
                 EntityId effect = castEffectQuery.first(data);
                 EffectMinimumTargetsRequiredComponent minimumTargetsComponent = data.get(effect, EffectMinimumTargetsRequiredComponent.class);
                 if (minimumTargetsComponent == null || targetSelector.selectTargets(effect).size() >= minimumTargetsComponent.count) {
-                    if(data.get(card, NameComponent.class).name.equals("Flamecannon")) {
-                        int a = 9;
-                    }
                     castables.add(effect);
                 }
             }

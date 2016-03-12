@@ -86,6 +86,9 @@ public class TemplateLoader {
 
     private EntityComponent parse(Element componentElement) throws Exception {
         Class componentClass = ALIASES.get(componentElement.getName());
+        if(componentClass == null) {
+            throw new NullPointerException(componentElement.getName() + " not found.");
+        }
         Constructor[] constructors = componentClass.getConstructors();
         if (constructors.length != 1) {
             throw new RuntimeException("only components with single constructor are supported");

@@ -5,6 +5,7 @@ import com.simsilica.lemur.Axis;
 import com.simsilica.lemur.Container;
 import com.simsilica.lemur.FillMode;
 import com.simsilica.lemur.Label;
+import com.simsilica.lemur.component.BorderLayout;
 import com.simsilica.lemur.component.BoxLayout;
 import com.simsilica.lemur.component.SpringGridLayout;
 import java.util.List;
@@ -19,18 +20,22 @@ public class MatchContainer extends Container {
     private final Container ownBoard = new Container();
     private final Container ownHand = new Container();
     private final Container oppHand = new Container();
-    private final Container infoPanel = new Container();
-    private final Label actionLabel = new Label("");
+//    private final Container infoPanel = new Container();
+    private final InfoContainer infos = new InfoContainer();
+//    private final Label actionLabel = new Label("");
     
     
     public MatchContainer() {
-//        super(new BoxLayout(Axis.Y, FillMode.None));
-        addChild(infoPanel);
-        infoPanel.addChild(actionLabel);
-        addChild(oppHand);
-        addChild(oppBoard);
-        addChild(ownBoard);
-        addChild(ownHand);
+        super(new SpringGridLayout(Axis.X, Axis.Y));
+//        addChild(infoPanel, BorderLayout.Position.West);
+//        infoPanel.addChild(actionLabel);
+        Container tmp = new Container();
+        addChild(tmp);
+        addChild(infos);
+        tmp.addChild(oppHand);
+        tmp.addChild(oppBoard);
+        tmp.addChild(ownBoard);
+        tmp.addChild(ownHand);
         oppHand.setLayout(new BoxLayout(Axis.X, FillMode.None));
         oppBoard.setLayout(new BoxLayout(Axis.X, FillMode.None));
         ownBoard.setLayout(new BoxLayout(Axis.X, FillMode.None));
@@ -62,17 +67,25 @@ public class MatchContainer extends Container {
         return ownHand;
     }
 
-    public void setAction(Ability ability, List<Card> targets) {
-        String text = "";
-        if (!targets.isEmpty()) {
-            for (Card cardPanel : targets) {
-                text += ", " + cardPanel.getCardName();
-            }
-            text = " {" + text.replaceFirst(", ", "") + "}";
+    public void select(Card card) {
+        if(card == null) {
+            infos.deselect();
+        } else {
+            infos.select(card);
         }
-        if (ability != null) {
-            text = ability.getName() + text;
-        }
-        actionLabel.setText(text);
     }
+    
+//    public void setAction(Ability ability, List<Card> targets) {
+//        String text = "";
+//        if (!targets.isEmpty()) {
+//            for (Card cardPanel : targets) {
+//                text += ", " + cardPanel.getCardName();
+//            }
+//            text = " {" + text.replaceFirst(", ", "") + "}";
+//        }
+//        if (ability != null) {
+//            text = ability.getName() + text;
+//        }
+//        actionLabel.setText(text);
+//    }
 }
