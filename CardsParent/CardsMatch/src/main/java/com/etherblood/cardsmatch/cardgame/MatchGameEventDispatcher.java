@@ -1,6 +1,6 @@
 package com.etherblood.cardsmatch.cardgame;
 
-import com.etherblood.match.Autowire;
+import com.etherblood.cardsmatch.cardgame.match.Autowire;
 import com.etherblood.cardsmatch.cardgame.client.SystemsEventHandler;
 import com.etherblood.eventsystem.GameEvent;
 import com.etherblood.eventsystem.GameEventDispatcher;

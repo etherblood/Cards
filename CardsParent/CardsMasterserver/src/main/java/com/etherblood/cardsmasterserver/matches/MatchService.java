@@ -3,9 +3,7 @@ package com.etherblood.cardsmasterserver.matches;
 import com.etherblood.cardsmasterserver.matches.internal.ClientUpdaterFactory;
 import com.etherblood.cardsmasterserver.matches.internal.players.HumanPlayer;
 import com.etherblood.cardsmasterserver.cards.CardCollectionService;
-import com.etherblood.cardsmasterserver.cards.CardTemplatesService;
 import com.etherblood.cardsmasterserver.matches.internal.MatchContextWrapper;
-import com.etherblood.cardsmasterserver.matches.internal.MatchLogger;
 import com.etherblood.cardsmasterserver.matches.internal.MatchResult;
 import com.etherblood.cardsmasterserver.matches.internal.UpdateBuilder;
 import com.etherblood.cardsmasterserver.matches.internal.players.AbstractPlayer;
@@ -16,7 +14,6 @@ import com.etherblood.cardsmasterserver.network.messages.MessageHandler;
 import com.etherblood.cardsmasterserver.system.SystemTaskEvent;
 import com.etherblood.cardsmasterserver.users.UserService;
 import com.etherblood.cardsmatch.cardgame.ValidEffectTargetsSelector;
-import com.etherblood.cardsmatch.cardgame.bot.monteCarlo.CommandGenerator;
 import com.etherblood.cardsmatch.cardgame.bot.monteCarlo.MonteCarloController;
 import com.etherblood.cardsmatch.cardgame.client.SystemsEventHandler;
 import com.etherblood.cardsnetworkshared.master.commands.MatchRequest;
@@ -26,22 +23,26 @@ import com.etherblood.cardsnetworkshared.match.misc.MatchUpdate;
 import com.etherblood.entitysystem.data.EntityComponentMapReadonly;
 import com.etherblood.eventsystem.GameEvent;
 import com.etherblood.eventsystem.GameEventHandler;
-import com.etherblood.firstruleset.DefaultRulesDef;
-import com.etherblood.match.MatchContext;
-import com.etherblood.match.PlayerDefinition;
-import com.etherblood.match.RulesDefinition;
+import com.etherblood.cardsmatch.cardgame.match.MatchContext;
+import com.etherblood.cardsmatch.cardgame.match.PlayerDefinition;
+import com.etherblood.cardsmatch.cardgame.match.RulesDefinition;
 import com.etherblood.cardsmatch.cardgame.client.SystemsEventHandlerDispatcher;
 import com.etherblood.cardsnetworkshared.match.updates.JoinedMatchUpdate;
 import com.etherblood.entitysystem.data.EntityComponentMap;
 import com.etherblood.entitysystem.version.VersionedEntityComponentMapImpl;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -56,12 +57,13 @@ public class MatchService {
 
     private final ConcurrentHashMap<Long, HumanPlayer> matchMap = new ConcurrentHashMap<>();
     private final AtomicReference<Long> pendingUserId = new AtomicReference<>(null);
-    
+    private HashMap<String, RulesDefinition> rules;
+
     private Map<Class, UpdateBuilder> updateBuilders;
     @Autowired
     private UserConnectionService connectionService;
-    @Autowired
-    private CardTemplatesService templateService;
+//    @Autowired
+//    private CardTemplatesService templateService;
     @Autowired
     private CardCollectionService collectionService;
     @Autowired
@@ -73,6 +75,22 @@ public class MatchService {
     @PreAuthorize("denyAll")
     public void initRules() {
         updateBuilders = ClientUpdaterFactory.createUpdateBuilders();
+    }
+    
+    @PreAuthorize("denyAll")
+    @Value("${rules.paths}")
+    public void setRules(List<String> availableRulePaths) {
+        rules = new HashMap<>();
+        Arrays.toString(availableRulePaths.toArray());
+        for (String availableRulePath : availableRulePaths) {
+            try {
+                Class rulesetClass = Class.forName(availableRulePath);
+                RulesDefinition rule = (RulesDefinition) rulesetClass.newInstance();
+                rules.put(rule.getName(), rule);
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
+                ex.printStackTrace(System.out);
+            }
+        }
     }
 
     @MessageHandler
@@ -93,16 +111,16 @@ public class MatchService {
         if (matchRequest.isVersusBot()) {
             startRuleMatch(currentUserId, null);
         } else {
-            while(!pendingUserId.compareAndSet(null, currentUserId)) {
+            while (!pendingUserId.compareAndSet(null, currentUserId)) {
                 Long matchPartnerId = pendingUserId.getAndSet(null);
-                if(matchPartnerId != null) {
+                if (matchPartnerId != null) {
                     startRuleMatch(matchPartnerId, currentUserId);
                     break;
                 }
             }
         }
     }
-    
+
     @EventListener
     @PreAuthorize("hasRole('ROLE_SYSTEM')")
     public void onUserLogout(UserLogoutEvent event) {
@@ -110,36 +128,38 @@ public class MatchService {
     }
 
     private void startRuleMatch(long user1, Long user2) {
+        RulesDefinition ruleset = rules.get("default rules");//new DefaultRulesDef(templateService.getAll());
         ArrayList<PlayerDefinition> playerDefs = new ArrayList<>();
         ArrayList<AbstractPlayer> players = new ArrayList<>();
         ArrayList<HumanPlayer> humans = new ArrayList<>();
 
-        PlayerDefinition def1 = createHumanPlayerDefinition(user1);
+        PlayerDefinition def1 = createHumanPlayerDefinition(user1, createBotLibrary(ruleset.getTemplateNames()));
         playerDefs.add(def1);
 
         PlayerDefinition def2;
         if (user2 != null) {
-            def2 = createHumanPlayerDefinition(user2);
+            def2 = createHumanPlayerDefinition(user2, createBotLibrary(ruleset.getTemplateNames()));
         } else {
-            def2 = createBotPlayerDefinition();
+            def2 = createBotPlayerDefinition(createBotLibrary(ruleset.getTemplateNames()));
         }
         playerDefs.add(def2);
 
-        DefaultRulesDef rules = new DefaultRulesDef(templateService.getAll());
-        final EntityComponentMap data = rules.getBuilder().removeBean(EntityComponentMap.class);
-        rules.getBuilder().addBean(new VersionedEntityComponentMapImpl(data));
-        final MatchContext context = rules.start(playerDefs);
-        
+//        final EntityComponentMap data = rules.getBuilder().removeBean(EntityComponentMap.class);
+//        rules.getBuilder().addBean(new VersionedEntityComponentMapImpl(data));
+        final MatchContext context = ruleset.start(playerDefs);
+
         HumanPlayer player1 = new HumanPlayer(user1, def1.getEntity());
         humans.add(player1);
         players.add(player1);
-        
+
         AbstractPlayer player2;
         if (user2 != null) {
             player2 = new HumanPlayer(user2, def2.getEntity());
             humans.add((HumanPlayer) player2);
         } else {
-            player2 = new AiPlayer(def2.getEntity());
+            AiPlayer aiPlayer = new AiPlayer(def2.getEntity());
+            aiPlayer.setBot(def2.getBotInstance());
+            player2 = aiPlayer;
         }
         players.add(player2);
 
@@ -148,39 +168,38 @@ public class MatchService {
 
         SystemsEventHandlerDispatcher dispatcher = context.getBean(SystemsEventHandlerDispatcher.class);
         List<SystemsEventHandler> handlers = dispatcher.getHandlers();
-//        final EntityComponentMapReadonly data = context.getBean(EntityComponentMapReadonly.class);
-        handlers.add(new MatchLogger(data));
+        final EntityComponentMapReadonly data = context.getBean(EntityComponentMapReadonly.class);
         for (final HumanPlayer human : humans) {
             handlers.add(new SystemsEventHandler() {
                 @Override
                 public <T extends GameEvent> void onEvent(Class<GameEventHandler<T>> systemClass, T gameEvent) {
                     UpdateBuilder updateBuilder = updateBuilders.get(systemClass);
-                    if(updateBuilder != null) {
+                    if (updateBuilder != null) {
                         human.send(updateBuilder.build(data, human.getConverter(), gameEvent));
                     }
                 }
             });
             human.getConverter().register(human.getPlayer());
             for (AbstractPlayer player : players) {
-                if(player != human) {
+                if (player != human) {
                     human.getConverter().register(player.getPlayer());
                 }
             }
         }
 
-        for (AbstractPlayer player : players) {
-            if (player instanceof AiPlayer) {
-                AiPlayer ai = (AiPlayer) player;
-                
-//                EndTurnCommandFactory endTurnCommandFactory = new EndTurnCommandFactory();
-//                endTurnCommandFactory.data = wrapper.getData();
-//                ai.setBot(new EndTurnBot(endTurnCommandFactory));
-                MatchContext simulationContext = new DefaultRulesDef(templateService.getAll()).getBuilder().build();
-                MonteCarloController monteCarloBot = new MonteCarloController(context, simulationContext, new CommandGenerator(), player1.getPlayer());
-                ai.setBot(monteCarloBot);
-            }
-        }
-        
+//        for (AbstractPlayer player : players) {
+//            if (player instanceof AiPlayer) {
+//                AiPlayer ai = (AiPlayer) player;
+//
+////                EndTurnCommandFactory endTurnCommandFactory = new EndTurnCommandFactory();
+////                endTurnCommandFactory.data = wrapper.getData();
+////                ai.setBot(new EndTurnBot(endTurnCommandFactory));
+//                MatchContext simulationContext = new DefaultRulesDef(templateService.getAll()).getBuilder().build();
+//                MonteCarloController monteCarloBot = new MonteCarloController(context, simulationContext, new CommandGeneratorImpl(), player1.getPlayer());
+//                ai.setBot(monteCarloBot);
+//            }
+//        }
+
         wrapper.getEvents().handleEvents();
         assert wrapper.getCurrentPlayer() != null;
         for (HumanPlayer human : humans) {
@@ -190,21 +209,21 @@ public class MatchService {
         updateMatch(wrapper);
     }
 
-    private PlayerDefinition createHumanPlayerDefinition(long userAccountId) {
+    private PlayerDefinition createHumanPlayerDefinition(long userAccountId, String[] library) {
         PlayerDefinition def = new PlayerDefinition();
-//        List<String> cards = collectionService.getActiveUserLibrary(userAccountId).getCards();
-//        def.setLibrary(cards.toArray(new String[cards.size()]));
-        def.setLibrary(createBotLibrary());//TODO: use player cards instead
+        def.setLibrary(library);
         def.setHeroTemplate("Hero");
         def.setName(userService.getUser(userAccountId).getUsername());
+        def.setBot(false);
         return def;
     }
 
-    private PlayerDefinition createBotPlayerDefinition() {
+    private PlayerDefinition createBotPlayerDefinition(String[] library) {
         PlayerDefinition def = new PlayerDefinition();
-        def.setLibrary(createBotLibrary());
+        def.setLibrary(library);
         def.setHeroTemplate("Hero");
         def.setName("Bot");
+        def.setBot(true);
         return def;
     }
 
@@ -247,7 +266,7 @@ public class MatchService {
     private void broadcastChanges(MatchContextWrapper matchWrapper) {
         for (HumanPlayer matchPlayer : matchWrapper.getPlayers(HumanPlayer.class)) {
             List<MatchUpdate> updates = matchPlayer.getLatestUpdates();
-            if(updates.isEmpty()) {
+            if (updates.isEmpty()) {
                 continue;
             }
             DefaultMessage[] messages = messagesFromUpdates(updates);
@@ -264,12 +283,12 @@ public class MatchService {
         return messages;
     }
 
-    private String[] createBotLibrary() {
-        String[] COLLECTIBLE_TEMPLATES = templateService.getCollectibles();
+    private String[] createBotLibrary(List<String> templates) {
+//        String[] COLLECTIBLE_TEMPLATES = templateService.getCollectibles();
         Random rng = new Random();
         String[] library = new String[30];
         for (int i = 0; i < library.length; i++) {
-            library[i] = COLLECTIBLE_TEMPLATES[rng.nextInt(COLLECTIBLE_TEMPLATES.length)];
+            library[i] = templates.get(rng.nextInt(templates.size()));//COLLECTIBLE_TEMPLATES[rng.nextInt(COLLECTIBLE_TEMPLATES.length)];
         }
         return library;
     }

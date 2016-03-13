@@ -1,7 +1,7 @@
 package com.etherblood.cardsmasterserver.matches.internal.players;
 
 import com.etherblood.cardsmasterserver.matches.internal.MatchContextWrapper;
-import com.etherblood.cardsmatch.cardgame.events.endTurn.EndTurnEvent;
+import com.etherblood.firstruleset.logic.endTurn.EndTurnEvent;
 import com.etherblood.entitysystem.data.EntityId;
 
 /**

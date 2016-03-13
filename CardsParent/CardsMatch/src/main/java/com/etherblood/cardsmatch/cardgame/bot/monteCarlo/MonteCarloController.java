@@ -6,7 +6,6 @@ import com.etherblood.cardsmatch.cardgame.bot.commands.Command;
 import com.etherblood.cardsmatch.cardgame.components.misc.MatchEndedComponent;
 import com.etherblood.cardsmatch.cardgame.components.player.ItsMyTurnComponent;
 import com.etherblood.cardsmatch.cardgame.components.player.WinnerComponent;
-import com.etherblood.cardsmatch.cardgame.events.effects.TargetedTriggerEffectEvent;
 import com.etherblood.cardsmatch.cardgame.rng.RngFactoryImpl;
 import com.etherblood.cardsmatch.cardgame.rng.RngListener;
 import com.etherblood.entitysystem.data.EntityComponentMap;
@@ -15,7 +14,7 @@ import com.etherblood.entitysystem.data.EntityId;
 import com.etherblood.entitysystem.data.IncrementalEntityIdFactory;
 import com.etherblood.eventsystem.GameEventDataStack;
 import com.etherblood.eventsystem.GameEventQueueImpl;
-import com.etherblood.match.MatchContext;
+import com.etherblood.cardsmatch.cardgame.match.MatchContext;
 import com.etherblood.montecarlotreesearch.MonteCarloControls;
 import com.etherblood.montecarlotreesearch.MonteCarloNode;
 import com.etherblood.montecarlotreesearch.MonteCarloState;
@@ -32,7 +31,7 @@ public class MonteCarloController implements Bot {
     private final MonteCarloControls controls = new MonteCarloControls();
     private final MatchContext state;
     private final MatchContext simulationState;
-    private final CommandGenerator generator;
+    private final CommandManager generator;
     private final MoveSelector simulationMoveSelector = new MoveSelector() {
         @Override
         public int selectMove(int count) {
@@ -59,7 +58,7 @@ public class MonteCarloController implements Bot {
         }
     };
 
-    public MonteCarloController(MatchContext state, MatchContext simulationState, CommandGenerator commandGenerator, EntityId player1) {
+    public MonteCarloController(MatchContext state, MatchContext simulationState, CommandManager commandGenerator, EntityId player1) {
         this.state = state;
         this.simulationState = simulationState;
         this.generator = commandGenerator;
@@ -99,8 +98,8 @@ public class MonteCarloController implements Bot {
     @Override
     public Command think() {
         long endMillis = System.currentTimeMillis() + millis;
-        while (controls.simulationStrength() < 5000) {
-//        while (System.currentTimeMillis() < endMillis) {
+//        while (controls.simulationStrength() < 5000) {
+        while (System.currentTimeMillis() < endMillis) {
             iteration();
         }
         MonteCarloNode root = controls.startWalk();
@@ -122,19 +121,13 @@ public class MonteCarloController implements Bot {
         ValidEffectTargetsSelector targetSelector = simulationState.getBean(ValidEffectTargetsSelector.class);
         while (controls.state() == loopState) {
             Command command = generator.generate(simulationData, targetSelector, simulationMoveSelector);
-            applyCommand(simulationState, command);
+            generator.executeCommand(simulationState, command);
 
             int victor = getVictoryState(simulationData);
             if (victor != MonteCarloControls.ONGOING) {
                 controls.declareVictor(victor);
             }
         }
-    }
-
-    private void applyCommand(MatchContext context, Command command) {
-        GameEventQueueImpl events = context.getBean(GameEventQueueImpl.class);
-        events.fireEvent(new TargetedTriggerEffectEvent(command.effect, command.targets));
-        events.handleEvents();
     }
 
     private int getVictoryState(EntityComponentMapReadonly data) {
@@ -158,6 +151,6 @@ public class MonteCarloController implements Bot {
     public void moveNotification(EntityId effect, EntityId... targets) {
         EntityComponentMapReadonly data = MonteCarloController.this.state.getBean(EntityComponentMapReadonly.class);
         ValidEffectTargetsSelector targetSelector = MonteCarloController.this.state.getBean(ValidEffectTargetsSelector.class);
-        generator.applyCommand(data, targetSelector, effect, targets, moveConsumer);
+        generator.selectCommand(data, targetSelector, effect, targets, moveConsumer);
     }
 }

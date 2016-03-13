@@ -5,7 +5,7 @@
 package com.etherblood.cardsmatch.cardgame.events.gameover.systems;
 
 import com.etherblood.cardsmatch.cardgame.AbstractMatchSystem;
-import com.etherblood.match.Autowire;
+import com.etherblood.cardsmatch.cardgame.match.Autowire;
 import com.etherblood.cardsmatch.cardgame.components.player.LoserComponent;
 import com.etherblood.cardsmatch.cardgame.events.gameover.PlayerLostEvent;
 import com.etherblood.entitysystem.data.EntityComponentMap;

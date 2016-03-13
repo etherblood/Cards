@@ -34,8 +34,6 @@ public class CardCollectionService {
     @Autowired
     private UserConnectionService connectionService;
     @Autowired
-    private CardTemplatesService templateService;
-    @Autowired
     private UserService userService;
 
     @MessageHandler
@@ -98,7 +96,7 @@ public class CardCollectionService {
     @EventListener
     @PreAuthorize("hasRole('ROLE_SYSTEM')")
     public void onUserWonMatch(WonMatchEvent event) {
-        giftCard(userService.getUser(event.getPlayer().getUserId()), templateService.getCollectibles()[new Random().nextInt(templateService.getCollectibles().length)], 1);
+//        giftCard(userService.getUser(event.getPlayer().getUserId()), templateService.getCollectibles()[new Random().nextInt(templateService.getCollectibles().length)], 1);
 //        giftCard(userService.getUser(event.getPlayer().getUserId()), "Dunno", 1);
     }
 

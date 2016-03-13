@@ -90,6 +90,7 @@
             <groupId>com.etherblood</groupId>
             <artifactId>FirstRuleset</artifactId>
             <version>1.0-SNAPSHOT</version>
+            <!--<scope>runtime</scope>-->
         </dependency>
         <dependency>
             <groupId>com.etherblood</groupId>
