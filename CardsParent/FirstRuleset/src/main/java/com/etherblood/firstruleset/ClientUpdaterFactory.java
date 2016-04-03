@@ -1,5 +1,7 @@
-package com.etherblood.cardsmasterserver.matches.internal;
+package com.etherblood.firstruleset;
 
+import com.etherblood.cardsmatch.cardgame.IdConverter;
+import com.etherblood.cardsmatch.cardgame.UpdateBuilder;
 import com.etherblood.firstruleset.logic.battle.hero.HeroComponent;
 import com.etherblood.firstruleset.logic.battle.stats.HealthComponent;
 import com.etherblood.firstruleset.logic.cardZones.components.BoardCardComponent;
@@ -62,58 +64,58 @@ public class ClientUpdaterFactory {
             .addComponentClassFilter(HealthComponent.class);
         
         HashMap<Class, UpdateBuilder> updateBuilders = new HashMap<>();
-        updateBuilders.put(BoardAttachSystem.class, new UpdateBuilder<BoardAttachEvent>() {
+        updateBuilders.put(BoardAttachSystem.class, new UpdateBuilder<MatchUpdate, BoardAttachEvent>() {
             @Override
             public MatchUpdate build(EntityComponentMapReadonly data, IdConverter converter, BoardAttachEvent event) {
                 return new SetZone(converter.toLong(event.target), CardZone.Board.ordinal());
             }
         });
-        updateBuilders.put(HandAttachSystem.class, new UpdateBuilder<HandAttachEvent>() {
+        updateBuilders.put(HandAttachSystem.class, new UpdateBuilder<MatchUpdate, HandAttachEvent>() {
             @Override
             public MatchUpdate build(EntityComponentMapReadonly data, IdConverter converter, HandAttachEvent event) {
                 return new SetZone(converter.toLong(event.target), CardZone.Hand.ordinal());
             }
         });
-        updateBuilders.put(GraveyardAttachSystem.class, new UpdateBuilder<GraveyardAttachEvent>() {
+        updateBuilders.put(GraveyardAttachSystem.class, new UpdateBuilder<MatchUpdate, GraveyardAttachEvent>() {
             @Override
             public MatchUpdate build(EntityComponentMapReadonly data, IdConverter converter, GraveyardAttachEvent event) {
                 return new SetZone(converter.toLong(event.target), CardZone.Graveyard.ordinal());
             }
         });
         
-        updateBuilders.put(BoardDetachSystem.class, new UpdateBuilder<BoardDetachEvent>() {
+        updateBuilders.put(BoardDetachSystem.class, new UpdateBuilder<MatchUpdate, BoardDetachEvent>() {
             @Override
             public MatchUpdate build(EntityComponentMapReadonly data, IdConverter converter, BoardDetachEvent event) {
                 return new SetZone(converter.toLong(event.target), CardZone.None.ordinal());
             }
         });
-        updateBuilders.put(HandDetachSystem.class, new UpdateBuilder<HandDetachEvent>() {
+        updateBuilders.put(HandDetachSystem.class, new UpdateBuilder<MatchUpdate, HandDetachEvent>() {
             @Override
             public MatchUpdate build(EntityComponentMapReadonly data, IdConverter converter, HandDetachEvent event) {
                 return new SetZone(converter.toLong(event.target), CardZone.None.ordinal());
             }
         });
         
-        updateBuilders.put(SetOwnerSystem.class, new UpdateBuilder<SetOwnerEvent>() {
+        updateBuilders.put(SetOwnerSystem.class, new UpdateBuilder<MatchUpdate, SetOwnerEvent>() {
             @Override
             public MatchUpdate build(EntityComponentMapReadonly data, IdConverter converter, SetOwnerEvent event) {
                 return new SetOwner(converter.toLong(event.target), converter.toLong(event.owner));
             }
         });
-        updateBuilders.put(SetHealthSystem.class, new UpdateBuilder<SetHealthEvent>() {
+        updateBuilders.put(SetHealthSystem.class, new UpdateBuilder<MatchUpdate, SetHealthEvent>() {
             @Override
             public MatchUpdate build(EntityComponentMapReadonly data, IdConverter converter, SetHealthEvent event) {
                 return new SetHealth(converter.toLong(event.entity), event.health);
             }
         });
-        updateBuilders.put(EndMatchSystem.class, new UpdateBuilder<PlayerLostEvent>() {
+        updateBuilders.put(EndMatchSystem.class, new UpdateBuilder<MatchUpdate, PlayerLostEvent>() {
             @Override
             public MatchUpdate build(EntityComponentMapReadonly data, IdConverter converter, PlayerLostEvent event) {
                 return new GameOver(converter.toLong(data.entities(WinnerComponent.class).iterator().next()));
             }
         });
         
-        updateBuilders.put(SetManaSystem.class, new UpdateBuilder<SetManaEvent>() {
+        updateBuilders.put(SetManaSystem.class, new UpdateBuilder<MatchUpdate, SetManaEvent>() {
             @Override
             public MatchUpdate build(EntityComponentMapReadonly data, IdConverter converter, SetManaEvent event) {
                 for (EntityId hero : heroQuery.list(data)) {
@@ -130,37 +132,37 @@ public class ClientUpdaterFactory {
 //                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 //            }
 //        });
-        updateBuilders.put(AttachTemplateSystem.class, new UpdateBuilder<AttachTemplateEvent>() {
+        updateBuilders.put(AttachTemplateSystem.class, new UpdateBuilder<MatchUpdate, AttachTemplateEvent>() {
             @Override
             public MatchUpdate build(EntityComponentMapReadonly data, IdConverter converter, AttachTemplateEvent event) {
                 return new AttachEffect(converter.toLong(event.parent), converter.toLong(event.target), event.template);
             }
         });
-        updateBuilders.put(DeleteEntitySystem.class, new UpdateBuilder<DeleteEntityEvent>() {
+        updateBuilders.put(DeleteEntitySystem.class, new UpdateBuilder<MatchUpdate, DeleteEntityEvent>() {
             @Override
             public MatchUpdate build(EntityComponentMapReadonly data, IdConverter converter, DeleteEntityEvent event) {
                 return new DetachEffect(converter.toLong(event.target));
             }
         });
-        updateBuilders.put(ApplyAttackSystem.class, new UpdateBuilder<AttackEvent>() {
+        updateBuilders.put(ApplyAttackSystem.class, new UpdateBuilder<MatchUpdate, AttackEvent>() {
             @Override
             public MatchUpdate build(EntityComponentMapReadonly data, IdConverter converter, AttackEvent event) {
                 return new AttackUpdate(converter.toLong(event.source), converter.toLong(event.target));
             }
         });
-        updateBuilders.put(SetDivineShieldSystem.class, new UpdateBuilder<SetDivineShieldEvent>() {
+        updateBuilders.put(SetDivineShieldSystem.class, new UpdateBuilder<MatchUpdate, SetDivineShieldEvent>() {
             @Override
             public MatchUpdate build(EntityComponentMapReadonly data, IdConverter converter, SetDivineShieldEvent event) {
                 return new SetProperty(converter.toLong(event.target), "Divine Shield", event.value? 1: 0);
             }
         });
-        updateBuilders.put(AttachSummoningSicknessSystem.class, new UpdateBuilder<BoardAttachEvent>() {
+        updateBuilders.put(AttachSummoningSicknessSystem.class, new UpdateBuilder<MatchUpdate, BoardAttachEvent>() {
             @Override
             public MatchUpdate build(EntityComponentMapReadonly data, IdConverter converter, BoardAttachEvent event) {
                 return new SetProperty(converter.toLong(event.target), "Sickness", 1);
             }
         });
-        updateBuilders.put(RemoveSummonSicknessSystem.class, new UpdateBuilder<RemoveSummonSicknessEvent>() {
+        updateBuilders.put(RemoveSummonSicknessSystem.class, new UpdateBuilder<MatchUpdate, RemoveSummonSicknessEvent>() {
             @Override
             public MatchUpdate build(EntityComponentMapReadonly data, IdConverter converter, RemoveSummonSicknessEvent event) {
                 return new SetProperty(converter.toLong(event.target), "Sickness", 0);

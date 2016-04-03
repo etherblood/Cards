@@ -35,7 +35,7 @@ public class CopyBattlecryConditionsSystem extends AbstractMatchSystem<AttachTem
 
     @Autowire
     private EntityComponentMap data;
-    private List<Class<? extends EntityComponent>> copyComponentClasses = Arrays.asList(
+    private final List<Class<? extends EntityComponent>> copyComponentClasses = Arrays.asList(
             EffectIsTargetedComponent.class,
             EffectMinimumTargetsRequiredComponent.class,
             EffectRequiresUserTargetsComponent.class,

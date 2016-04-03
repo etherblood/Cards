@@ -13,43 +13,26 @@ import com.etherblood.cardsnetworkshared.match.updates.AttachEffect;
 import com.etherblood.cardsnetworkshared.match.updates.AttackUpdate;
 import com.etherblood.cardsnetworkshared.match.updates.CreateEntity;
 import com.etherblood.cardsnetworkshared.match.updates.DetachEffect;
-import com.etherblood.cardsnetworkshared.match.updates.GameOver;
-import com.etherblood.cardsnetworkshared.match.updates.JoinedMatchUpdate;
 import com.etherblood.cardsnetworkshared.match.updates.SetAttack;
 import com.etherblood.cardsnetworkshared.match.updates.SetCost;
 import com.etherblood.cardsnetworkshared.match.updates.SetHealth;
 import com.etherblood.cardsnetworkshared.match.updates.SetOwner;
 import com.etherblood.cardsnetworkshared.match.updates.SetProperty;
 import com.etherblood.cardsnetworkshared.match.updates.SetZone;
-import com.jme3.scene.Node;
-import com.simsilica.lemur.Container;
 
 /**
  *
  * @author Philipp
  */
-public class MatchScreen extends Container implements Screen {
+public class MatchScreen extends AbstractScreen {
 
+    private final GameController controller = new GameController(new MatchContainer());
     
     @Override
-    public void bind(final Eventbus eventbus, final Node parent) {
-        final GameController controller = new GameController(new MatchContainer());
-        eventbus.subscribe(JoinedMatchUpdate.class, new EventListener<JoinedMatchUpdate>() {
-            @Override
-            public void onEvent(JoinedMatchUpdate event) {
-                parent.attachChild(MatchScreen.this);
-            }
-        });
-        setLocalTranslation(0, 1000, 0);
-
-//        Card card = new Card();
-//        addChild(card);
-//        card.setCardName("testcard");
-//        card.setCost(3);
-//        card.setAttack(7);
-//        card.setHealth(5);
+    public void bind(final Eventbus eventbus) {
+        getContainer().setLocalTranslation(0, 1000, 0);
         
-        addChild(controller.getGamePanel());
+        getContainer().addChild(controller.getGamePanel());
         controller.setCommandHandler(new CommandHandler() {
             @Override
             public void triggerEffect(long effect, long... targets) {
@@ -93,14 +76,6 @@ public class MatchScreen extends Container implements Screen {
                 controller.setCardZone(update.getTarget(), CardZone.values()[update.getZone()]);
             }
         });
-        eventbus.subscribe(GameOver.class, new EventListener<GameOver>() {
-            @Override
-            public void onEvent(GameOver update) {
-                parent.detachChild(MatchScreen.this);
-                controller.reset();
-//                ((JFrame) SwingUtilities.windowForComponent(controller.getGamePanel())).setTitle(update.getWinner().longValue() == 0L ? "You won!" : "You lost...");
-            }
-        });
         eventbus.subscribe(AttachEffect.class, new EventListener<AttachEffect>() {
             @Override
             public void onEvent(AttachEffect update) {
@@ -125,6 +100,11 @@ public class MatchScreen extends Container implements Screen {
                 controller.attack(update.getAttacker(), update.getDefender());
             }
         });
+    }
+
+    @Override
+    public void onDetach() {
+        controller.reset();
     }
 
 }

@@ -23,6 +23,7 @@ public class AiPlayer extends AbstractPlayer {
         bot.moveNotification(effect, targets);
     }
     
+    @Override
     public void clearCache() {
         bot.clearCache();
     }
@@ -38,14 +39,15 @@ public class AiPlayer extends AbstractPlayer {
     }
 
     private Command think() {
-        Command command;
-        try {
-            command = bot.think();
-        } catch (Exception e) {
-            endTurn();
-            throw new RuntimeException("Exception occurred during AI turn, remaining turn was skipped. This might cause the client to be out of sync.", e);
-        }
-        return command;
+        return bot.think();
+//        Command command;
+//        try {
+//            command = bot.think();
+//        } catch (Exception e) {
+//            endTurn();
+//            throw new RuntimeException("Exception occurred during AI turn, remaining turn was skipped. This might cause the client to be out of sync.", e);
+//        }
+//        return command;
     }
 
     public void setBot(Bot bot) {

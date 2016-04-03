@@ -42,11 +42,13 @@ public final class GameEventQueueImpl implements GameEventQueue {
             dispatcher.dispatch(event);//response-events will be put into currentQueue
         } catch (Exception ex) {
             System.out.println("eventQueue at time of exception:");
-            for (ArrayDeque<GameEvent> queue : queues) {
-                for (GameEvent gameEvent : queue) {
+            for (int i = 0; i < dataStack.depth(); i++) {
+                if(i != 0) {
+                    System.out.println("childs:");
+                }
+                for (GameEvent gameEvent : queues.get(i)) {
                     System.out.println(gameEvent);
                 }
-                System.out.println("");
             }
             throw ex;
         }

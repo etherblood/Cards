@@ -1,6 +1,7 @@
 package com.etherblood.firstruleset.bot;
 
 import com.etherblood.cardsmatch.cardgame.EntityUtils;
+import com.etherblood.cardsmatch.cardgame.IllegalCommandException;
 import com.etherblood.cardsmatch.cardgame.ValidEffectTargetsSelector;
 import com.etherblood.cardsmatch.cardgame.bot.commands.Command;
 import com.etherblood.cardsmatch.cardgame.bot.monteCarlo.CommandManager;
@@ -154,7 +155,7 @@ public class CommandGeneratorImpl implements CommandManager {
         }
         ownerFilter.setValue(currentQuery.first(data));
         if (!endTurnQuery.first(data).equals(source)) {
-            throw new IllegalArgumentException();
+            throw new IllegalCommandException("The selected command was not listed in valid moves of AI");
         }
         consumer.applyMove(count - 1, count);
     }

@@ -72,6 +72,36 @@
                 <url>http://img12.deviantart.net/e9ef/i/2015/304/d/8/let_s_go_find_some_candy_by_deadslug-d9f1jzb.png</url>
             </image>
         </template>
+        <template name="Warsong Commander">
+            <collectible/>
+            <components>
+                <manaCost cost="3"/>
+                <attack attack="2"/>
+                <health health="3"/>
+                <minion/>
+                <warsongAura maxAttack="3"/>
+                <castEffect template="Activation=>Summon"/>
+            </components>
+            
+            <image>
+                <url>http://hydra-media.cursecdn.com/hearthstone.gamepedia.com/7/71/Warsong_Commander_-_art.jpg</url>
+            </image>
+        </template>
+        <template name="Grim Patron">
+            <collectible/>
+            <components>
+                <manaCost cost="5"/>
+                <attack attack="3"/>
+                <health health="3"/>
+                <minion/>
+                <patronAbility template="Grim Patron"/>
+                <castEffect template="Activation=>Summon"/>
+            </components>
+            
+            <image>
+                <url>http://vignette4.wikia.nocookie.net/hearthstone/images/7/7a/Grim_Patron.jpg</url>
+            </image>
+        </template>
         <template name="Mirth">
             <collectible/>
             <components>
@@ -170,15 +200,19 @@
             <audio>
                 <summon>
                     <path>/sounds/Leeroy Jenkins/Summon.wav</path>
+                    <url>wow.zamimg.com/hearthhead/sounds/VO_EX1_116_Play_01.ogg</url>
                 </summon>
                 <death>
                     <path>/sounds/Leeroy Jenkins/Death.wav</path>
+                    <url>wow.zamimg.com/hearthhead/sounds/VO_EX1_116_Death_03.ogg</url>
                 </death>
                 <intro>
                     <path>/sounds/Leeroy Jenkins/Intro.wav</path>
+                    <url>wow.zamimg.com/hearthhead/sounds/Pegasus_Stinger_Leeroy_Jenkins.ogg</url>
                 </intro>
                 <attack>
                     <path>/sounds/Leeroy Jenkins/Attack.wav</path>
+                    <url>wow.zamimg.com/hearthhead/sounds/VO_EX1_116_Attack_02.ogg</url>
                 </attack>
             </audio>
         </template>

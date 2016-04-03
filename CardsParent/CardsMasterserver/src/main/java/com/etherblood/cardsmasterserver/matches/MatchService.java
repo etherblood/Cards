@@ -1,11 +1,10 @@
 package com.etherblood.cardsmasterserver.matches;
 
-import com.etherblood.cardsmasterserver.matches.internal.ClientUpdaterFactory;
 import com.etherblood.cardsmasterserver.matches.internal.players.HumanPlayer;
 import com.etherblood.cardsmasterserver.cards.CardCollectionService;
 import com.etherblood.cardsmasterserver.matches.internal.MatchContextWrapper;
 import com.etherblood.cardsmasterserver.matches.internal.MatchResult;
-import com.etherblood.cardsmasterserver.matches.internal.UpdateBuilder;
+import com.etherblood.cardsmatch.cardgame.UpdateBuilder;
 import com.etherblood.cardsmasterserver.matches.internal.players.AbstractPlayer;
 import com.etherblood.cardsmasterserver.matches.internal.players.AiPlayer;
 import com.etherblood.cardsmasterserver.network.connections.UserConnectionService;
@@ -13,8 +12,7 @@ import com.etherblood.cardsmasterserver.network.events.UserLogoutEvent;
 import com.etherblood.cardsmasterserver.network.messages.MessageHandler;
 import com.etherblood.cardsmasterserver.system.SystemTaskEvent;
 import com.etherblood.cardsmasterserver.users.UserService;
-import com.etherblood.cardsmatch.cardgame.ValidEffectTargetsSelector;
-import com.etherblood.cardsmatch.cardgame.bot.monteCarlo.MonteCarloController;
+import com.etherblood.cardsmatch.cardgame.IllegalCommandException;
 import com.etherblood.cardsmatch.cardgame.client.SystemsEventHandler;
 import com.etherblood.cardsnetworkshared.master.commands.MatchRequest;
 import com.etherblood.cardsnetworkshared.match.commands.TriggerEffectRequest;
@@ -28,19 +26,13 @@ import com.etherblood.cardsmatch.cardgame.match.PlayerDefinition;
 import com.etherblood.cardsmatch.cardgame.match.RulesDefinition;
 import com.etherblood.cardsmatch.cardgame.client.SystemsEventHandlerDispatcher;
 import com.etherblood.cardsnetworkshared.match.updates.JoinedMatchUpdate;
-import com.etherblood.entitysystem.data.EntityComponentMap;
-import com.etherblood.entitysystem.version.VersionedEntityComponentMapImpl;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
@@ -59,7 +51,7 @@ public class MatchService {
     private final AtomicReference<Long> pendingUserId = new AtomicReference<>(null);
     private HashMap<String, RulesDefinition> rules;
 
-    private Map<Class, UpdateBuilder> updateBuilders;
+//    private Map<Class, UpdateBuilder> updateBuilders;
     @Autowired
     private UserConnectionService connectionService;
 //    @Autowired
@@ -71,12 +63,11 @@ public class MatchService {
     @Autowired
     private ApplicationEventPublisher eventPublisher;
 
-    @PostConstruct
-    @PreAuthorize("denyAll")
-    public void initRules() {
-        updateBuilders = ClientUpdaterFactory.createUpdateBuilders();
-    }
-    
+//    @PostConstruct
+//    @PreAuthorize("denyAll")
+//    public void initRules() {
+//        updateBuilders = ClientUpdaterFactory.createUpdateBuilders();
+//    }
     @PreAuthorize("denyAll")
     @Value("${rules.paths}")
     public void setRules(List<String> availableRulePaths) {
@@ -97,9 +88,15 @@ public class MatchService {
     @PreAuthorize("hasRole('ROLE_USER')")
     public void onTriggerEffectRequest(TriggerEffectRequest triggerEffect) {
         HumanPlayer matchPlayer = matchMap.get(connectionService.getCurrentUserId());
-        matchPlayer.triggerEffect(triggerEffect.getSource(), triggerEffect.getTargets());
         MatchContextWrapper match = matchPlayer.getMatch();
-        updateMatch(match);
+        try {
+            matchPlayer.triggerEffect(triggerEffect.getSource(), triggerEffect.getTargets());
+            updateMatch(match);
+        } catch (IllegalCommandException e) {
+            e.printStackTrace(System.err);
+        } catch (Exception e) {
+            cleanupMatchAfterException(e, match);
+        }
     }
 
     @MessageHandler
@@ -149,12 +146,14 @@ public class MatchService {
         final MatchContext context = ruleset.start(playerDefs);
 
         HumanPlayer player1 = new HumanPlayer(user1, def1.getEntity());
+        player1.setConverter(def1.getConverter());
         humans.add(player1);
         players.add(player1);
 
         AbstractPlayer player2;
         if (user2 != null) {
             player2 = new HumanPlayer(user2, def2.getEntity());
+            ((HumanPlayer) player2).setConverter(def2.getConverter());
             humans.add((HumanPlayer) player2);
         } else {
             AiPlayer aiPlayer = new AiPlayer(def2.getEntity());
@@ -163,8 +162,8 @@ public class MatchService {
         }
         players.add(player2);
 
-        MatchContextWrapper wrapper = new MatchContextWrapper();
-        wrapper.init(context, players);
+        final MatchContextWrapper wrapper = new MatchContextWrapper();
+        wrapper.init(context, ruleset.getUpdateBuilders(), players);
 
         SystemsEventHandlerDispatcher dispatcher = context.getBean(SystemsEventHandlerDispatcher.class);
         List<SystemsEventHandler> handlers = dispatcher.getHandlers();
@@ -173,7 +172,7 @@ public class MatchService {
             handlers.add(new SystemsEventHandler() {
                 @Override
                 public <T extends GameEvent> void onEvent(Class<GameEventHandler<T>> systemClass, T gameEvent) {
-                    UpdateBuilder updateBuilder = updateBuilders.get(systemClass);
+                    UpdateBuilder<MatchUpdate, T> updateBuilder = wrapper.getUpdateBuilders().get(systemClass);
                     if (updateBuilder != null) {
                         human.send(updateBuilder.build(data, human.getConverter(), gameEvent));
                     }
@@ -199,8 +198,7 @@ public class MatchService {
 //                ai.setBot(monteCarloBot);
 //            }
 //        }
-
-        wrapper.getEvents().handleEvents();
+        ruleset.flush(context);
         assert wrapper.getCurrentPlayer() != null;
         for (HumanPlayer human : humans) {
             matchMap.put(human.getUserId(), human);
@@ -215,6 +213,7 @@ public class MatchService {
         def.setHeroTemplate("Hero");
         def.setName(userService.getUser(userAccountId).getUsername());
         def.setBot(false);
+
         return def;
     }
 
@@ -235,10 +234,21 @@ public class MatchService {
         if (currentPlayer instanceof AiPlayer && !matchWrapper.hasMatchEnded()) {
             try {
                 ((AiPlayer) currentPlayer).compute();
-            } finally {
                 updateMatch(matchWrapper);
+            } catch (Exception e) {
+                cleanupMatchAfterException(e, matchWrapper);
             }
         }
+    }
+
+    private void cleanupMatchAfterException(Exception e, MatchContextWrapper matchWrapper) {
+        e.printStackTrace(System.err);
+        System.err.println("ending match because of exception");
+        //TODO: end match with exception result
+        for (HumanPlayer player : matchWrapper.getPlayers(HumanPlayer.class)) {
+            System.out.println("MatchService - TODO: send matchAbort to user " + player.getUserId());//TODO send matchAbort to user
+        }
+        cleanupMatch(matchWrapper);
     }
 
     private void updateMatch(MatchContextWrapper match) {
@@ -289,6 +299,15 @@ public class MatchService {
         String[] library = new String[30];
         for (int i = 0; i < library.length; i++) {
             library[i] = templates.get(rng.nextInt(templates.size()));//COLLECTIBLE_TEMPLATES[rng.nextInt(COLLECTIBLE_TEMPLATES.length)];
+        }
+        for (int i = 0; i < 5; i++) {
+            library[i] = "Warsong Commander";
+        }
+        for (int i = 5; i < 10; i++) {
+            library[i] = "Grim Patron";
+        }
+        for (int i = 10; i < 15; i++) {
+            library[i] = "Whirlwind";
         }
         return library;
     }

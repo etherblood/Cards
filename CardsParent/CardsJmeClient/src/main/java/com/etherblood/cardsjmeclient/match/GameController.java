@@ -2,8 +2,14 @@ package com.etherblood.cardsjmeclient.match;
 
 import com.etherblood.cardsjmeclient.match.cards.Card;
 import com.etherblood.cardsnetworkshared.match.misc.CardZone;
+import com.jme3.asset.AssetManager;
+import com.jme3.asset.plugins.UrlLocator;
+import com.jme3.audio.AudioKey;
+import com.jme3.audio.AudioNode;
+import com.jme3.audio.Listener;
 import com.jme3.input.event.MouseButtonEvent;
 import com.jme3.scene.Spatial;
+import com.jme3.system.JmeSystem;
 import com.simsilica.lemur.Container;
 import com.simsilica.lemur.event.DefaultMouseListener;
 import java.util.Collections;
@@ -226,6 +232,25 @@ public class GameController {
     }
 
     public void attack(long attacker, long target) {
+        AssetManager   manager = JmeSystem.newAssetManager();
+
+   
+
+  manager.registerLocator("http://wow.zamimg.com/hearthhead/sounds/",UrlLocator.class);
+
+//   Listener   listener = new Listener();
+
+//    ar.setListener(listener);
+
+   AudioNode src = new AudioNode(manager,"VO_EX1_116_Play_01.ogg", true);
+   gamePanel.attachChild(src);
+   src.play();
+        
+//        UrlLocator locator = new UrlLocator();
+//        locator.locate(null, new AudioKey("wow.zamimg.com/hearthhead/sounds/VO_EX1_116_Play_01.ogg")).openStream()
+//        AudioKey key = new AudioKey("a");
+//        key.
+//        AudioNode audio = new AudioNode(audioData, audioKey)
 //        AudioFactory.INSTANCE.playSound(cards.get(attacker).getCardName() + "attack");
     }
 

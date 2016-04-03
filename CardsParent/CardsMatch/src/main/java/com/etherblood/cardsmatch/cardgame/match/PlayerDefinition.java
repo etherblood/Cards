@@ -1,5 +1,7 @@
 package com.etherblood.cardsmatch.cardgame.match;
 
+import com.etherblood.cardsmatch.cardgame.IdConverter;
+import com.etherblood.cardsmatch.cardgame.NetworkPlayer;
 import com.etherblood.cardsmatch.cardgame.bot.Bot;
 import com.etherblood.entitysystem.data.EntityId;
 
@@ -13,6 +15,7 @@ public class PlayerDefinition {
     private EntityId entity;
     private boolean bot;
     private Bot botInstance;
+    private IdConverter converter;
     
     public String getName() {
         return name;
@@ -66,5 +69,13 @@ public class PlayerDefinition {
 
     public void setBotInstance(Bot botInstance) {
         this.botInstance = botInstance;
+    }
+
+    public IdConverter getConverter() {
+        return converter;
+    }
+
+    public void setConverter(IdConverter converter) {
+        this.converter = converter;
     }
 }

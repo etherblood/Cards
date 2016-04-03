@@ -18,43 +18,22 @@ import com.simsilica.lemur.Label;
  *
  * @author Philipp
  */
-public class ArrangeMatchScreen extends Container implements Screen {
+public class ArrangeMatchScreen extends AbstractScreen {
 
     @Override
-    public void bind(final Eventbus eventbus, final Node parent) {
-        eventbus.subscribe(LoginSuccess.class, new EventListener<LoginSuccess>() {
-            @Override
-            public void onEvent(LoginSuccess event) {
-                parent.attachChild(ArrangeMatchScreen.this);
-            }
-        });
-        eventbus.subscribe(GameOver.class, new EventListener<GameOver>() {
-            @Override
-            public void onEvent(GameOver update) {
-                parent.attachChild(ArrangeMatchScreen.this);
-//                ((JFrame) SwingUtilities.windowForComponent(controller.getGamePanel())).setTitle(update.getWinner().longValue() == 0L ? "You won!" : "You lost...");
-            }
-        });
-        eventbus.subscribe(JoinedMatchUpdate.class, new EventListener<JoinedMatchUpdate>() {
-            @Override
-            public void onEvent(JoinedMatchUpdate event) {
-                parent.detachChild(ArrangeMatchScreen.this);
-            }
-        });
-
-        setLocalTranslation(300, 300, 0);
+    public void bind(final Eventbus eventbus) {
+        getContainer().setLocalTranslation(300, 300, 0);
 
         // Add some elements
-        addChild(new Label("Hello, World."));
-        final Checkbox botbox = addChild(new Checkbox("bot"));
+        getContainer().addChild(new Label("Hello, World."));
+        final Checkbox botbox = getContainer().addChild(new Checkbox("bot"));
         botbox.setChecked(true);
 //        myWindow.addChild(, constraints)
-        Button clickMe = addChild(new Button("start"));
+        Button clickMe = getContainer().addChild(new Button("start"));
         clickMe.addClickCommands(new Command<Button>() {
             @Override
             public void execute(Button source) {
                 eventbus.sendEvent(new DefaultMessage(new MatchRequest(botbox.isChecked())));
-                System.out.println("The world is mine.");
             }
         });
     }

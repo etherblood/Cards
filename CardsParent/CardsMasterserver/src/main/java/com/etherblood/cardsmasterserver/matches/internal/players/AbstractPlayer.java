@@ -1,7 +1,6 @@
 package com.etherblood.cardsmasterserver.matches.internal.players;
 
 import com.etherblood.cardsmasterserver.matches.internal.MatchContextWrapper;
-import com.etherblood.firstruleset.logic.endTurn.EndTurnEvent;
 import com.etherblood.entitysystem.data.EntityId;
 
 /**
@@ -30,12 +29,14 @@ public abstract class AbstractPlayer {
         return player;
     }
     
-    protected void endTurn() {
-        match.getEvents().fireEvent(new EndTurnEvent(player));
-        match.getEvents().handleEvents();
-    }
+//    protected void endTurn() {
+//        match.getEvents().fireEvent(new EndTurnEvent(player));
+//        match.getEvents().handleEvents();
+//    }
 
     public void setMatch(MatchContextWrapper match) {
         this.match = match;
     }
+    
+    public abstract void clearCache();
 }
