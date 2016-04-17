@@ -8,10 +8,12 @@ import com.etherblood.eventsystem.GameEvent;
  * @author Philipp
  */
 public class TargetedTriggerEffectEvent implements GameEvent {
+    public final EntityId player;
     public final EntityId effect;
     public final EntityId[] targets;
 
-    public TargetedTriggerEffectEvent(EntityId effect, EntityId[] targets) {
+    public TargetedTriggerEffectEvent(EntityId player, EntityId effect, EntityId[] targets) {
+        this.player = player;
         this.effect = effect;
         this.targets = targets;
     }

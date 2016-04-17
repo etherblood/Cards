@@ -1,7 +1,7 @@
 package com.etherblood.firstruleset.logic.cardZones.systems.castAbility;
 
 import com.etherblood.cardsmatch.cardgame.AbstractMatchSystem;
-import com.etherblood.cardsmatch.cardgame.match.Autowire;
+import com.etherblood.cardscontext.Autowire;
 import com.etherblood.firstruleset.logic.cards.DeleteOnTriggerRemovedFromHand;
 import com.etherblood.firstruleset.logic.effects.EffectTriggerEntityComponent;
 import com.etherblood.firstruleset.logic.cardZones.events.HandDetachEvent;

@@ -1,7 +1,7 @@
 package com.etherblood.firstruleset;
 
 import com.etherblood.cardsmatch.cardgame.bot.commands.Command;
-import com.etherblood.cardsmatch.cardgame.match.Autowire;
+import com.etherblood.cardscontext.Autowire;
 import com.etherblood.firstruleset.logic.effects.effects.EndTurnEffectComponent;
 import com.etherblood.firstruleset.logic.player.OwnerComponent;
 import com.etherblood.cardsmatch.cardgame.components.player.ItsMyTurnComponent;

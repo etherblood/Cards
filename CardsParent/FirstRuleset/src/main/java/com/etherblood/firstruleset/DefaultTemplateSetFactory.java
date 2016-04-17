@@ -117,7 +117,7 @@ public class DefaultTemplateSetFactory {
 
         EntityTemplate template = new EntityTemplate();
         template.add(new NameComponent("Hero"));
-        template.add(new HealthComponent(20));
+        template.add(new HealthComponent(30));
         template.add(new HeroComponent());
 //        template.add(new RegenerationComponent(1));
 

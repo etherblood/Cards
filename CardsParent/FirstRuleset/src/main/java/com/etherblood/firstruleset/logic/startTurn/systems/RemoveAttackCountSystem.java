@@ -1,7 +1,7 @@
 package com.etherblood.firstruleset.logic.startTurn.systems;
 
 import com.etherblood.cardsmatch.cardgame.AbstractMatchSystem;
-import com.etherblood.cardsmatch.cardgame.match.Autowire;
+import com.etherblood.cardscontext.Autowire;
 import com.etherblood.firstruleset.logic.battle.buffs.AttackCountComponent;
 import com.etherblood.firstruleset.logic.player.OwnerComponent;
 import com.etherblood.firstruleset.logic.startTurn.StartTurnEvent;

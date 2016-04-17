@@ -7,7 +7,7 @@ import java.awt.Rectangle;
  * @author Philipp
  */
 public class ImageData {
-    private String name, url, path;
+    private String name, url, path, classpath;
     private Rectangle view;
 
     public String getName() {
@@ -42,10 +42,18 @@ public class ImageData {
         this.view = view;
     }
     
-    public boolean enableSmoothScale() {
-        if(path != null) {
-            return !path.endsWith(".gif");
-        }
-        return !url.endsWith(".gif");
+//    public boolean enableSmoothScale() {
+//        if(path != null) {
+//            return !path.endsWith(".gif");
+//        }
+//        return !url.endsWith(".gif");
+//    }
+
+    public String getClasspath() {
+        return classpath;
+    }
+
+    public void setClasspath(String classpath) {
+        this.classpath = classpath;
     }
 }

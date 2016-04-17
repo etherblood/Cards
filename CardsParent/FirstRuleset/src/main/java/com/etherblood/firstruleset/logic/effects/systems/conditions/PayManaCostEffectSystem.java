@@ -1,7 +1,7 @@
 package com.etherblood.firstruleset.logic.effects.systems.conditions;
 
 import com.etherblood.cardsmatch.cardgame.AbstractMatchSystem;
-import com.etherblood.cardsmatch.cardgame.match.Autowire;
+import com.etherblood.cardscontext.Autowire;
 import com.etherblood.firstruleset.logic.battle.stats.ManaCostComponent;
 import com.etherblood.firstruleset.logic.effects.EffectTriggerEntityComponent;
 import com.etherblood.firstruleset.logic.effects.effects.mana.PayManaCostEffectComponent;

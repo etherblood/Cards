@@ -1,7 +1,7 @@
 package com.etherblood.firstruleset.logic.effects.systems.conditions;
 
 import com.etherblood.cardsmatch.cardgame.AbstractMatchSystem;
-import com.etherblood.cardsmatch.cardgame.match.Autowire;
+import com.etherblood.cardscontext.Autowire;
 import com.etherblood.firstruleset.logic.effects.conditions.ItsMyTurnConditionComponent;
 import com.etherblood.firstruleset.logic.player.OwnerComponent;
 import com.etherblood.cardsmatch.cardgame.components.player.ItsMyTurnComponent;

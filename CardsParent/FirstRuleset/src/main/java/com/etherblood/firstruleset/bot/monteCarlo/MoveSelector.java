@@ -1,4 +1,4 @@
-package com.etherblood.cardsmatch.cardgame.bot.monteCarlo;
+package com.etherblood.firstruleset.bot.monteCarlo;
 
 /**
  *

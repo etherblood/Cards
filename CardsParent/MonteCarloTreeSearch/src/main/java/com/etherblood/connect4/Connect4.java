@@ -73,8 +73,7 @@ public class Connect4 {
     }
     
     public boolean hasGameEnded() {
-        assert !isVictor(currentPlayer);
-        return isBoardFull() || isVictor(opponent());
+        return isBoardFull() || opponentWon();
     }
     
     public long generateTokenMoves() {
@@ -82,8 +81,8 @@ public class Connect4 {
         return ~(allTokens | ~allTokens << width) & fullBoard;
     }
     
-    public boolean isVictor(int player) {
-        long tokens = playerTokens[player];
+    public boolean opponentWon() {
+        long tokens = playerTokens[opponent()];
         for (int i = 0; i < 4; i++) {
             long win = tokens;
             win &= win << (2 * winShifts[i]);

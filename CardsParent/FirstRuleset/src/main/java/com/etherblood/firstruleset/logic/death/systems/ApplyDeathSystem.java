@@ -5,7 +5,7 @@
 package com.etherblood.firstruleset.logic.death.systems;
 
 import com.etherblood.cardsmatch.cardgame.AbstractMatchSystem;
-import com.etherblood.cardsmatch.cardgame.match.Autowire;
+import com.etherblood.cardscontext.Autowire;
 import com.etherblood.firstruleset.logic.cardZones.components.BoardCardComponent;
 import com.etherblood.firstruleset.logic.cardZones.events.CardZone;
 import com.etherblood.firstruleset.logic.cardZones.events.CardZoneMoveEvent;

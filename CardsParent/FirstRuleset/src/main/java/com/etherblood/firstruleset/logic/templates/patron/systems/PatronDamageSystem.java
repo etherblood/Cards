@@ -1,7 +1,7 @@
 package com.etherblood.firstruleset.logic.templates.patron.systems;
 
 import com.etherblood.cardsmatch.cardgame.AbstractMatchSystem;
-import com.etherblood.cardsmatch.cardgame.match.Autowire;
+import com.etherblood.cardscontext.Autowire;
 import com.etherblood.entitysystem.data.EntityComponentMapReadonly;
 import com.etherblood.firstruleset.logic.damage.DamageEvent;
 import com.etherblood.firstruleset.logic.templates.patron.PatronAbilityComponent;

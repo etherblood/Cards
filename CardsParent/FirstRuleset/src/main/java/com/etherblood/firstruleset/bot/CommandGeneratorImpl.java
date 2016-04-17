@@ -4,9 +4,9 @@ import com.etherblood.cardsmatch.cardgame.EntityUtils;
 import com.etherblood.cardsmatch.cardgame.IllegalCommandException;
 import com.etherblood.cardsmatch.cardgame.ValidEffectTargetsSelector;
 import com.etherblood.cardsmatch.cardgame.bot.commands.Command;
-import com.etherblood.cardsmatch.cardgame.bot.monteCarlo.CommandManager;
-import com.etherblood.cardsmatch.cardgame.bot.monteCarlo.MoveConsumer;
-import com.etherblood.cardsmatch.cardgame.bot.monteCarlo.MoveSelector;
+import com.etherblood.firstruleset.bot.monteCarlo.CommandManager;
+import com.etherblood.firstruleset.bot.monteCarlo.MoveConsumer;
+import com.etherblood.firstruleset.bot.monteCarlo.MoveSelector;
 import com.etherblood.firstruleset.logic.battle.buffs.AttackCountComponent;
 import com.etherblood.firstruleset.logic.battle.buffs.ChargeComponent;
 import com.etherblood.firstruleset.logic.battle.buffs.SummonSicknessComponent;
@@ -34,7 +34,7 @@ import com.etherblood.entitysystem.filters.FilterQuery;
 import com.etherblood.entitysystem.util.DeterministicEntityIndices;
 import com.etherblood.eventsystem.GameEventQueueImpl;
 import com.etherblood.firstruleset.logic.effects.TargetedTriggerEffectEvent;
-import com.etherblood.cardsmatch.cardgame.match.MatchContext;
+import com.etherblood.cardscontext.MatchContext;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -117,7 +117,7 @@ public class CommandGeneratorImpl implements CommandManager {
     @Override
     public void executeCommand(MatchContext context, Command command) {
         GameEventQueueImpl events = context.getBean(GameEventQueueImpl.class);
-        events.fireEvent(new TargetedTriggerEffectEvent(command.effect, command.targets));
+        events.fireEvent(new TargetedTriggerEffectEvent(currentQuery.first(context.getBean(EntityComponentMapReadonly.class)), command.effect, command.targets));
         events.handleEvents();
     }
 

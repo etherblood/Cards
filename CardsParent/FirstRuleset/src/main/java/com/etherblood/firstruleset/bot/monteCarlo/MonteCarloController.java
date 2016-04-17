@@ -1,4 +1,4 @@
-package com.etherblood.cardsmatch.cardgame.bot.monteCarlo;
+package com.etherblood.firstruleset.bot.monteCarlo;
 
 import com.etherblood.cardsmatch.cardgame.ValidEffectTargetsSelector;
 import com.etherblood.cardsmatch.cardgame.bot.Bot;
@@ -14,7 +14,7 @@ import com.etherblood.entitysystem.data.EntityId;
 import com.etherblood.entitysystem.data.IncrementalEntityIdFactory;
 import com.etherblood.eventsystem.GameEventDataStack;
 import com.etherblood.eventsystem.GameEventQueueImpl;
-import com.etherblood.cardsmatch.cardgame.match.MatchContext;
+import com.etherblood.cardscontext.MatchContext;
 import com.etherblood.montecarlotreesearch.MonteCarloControls;
 import com.etherblood.montecarlotreesearch.MonteCarloNode;
 import com.etherblood.montecarlotreesearch.MonteCarloState;
@@ -26,7 +26,7 @@ import java.util.Set;
  */
 public class MonteCarloController implements Bot {
 
-    long millis = 2000;
+    long millis = 5000;
     private final EntityId player1Entity;
     private final MonteCarloControls controls = new MonteCarloControls();
     private final MatchContext state;

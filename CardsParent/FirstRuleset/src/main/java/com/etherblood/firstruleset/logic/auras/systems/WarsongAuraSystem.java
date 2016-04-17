@@ -5,7 +5,7 @@
 package com.etherblood.firstruleset.logic.auras.systems;
 
 import com.etherblood.cardsmatch.cardgame.AbstractMatchSystem;
-import com.etherblood.cardsmatch.cardgame.match.Autowire;
+import com.etherblood.cardscontext.Autowire;
 import com.etherblood.entitysystem.data.EntityComponentMap;
 import com.etherblood.entitysystem.data.EntityId;
 import com.etherblood.entitysystem.filters.AbstractComponentFieldValueFilter;
@@ -35,7 +35,7 @@ public class WarsongAuraSystem extends AbstractMatchSystem<BoardAttachEvent> {
             ownerFilter.setValue(owner);
             FilterQuery query = new FilterQuery().setBaseClass(WarsongAuraComponent.class).addComponentClassFilter(BoardCardComponent.class).addComponentFilter(ownerFilter);
             for (EntityId auraSource : query.list(data)) {
-                if(attack.attack <= data.get(auraSource, WarsongAuraComponent.class).maxAttack) {
+                if(!auraSource.equals(event.target) && attack.attack <= data.get(auraSource, WarsongAuraComponent.class).maxAttack) {
     //              enqueueEvent(new AttachChargeEvent(event.target));
                     data.set(event.target, new ChargeComponent());//TODO: fire event instead, see line above
                     break;

@@ -5,7 +5,7 @@
 package com.etherblood.firstruleset.logic.attack.systems;
 
 import com.etherblood.cardsmatch.cardgame.AbstractMatchSystem;
-import com.etherblood.cardsmatch.cardgame.match.Autowire;
+import com.etherblood.cardscontext.Autowire;
 import com.etherblood.firstruleset.logic.battle.stats.AttackComponent;
 import com.etherblood.firstruleset.logic.attack.AttackEvent;
 import com.etherblood.firstruleset.logic.damage.DamageEvent;

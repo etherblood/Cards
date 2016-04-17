@@ -55,7 +55,8 @@ build/
 nbbuild/
 dist/
 nbdist/
-nbactions.xml
 .nb-gradle/
-/CardsParent/CardsJmeClient/lwjgl64.dll
-/CardsParent/CardsJmeClient/OpenAL64.dll
+
+# jme specific #
+lwjgl64.dll
+OpenAL64.dll

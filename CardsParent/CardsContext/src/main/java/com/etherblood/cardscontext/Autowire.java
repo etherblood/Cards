@@ -1,4 +1,4 @@
-package com.etherblood.cardsmatch.cardgame.match;
+package com.etherblood.cardscontext;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -5,7 +5,7 @@
 package com.etherblood.firstruleset.logic.summon.systems;
 
 import com.etherblood.cardsmatch.cardgame.AbstractMatchSystem;
-import com.etherblood.cardsmatch.cardgame.match.Autowire;
+import com.etherblood.cardscontext.Autowire;
 import com.etherblood.firstruleset.logic.battle.MinionComponent;
 import com.etherblood.firstruleset.logic.cards.SpellComponent;
 import com.etherblood.firstruleset.logic.cardZones.events.CardZone;

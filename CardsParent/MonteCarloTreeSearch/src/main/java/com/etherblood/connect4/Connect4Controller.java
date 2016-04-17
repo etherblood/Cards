@@ -9,6 +9,8 @@ import java.util.Random;
  * @author Philipp
  */
 public class Connect4Controller {
+    private static final int MATCH_RESULT_DRAW = 2;
+    private static final int MATCH_RESULT_ONGOING = 3;
 
     private final Random rng = new Random();
     private final MonteCarloControls controls = new MonteCarloControls();
@@ -20,14 +22,12 @@ public class Connect4Controller {
     }
     
     public int getVictor() {
-        if(state.isVictor(0)) {
-            return 0;
-        } else if(state.isVictor(1)) {
-            return 1;
+        if(state.opponentWon()) {
+            return state.opponent();
         } else if(state.isBoardFull()) {
-            return 2;
+            return MATCH_RESULT_DRAW;
         }
-        return 3;
+        return MATCH_RESULT_ONGOING;
     }
     
     public void move(int index) {
@@ -62,11 +62,10 @@ public class Connect4Controller {
             controls.move(index, numMoves);
             simulationState.tokenMove(move);
 
-            assert !simulationState.isVictor(simulationState.currentPlayer());
-            if (simulationState.isVictor(currentPlayer)) {
-                controls.declareVictor(currentPlayer);
+            if (simulationState.opponentWon()) {
+                controls.declareVictor(simulationState.opponent());
             } else if (simulationState.isBoardFull()) {
-                controls.declareVictor(2);
+                controls.declareVictor(MATCH_RESULT_DRAW);
             }
         }
         if(controls.state() == MonteCarloState.PLAYOUT) {
@@ -84,15 +83,14 @@ public class Connect4Controller {
         while (true) {
             long moves = simulationState.generateTokenMoves();
             int numMoves = Long.bitCount(moves);
-            int currentPlayer = simulationState.currentPlayer();
             int index = rng.nextInt(numMoves);
             long move = extractMoveToken(moves, index);
             simulationState.tokenMove(move);
 
-            if (simulationState.isVictor(currentPlayer)) {
-                return currentPlayer;
+            if (simulationState.opponentWon()) {
+                return simulationState.opponent();
             } else if (simulationState.isBoardFull()) {
-                return 2;
+                return MATCH_RESULT_DRAW;
             }
         }
     }

@@ -1,7 +1,7 @@
 package com.etherblood.firstruleset.logic.cardZones.systems.attackAbility;
 
 import com.etherblood.cardsmatch.cardgame.AbstractMatchSystem;
-import com.etherblood.cardsmatch.cardgame.match.Autowire;
+import com.etherblood.cardscontext.Autowire;
 import com.etherblood.firstruleset.logic.battle.buffs.SummonSicknessComponent;
 import com.etherblood.firstruleset.logic.cardZones.events.BoardAttachEvent;
 import com.etherblood.entitysystem.data.EntityComponentMap;

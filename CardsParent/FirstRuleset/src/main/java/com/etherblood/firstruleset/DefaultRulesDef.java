@@ -1,10 +1,9 @@
 package com.etherblood.firstruleset;
 
-import com.etherblood.cardsmatch.cardgame.CommandHandler;
 import com.etherblood.cardsmatch.cardgame.MatchGameEventDispatcher;
 import com.etherblood.cardsmatch.cardgame.TemplateSet;
 import com.etherblood.cardsmatch.cardgame.UpdateBuilder;
-import com.etherblood.cardsmatch.cardgame.bot.monteCarlo.MonteCarloController;
+import com.etherblood.firstruleset.bot.monteCarlo.MonteCarloController;
 import com.etherblood.cardsmatch.cardgame.client.SystemsEventHandlerDispatcher;
 import com.etherblood.cardsmatch.cardgame.components.misc.NameComponent;
 import com.etherblood.firstruleset.logic.player.NextTurnPlayerComponent;
@@ -125,17 +124,18 @@ import com.etherblood.firstruleset.logic.startTurn.systems.StartTurnSystem;
 import com.etherblood.firstruleset.logic.summon.SummonEvent;
 import com.etherblood.firstruleset.logic.summon.systems.ApplySummonSystem;
 import com.etherblood.firstruleset.logic.summon.systems.BattlecrySystem;
-import com.etherblood.cardsmatch.cardgame.match.MatchContext;
-import com.etherblood.cardsmatch.cardgame.match.MatchContextBuilder;
+import com.etherblood.cardscontext.MatchContext;
+import com.etherblood.cardscontext.MatchContextBuilder;
 import com.etherblood.cardsmatch.cardgame.match.PlayerDefinition;
 import com.etherblood.cardsmatch.cardgame.match.RulesDefinition;
 import com.etherblood.entitysystem.version.VersionedEntityComponentMapImpl;
 import com.etherblood.firstruleset.bot.CommandGeneratorImpl;
-import com.etherblood.firstruleset.logic.CommandHandlerImpl;
 import com.etherblood.firstruleset.logic.auras.systems.WarsongAuraSystem;
+import com.etherblood.firstruleset.logic.effects.systems.triggers.ValidateTargetedTriggerEffectSystem;
 import com.etherblood.firstruleset.logic.templates.patron.PatronSurvivalCheckEvent;
 import com.etherblood.firstruleset.logic.templates.patron.systems.PatronDamageSystem;
 import com.etherblood.firstruleset.logic.templates.patron.systems.PatronSurvivalSystem;
+import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -157,13 +157,8 @@ public class DefaultRulesDef implements RulesDefinition {
         this.templates = templates;
     }
 
-    private <E extends GameEvent> void addSystem(MatchContextBuilder builder, GameEventDispatcher dispatcher, Class<E> eventClass, GameEventHandler<E> system) {
-        dispatcher.subscribe(eventClass, system);
-        builder.addPassiveBean(system);
-    }
-
     @Override
-    public MatchContext start(List<PlayerDefinition> playerDefinitions) {
+    public MatchContext init(List<PlayerDefinition> playerDefinitions) {
         if (playerDefinitions.size() != 2) {
             throw new IllegalStateException();
         }
@@ -314,11 +309,24 @@ public class DefaultRulesDef implements RulesDefinition {
         addSystem(builder, eventDispatcher, SummonEvent.class, new BattlecrySystem());
         addSystem(builder, eventDispatcher, SurrenderEvent.class, new SurrenderSystem());
 
+        addSystem(builder, eventDispatcher, TargetedTriggerEffectEvent.class, new ValidateTargetedTriggerEffectSystem());
         addSystem(builder, eventDispatcher, TargetedTriggerEffectEvent.class, new TargetedTriggerEffectSystem());
         addSystem(builder, eventDispatcher, TriggerEffectEvent.class, new CreateSingleTargetEntityEffectSystem());
         addSystem(builder, eventDispatcher, TriggerEffectEvent.class, new SelectTargetsEffectSystem());
 //        addSystem(builder, dispatcher, TriggerEffectEvent.class, new EffectPlayerTriggerConditionSystem());
         addSystem(builder, eventDispatcher, TriggerEffectEvent.class, new TriggerEffectSystem());
+    }
+
+    private <E extends GameEvent> void addSystem(MatchContextBuilder builder, GameEventDispatcher dispatcher, Class<E> eventClass, GameEventHandler<E> system) {
+//        dispatcher.subscribe(eventClass, system);
+//        builder.addPassiveBean(system);
+        addSystem(builder, dispatcher, system);
+    }
+    
+    private <E extends GameEvent> void addSystem(MatchContextBuilder builder, GameEventDispatcher dispatcher, GameEventHandler<E> system) {
+        ParameterizedType genericSuperclass = (ParameterizedType)system.getClass().getGenericSuperclass();
+        dispatcher.subscribe((Class) genericSuperclass.getActualTypeArguments()[0], system);
+        builder.addBean(system);
     }
 
     private void initPlayer(MatchContext match, EntityId player, String name, String heroTemplate, String[] library) {
@@ -357,7 +365,7 @@ public class DefaultRulesDef implements RulesDefinition {
     }
 
     @Override
-    public void flush(MatchContext context) {
+    public void start(MatchContext context) {
         context.getBean(GameEventQueueImpl.class).handleEvents();
     }
 }

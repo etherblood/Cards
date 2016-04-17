@@ -23,7 +23,7 @@ import com.etherblood.entitysystem.filters.AbstractComponentFieldValueFilter;
 import com.etherblood.entitysystem.filters.EqualityOperator;
 import com.etherblood.entitysystem.filters.FilterQuery;
 import com.etherblood.firstruleset.logic.entities.AttachTemplateEvent;
-import com.etherblood.cardsmatch.cardgame.match.Autowire;
+import com.etherblood.cardscontext.Autowire;
 import java.util.Arrays;
 import java.util.List;
 

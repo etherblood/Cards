@@ -21,7 +21,7 @@ import com.etherblood.cardsnetworkshared.match.misc.MatchUpdate;
 import com.etherblood.entitysystem.data.EntityComponentMapReadonly;
 import com.etherblood.eventsystem.GameEvent;
 import com.etherblood.eventsystem.GameEventHandler;
-import com.etherblood.cardsmatch.cardgame.match.MatchContext;
+import com.etherblood.cardscontext.MatchContext;
 import com.etherblood.cardsmatch.cardgame.match.PlayerDefinition;
 import com.etherblood.cardsmatch.cardgame.match.RulesDefinition;
 import com.etherblood.cardsmatch.cardgame.client.SystemsEventHandlerDispatcher;
@@ -143,7 +143,7 @@ public class MatchService {
 
 //        final EntityComponentMap data = rules.getBuilder().removeBean(EntityComponentMap.class);
 //        rules.getBuilder().addBean(new VersionedEntityComponentMapImpl(data));
-        final MatchContext context = ruleset.start(playerDefs);
+        final MatchContext context = ruleset.init(playerDefs);
 
         HumanPlayer player1 = new HumanPlayer(user1, def1.getEntity());
         player1.setConverter(def1.getConverter());
@@ -198,7 +198,7 @@ public class MatchService {
 //                ai.setBot(monteCarloBot);
 //            }
 //        }
-        ruleset.flush(context);
+        ruleset.start(context);
         assert wrapper.getCurrentPlayer() != null;
         for (HumanPlayer human : humans) {
             matchMap.put(human.getUserId(), human);
@@ -300,15 +300,15 @@ public class MatchService {
         for (int i = 0; i < library.length; i++) {
             library[i] = templates.get(rng.nextInt(templates.size()));//COLLECTIBLE_TEMPLATES[rng.nextInt(COLLECTIBLE_TEMPLATES.length)];
         }
-        for (int i = 0; i < 5; i++) {
-            library[i] = "Warsong Commander";
-        }
-        for (int i = 5; i < 10; i++) {
-            library[i] = "Grim Patron";
-        }
-        for (int i = 10; i < 15; i++) {
-            library[i] = "Whirlwind";
-        }
+//        for (int i = 0; i < 5; i++) {
+//            library[i] = "Warsong Commander";
+//        }
+//        for (int i = 5; i < 10; i++) {
+//            library[i] = "Grim Patron";
+//        }
+//        for (int i = 10; i < 15; i++) {
+//            library[i] = "Whirlwind";
+//        }
         return library;
     }
 }

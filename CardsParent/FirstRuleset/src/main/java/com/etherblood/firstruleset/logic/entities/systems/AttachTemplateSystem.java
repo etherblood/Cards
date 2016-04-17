@@ -6,7 +6,7 @@ package com.etherblood.firstruleset.logic.entities.systems;
 
 import com.etherblood.cardsmatch.cardgame.EntityTemplate;
 import com.etherblood.cardsmatch.cardgame.AbstractMatchSystem;
-import com.etherblood.cardsmatch.cardgame.match.Autowire;
+import com.etherblood.cardscontext.Autowire;
 import com.etherblood.cardsmatch.cardgame.TemplateSet;
 import com.etherblood.firstruleset.logic.effects.EffectTriggerEntityComponent;
 import com.etherblood.firstruleset.logic.entities.AttachTemplateEvent;

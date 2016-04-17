@@ -11,7 +11,7 @@ import com.etherblood.entitysystem.data.EntityComponentMapReadonly;
 import com.etherblood.entitysystem.data.EntityIdFactory;
 import com.etherblood.firstruleset.logic.cardZones.events.BoardAttachEvent;
 import com.etherblood.firstruleset.logic.entities.AttachTemplateEvent;
-import com.etherblood.cardsmatch.cardgame.match.Autowire;
+import com.etherblood.cardscontext.Autowire;
 
 /**
  *

@@ -5,7 +5,7 @@
 package com.etherblood.firstruleset.logic.cardZones.systems;
 
 import com.etherblood.cardsmatch.cardgame.AbstractMatchSystem;
-import com.etherblood.cardsmatch.cardgame.match.Autowire;
+import com.etherblood.cardscontext.Autowire;
 import com.etherblood.firstruleset.logic.cardZones.components.LibraryCardComponent;
 import com.etherblood.firstruleset.logic.player.OwnerComponent;
 import com.etherblood.firstruleset.logic.cardZones.events.LibraryAttachEvent;

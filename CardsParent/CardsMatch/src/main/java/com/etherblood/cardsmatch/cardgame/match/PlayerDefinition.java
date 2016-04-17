@@ -1,7 +1,6 @@
 package com.etherblood.cardsmatch.cardgame.match;
 
 import com.etherblood.cardsmatch.cardgame.IdConverter;
-import com.etherblood.cardsmatch.cardgame.NetworkPlayer;
 import com.etherblood.cardsmatch.cardgame.bot.Bot;
 import com.etherblood.entitysystem.data.EntityId;
 

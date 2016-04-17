@@ -1,10 +1,10 @@
-package com.etherblood.cardsmatch.cardgame.bot.monteCarlo;
+package com.etherblood.firstruleset.bot.monteCarlo;
 
 import com.etherblood.cardsmatch.cardgame.ValidEffectTargetsSelector;
 import com.etherblood.cardsmatch.cardgame.bot.commands.Command;
 import com.etherblood.entitysystem.data.EntityComponentMapReadonly;
 import com.etherblood.entitysystem.data.EntityId;
-import com.etherblood.cardsmatch.cardgame.match.MatchContext;
+import com.etherblood.cardscontext.MatchContext;
 
 /**
  *

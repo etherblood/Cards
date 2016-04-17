@@ -232,26 +232,26 @@ public class GameController {
     }
 
     public void attack(long attacker, long target) {
-        AssetManager   manager = JmeSystem.newAssetManager();
-
-   
-
-  manager.registerLocator("http://wow.zamimg.com/hearthhead/sounds/",UrlLocator.class);
-
-//   Listener   listener = new Listener();
-
-//    ar.setListener(listener);
-
-   AudioNode src = new AudioNode(manager,"VO_EX1_116_Play_01.ogg", true);
-   gamePanel.attachChild(src);
-   src.play();
-        
-//        UrlLocator locator = new UrlLocator();
-//        locator.locate(null, new AudioKey("wow.zamimg.com/hearthhead/sounds/VO_EX1_116_Play_01.ogg")).openStream()
-//        AudioKey key = new AudioKey("a");
-//        key.
-//        AudioNode audio = new AudioNode(audioData, audioKey)
-//        AudioFactory.INSTANCE.playSound(cards.get(attacker).getCardName() + "attack");
+//////////        AssetManager   manager = JmeSystem.newAssetManager();
+//////////
+//////////   
+//////////
+//////////  manager.registerLocator("http://wow.zamimg.com/hearthhead/sounds/",UrlLocator.class);
+//////////
+////////////   Listener   listener = new Listener();
+//////////
+////////////    ar.setListener(listener);
+//////////
+//////////   AudioNode src = new AudioNode(manager,"VO_EX1_116_Play_01.ogg", true);
+//////////   gamePanel.attachChild(src);
+//////////   src.play();
+//////////        
+////////////        UrlLocator locator = new UrlLocator();
+////////////        locator.locate(null, new AudioKey("wow.zamimg.com/hearthhead/sounds/VO_EX1_116_Play_01.ogg")).openStream()
+////////////        AudioKey key = new AudioKey("a");
+////////////        key.
+////////////        AudioNode audio = new AudioNode(audioData, audioKey)
+////////////        AudioFactory.INSTANCE.playSound(cards.get(attacker).getCardName() + "attack");
     }
 
     private void refreshZone(Card cardPanel) {

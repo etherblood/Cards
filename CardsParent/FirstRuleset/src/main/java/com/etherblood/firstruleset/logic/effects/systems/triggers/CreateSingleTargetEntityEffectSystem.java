@@ -5,7 +5,7 @@
 package com.etherblood.firstruleset.logic.effects.systems.triggers;
 
 import com.etherblood.cardsmatch.cardgame.AbstractMatchSystem;
-import com.etherblood.cardsmatch.cardgame.match.Autowire;
+import com.etherblood.cardscontext.Autowire;
 import com.etherblood.firstruleset.logic.effects.targeting.CreateSingleTargetEntityEffectComponent;
 import com.etherblood.firstruleset.eventData.EffectTargets;
 import com.etherblood.firstruleset.logic.effects.TriggerEffectEvent;

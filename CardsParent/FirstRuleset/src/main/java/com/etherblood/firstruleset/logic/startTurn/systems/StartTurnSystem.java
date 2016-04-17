@@ -5,7 +5,7 @@
 package com.etherblood.firstruleset.logic.startTurn.systems;
 
 import com.etherblood.cardsmatch.cardgame.AbstractMatchSystem;
-import com.etherblood.cardsmatch.cardgame.match.Autowire;
+import com.etherblood.cardscontext.Autowire;
 import com.etherblood.cardsmatch.cardgame.components.player.ItsMyTurnComponent;
 import com.etherblood.firstruleset.logic.startTurn.StartTurnEvent;
 import com.etherblood.entitysystem.data.EntityComponentMap;

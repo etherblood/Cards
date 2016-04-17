@@ -11,7 +11,7 @@ import com.etherblood.cardsmatch.cardgame.components.player.WinnerComponent;
 import com.etherblood.entitysystem.data.EntityId;
 import com.etherblood.entitysystem.filters.FilterQuery;
 import com.etherblood.entitysystem.version.VersionedEntityComponentMap;
-import com.etherblood.cardsmatch.cardgame.match.MatchContext;
+import com.etherblood.cardscontext.MatchContext;
 import com.etherblood.eventsystem.GameEventQueueImpl;
 import java.util.ArrayList;
 import java.util.List;

@@ -1,9 +1,7 @@
 package com.etherblood.firstruleset;
 
 import com.etherblood.cardsmatch.cardgame.IdConverter;
-import com.etherblood.cardsmatch.cardgame.NetworkPlayer;
 import com.etherblood.cardsmatch.cardgame.components.misc.NameComponent;
-import com.etherblood.cardsnetworkshared.match.misc.MatchUpdate;
 import com.etherblood.cardsnetworkshared.match.updates.CreateEntity;
 import com.etherblood.cardsnetworkshared.match.updates.SetAttack;
 import com.etherblood.cardsnetworkshared.match.updates.SetCost;

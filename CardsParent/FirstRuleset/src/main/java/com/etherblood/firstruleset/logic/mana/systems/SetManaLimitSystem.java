@@ -5,7 +5,7 @@
 package com.etherblood.firstruleset.logic.mana.systems;
 
 import com.etherblood.cardsmatch.cardgame.AbstractMatchSystem;
-import com.etherblood.cardsmatch.cardgame.match.Autowire;
+import com.etherblood.cardscontext.Autowire;
 import com.etherblood.firstruleset.logic.player.ManaLimitComponent;
 import com.etherblood.firstruleset.logic.mana.SetManaLimitEvent;
 import com.etherblood.entitysystem.data.EntityComponentMap;

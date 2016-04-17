@@ -1,33 +1,18 @@
 package com.etherblood.cardsjmeclient.match.cards.images;
 
-import com.jme3.texture.Image;
 import com.jme3.texture.Texture;
 import com.jme3.texture.Texture2D;
 import com.simsilica.lemur.GuiGlobals;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
-import java.awt.Toolkit;
-import java.awt.image.AreaAveragingScaleFilter;
 import java.awt.image.BufferedImage;
-import java.awt.image.CropImageFilter;
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferInt;
-import java.awt.image.FilteredImageSource;
-import java.awt.image.ImageProducer;
-import java.awt.image.Raster;
-import java.awt.image.ReplicateScaleFilter;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 
 /**
  *
@@ -39,6 +24,14 @@ public class ImageFactory {
     private final HashMap<String, ImageData> dataMap = new HashMap<>();
     private final HashMap<String, BufferedImage> imageMap = new HashMap<>();
     private final HashMap<String, Texture> lastSizeCache = new HashMap<>();
+    private final ImageData defaultImageData;
+
+    public ImageFactory() {
+        defaultImageData = new ImageData();
+        defaultImageData.setName("defaultDemon");
+        defaultImageData.setClasspath("./etherblood_demon.jpg");
+        register(defaultImageData);
+    }
 
     public static ImageFactory getInstance() {
         return INSTANCE;
@@ -47,7 +40,7 @@ public class ImageFactory {
 
     public Texture get(String name, int width, int height) {
         if (width <= 0 || height <= 0) {
-            return getDefaultTexture();
+            return null;
         }
         Texture icon = lastSizeCache.get(name);
         if (icon != null && icon.getImage().getWidth() == width && icon.getImage().getHeight() == height) {
@@ -55,7 +48,8 @@ public class ImageFactory {
         }
         ImageData data = dataMap.get(name);
         if (data == null) {
-            return getDefaultTexture();
+//            return getDefaultTexture();
+            return get(defaultImageData.getName(), width, height);
         }
         BufferedImage img = fromData(data);
         img = getAdjusted(img, data, width, height);
@@ -80,15 +74,25 @@ public class ImageFactory {
         return icon;
     }
 
-    private Texture getDefaultTexture() {
-        return GuiGlobals.getInstance().loadTexture("./random_sprites___little_red_by_extrahp-d7auma5.gif"
-//        return "./agafdg.png";
-        , false, false);
-    }
+//    private Texture getDefaultTexture() {
+//        return GuiGlobals.getInstance().loadTexture("./etherblood_demon.jpg", false, false);
+//    }
 
     private BufferedImage fromData(ImageData data) {
         BufferedImage image;
-        if (data.getPath() != null) {
+        if (data.getClasspath() != null) {
+            image = imageMap.get(data.getClasspath());
+            if (image == null) {
+                try {
+                    System.out.println("opening image " + data.getClasspath());
+                    image = ImageIO.read(ClassLoader.getSystemResourceAsStream(data.getClasspath()));
+                    imageMap.put(data.getClasspath(), image);
+                } catch (IOException ex) {
+                    ex.printStackTrace(System.out);
+                    return null;
+                }
+            }
+        } else if (data.getPath() != null) {
             image = imageMap.get(data.getPath());
             if (image == null) {
                 try {
@@ -124,11 +128,11 @@ public class ImageFactory {
         if (view == null) {
             view = new Rectangle(image.getWidth(), image.getHeight());
         }
-        return zoomAndCrop(image, view, destWidth, destHeight, data.enableSmoothScale());
+        return zoomAndCrop(image, view, destWidth, destHeight);
 //        return new ToolkitImage(source);
     }
 
-    private BufferedImage zoomAndCrop(BufferedImage source, Rectangle view, int destWidth, int destHeight, boolean smooth) {
+    private BufferedImage zoomAndCrop(BufferedImage source, Rectangle view, int destWidth, int destHeight) {
         int unscaledWidth;
         int unscaledHeight;
         if (view.width * destHeight > destWidth * view.height) {

@@ -23,7 +23,7 @@ import com.etherblood.entitysystem.data.EntityComponentMapReadonly;
 import com.etherblood.entitysystem.data.EntityId;
 import com.etherblood.entitysystem.filters.FilterQuery;
 import com.etherblood.firstruleset.logic.cardZones.components.BoardCardComponent;
-import com.etherblood.cardsmatch.cardgame.match.Autowire;
+import com.etherblood.cardscontext.Autowire;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -34,8 +34,8 @@ public class ValidEffectTargetsSelectorImpl implements ValidEffectTargetsSelecto
     private final LinkedHashMap<Class, Class> classFilterMap;
     @Autowire
     private EntityComponentMapReadonly data;
-    @Autowire
-    private RngFactory rng;
+//    @Autowire
+//    private RngFactory rng;
 
     public ValidEffectTargetsSelectorImpl() {
         classFilterMap = new LinkedHashMap<>();
@@ -78,7 +78,7 @@ public class ValidEffectTargetsSelectorImpl implements ValidEffectTargetsSelecto
         allyFilter(effect, list);
         enemyFilter(effect, list);
         notSelfFilter(effect, list);
-        randomFilter(effect, list);
+//        randomFilter(effect, list);
         return list;
     }
 
@@ -124,11 +124,11 @@ public class ValidEffectTargetsSelectorImpl implements ValidEffectTargetsSelecto
         }
     }
 
-    private void randomFilter(EntityId effect, List<EntityId> list) {
-        if (!list.isEmpty() && data.has(effect, EffectTargetsSingleRandomComponent.class)) {
-            EntityId randomItem = list.get(rng.nextInt(list.size()));
-            list.clear();
-            list.add(randomItem);
-        }
-    }
+//    private void randomFilter(EntityId effect, List<EntityId> list) {
+//        if (!list.isEmpty() && data.has(effect, EffectTargetsSingleRandomComponent.class)) {
+//            EntityId randomItem = list.get(rng.nextInt(list.size()));
+//            list.clear();
+//            list.add(randomItem);
+//        }
+//    }
 }
