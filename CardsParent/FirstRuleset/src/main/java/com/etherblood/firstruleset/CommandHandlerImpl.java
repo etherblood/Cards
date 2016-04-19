@@ -1,7 +1,7 @@
 package com.etherblood.firstruleset;
 
 import com.etherblood.cardsmatch.cardgame.CommandHandler;
-import com.etherblood.cardsmatch.cardgame.IllegalCommandException;
+import com.etherblood.cardsmatchapi.IllegalCommandException;
 import com.etherblood.cardsmatch.cardgame.bot.Bot;
 import com.etherblood.cardscontext.Autowire;
 import com.etherblood.entitysystem.data.EntityId;

@@ -3,8 +3,6 @@ package com.etherblood.cardsmasterserver.matches;
 import com.etherblood.cardsmasterserver.matches.internal.players.HumanPlayer;
 import com.etherblood.cardsmasterserver.cards.CardCollectionService;
 import com.etherblood.cardsmasterserver.matches.internal.MatchContextWrapper;
-import com.etherblood.cardsmasterserver.matches.internal.MatchResult;
-import com.etherblood.cardsmatch.cardgame.UpdateBuilder;
 import com.etherblood.cardsmasterserver.matches.internal.players.AbstractPlayer;
 import com.etherblood.cardsmasterserver.matches.internal.players.AiPlayer;
 import com.etherblood.cardsmasterserver.network.connections.UserConnectionService;
@@ -12,19 +10,15 @@ import com.etherblood.cardsmasterserver.network.events.UserLogoutEvent;
 import com.etherblood.cardsmasterserver.network.messages.MessageHandler;
 import com.etherblood.cardsmasterserver.system.SystemTaskEvent;
 import com.etherblood.cardsmasterserver.users.UserService;
-import com.etherblood.cardsmatch.cardgame.IllegalCommandException;
-import com.etherblood.cardsmatch.cardgame.client.SystemsEventHandler;
+import com.etherblood.cardsmatchapi.IllegalCommandException;
 import com.etherblood.cardsnetworkshared.master.commands.MatchRequest;
 import com.etherblood.cardsnetworkshared.match.commands.TriggerEffectRequest;
 import com.etherblood.cardsnetworkshared.DefaultMessage;
 import com.etherblood.cardsnetworkshared.match.misc.MatchUpdate;
-import com.etherblood.entitysystem.data.EntityComponentMapReadonly;
-import com.etherblood.eventsystem.GameEvent;
-import com.etherblood.eventsystem.GameEventHandler;
-import com.etherblood.cardscontext.MatchContext;
-import com.etherblood.cardsmatch.cardgame.match.PlayerDefinition;
-import com.etherblood.cardsmatch.cardgame.match.RulesDefinition;
-import com.etherblood.cardsmatch.cardgame.client.SystemsEventHandlerDispatcher;
+import com.etherblood.cardsmatchapi.PlayerDefinition;
+import com.etherblood.cardsmatchapi.RulesDefinition;
+import com.etherblood.cardsmatchapi.MatchBuilder;
+import com.etherblood.cardsmatchapi.PlayerResult;
 import com.etherblood.cardsnetworkshared.match.updates.JoinedMatchUpdate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -90,7 +84,7 @@ public class MatchService {
         HumanPlayer matchPlayer = matchMap.get(connectionService.getCurrentUserId());
         MatchContextWrapper match = matchPlayer.getMatch();
         try {
-            matchPlayer.triggerEffect(triggerEffect.getSource(), triggerEffect.getTargets());
+            matchPlayer.triggerEffect(triggerEffect);
             updateMatch(match);
         } catch (IllegalCommandException e) {
             e.printStackTrace(System.err);
@@ -130,61 +124,38 @@ public class MatchService {
         ArrayList<AbstractPlayer> players = new ArrayList<>();
         ArrayList<HumanPlayer> humans = new ArrayList<>();
 
-        PlayerDefinition def1 = createHumanPlayerDefinition(user1, createBotLibrary(ruleset.getTemplateNames()));
+        PlayerDefinition def1 = createPlayerDefinition(userService.getUser(user1).getUsername(), createBotLibrary(ruleset.getTemplateNames()));
         playerDefs.add(def1);
 
         PlayerDefinition def2;
         if (user2 != null) {
-            def2 = createHumanPlayerDefinition(user2, createBotLibrary(ruleset.getTemplateNames()));
+            def2 = createPlayerDefinition(userService.getUser(user2).getUsername(), createBotLibrary(ruleset.getTemplateNames()));
         } else {
-            def2 = createBotPlayerDefinition(createBotLibrary(ruleset.getTemplateNames()));
+            def2 = createPlayerDefinition("Bot", createBotLibrary(ruleset.getTemplateNames()));
         }
         playerDefs.add(def2);
 
+        MatchBuilder matchBuilder = ruleset.createMatchBuilder();
 //        final EntityComponentMap data = rules.getBuilder().removeBean(EntityComponentMap.class);
 //        rules.getBuilder().addBean(new VersionedEntityComponentMapImpl(data));
-        final MatchContext context = ruleset.init(playerDefs);
+////        final MatchContext context = ruleset.init(playerDefs);
 
-        HumanPlayer player1 = new HumanPlayer(user1, def1.getEntity());
-        player1.setConverter(def1.getConverter());
+        HumanPlayer player1 = new HumanPlayer(user1, matchBuilder.createHuman(def1));
         humans.add(player1);
         players.add(player1);
 
         AbstractPlayer player2;
         if (user2 != null) {
-            player2 = new HumanPlayer(user2, def2.getEntity());
-            ((HumanPlayer) player2).setConverter(def2.getConverter());
+            player2 = new HumanPlayer(user2, matchBuilder.createHuman(def2));
             humans.add((HumanPlayer) player2);
         } else {
-            AiPlayer aiPlayer = new AiPlayer(def2.getEntity());
-            aiPlayer.setBot(def2.getBotInstance());
+            AiPlayer aiPlayer = new AiPlayer(matchBuilder.createBot(def2));
             player2 = aiPlayer;
         }
         players.add(player2);
 
         final MatchContextWrapper wrapper = new MatchContextWrapper();
-        wrapper.init(context, ruleset.getUpdateBuilders(), players);
-
-        SystemsEventHandlerDispatcher dispatcher = context.getBean(SystemsEventHandlerDispatcher.class);
-        List<SystemsEventHandler> handlers = dispatcher.getHandlers();
-        final EntityComponentMapReadonly data = context.getBean(EntityComponentMapReadonly.class);
-        for (final HumanPlayer human : humans) {
-            handlers.add(new SystemsEventHandler() {
-                @Override
-                public <T extends GameEvent> void onEvent(Class<GameEventHandler<T>> systemClass, T gameEvent) {
-                    UpdateBuilder<MatchUpdate, T> updateBuilder = wrapper.getUpdateBuilders().get(systemClass);
-                    if (updateBuilder != null) {
-                        human.send(updateBuilder.build(data, human.getConverter(), gameEvent));
-                    }
-                }
-            });
-            human.getConverter().register(human.getPlayer());
-            for (AbstractPlayer player : players) {
-                if (player != human) {
-                    human.getConverter().register(player.getPlayer());
-                }
-            }
-        }
+        wrapper.init(matchBuilder.getStateTracker(), players);
 
 //        for (AbstractPlayer player : players) {
 //            if (player instanceof AiPlayer) {
@@ -198,31 +169,21 @@ public class MatchService {
 //                ai.setBot(monteCarloBot);
 //            }
 //        }
-        ruleset.start(context);
-        assert wrapper.getCurrentPlayer() != null;
+//        ruleset.start(context);
         for (HumanPlayer human : humans) {
             matchMap.put(human.getUserId(), human);
-            human.send(new JoinedMatchUpdate());
+            connectionService.sendMessage(human.getUserId(), new DefaultMessage(new JoinedMatchUpdate()));
         }
+        matchBuilder.start();
+        assert wrapper.getCurrentPlayer() != null;
         updateMatch(wrapper);
     }
 
-    private PlayerDefinition createHumanPlayerDefinition(long userAccountId, String[] library) {
+    private PlayerDefinition createPlayerDefinition(String name, String[] library) {
         PlayerDefinition def = new PlayerDefinition();
         def.setLibrary(library);
         def.setHeroTemplate("Hero");
-        def.setName(userService.getUser(userAccountId).getUsername());
-        def.setBot(false);
-
-        return def;
-    }
-
-    private PlayerDefinition createBotPlayerDefinition(String[] library) {
-        PlayerDefinition def = new PlayerDefinition();
-        def.setLibrary(library);
-        def.setHeroTemplate("Hero");
-        def.setName("Bot");
-        def.setBot(true);
+        def.setName(name);
         return def;
     }
 
@@ -261,14 +222,11 @@ public class MatchService {
     }
 
     private void cleanupMatch(MatchContextWrapper matchWrapper) {
-        MatchResult result = matchWrapper.getResult();
-        for (AbstractPlayer player : result.getWinners()) {
-            if (player instanceof HumanPlayer) {
-                eventPublisher.publishEvent(new SystemTaskEvent(new WonMatchEvent((HumanPlayer) player)));
-            }
-        }
         for (HumanPlayer matchPlayer : matchWrapper.getPlayers(HumanPlayer.class)) {
             matchMap.remove(matchPlayer.getUserId());
+            if(matchWrapper.getResult(matchPlayer) == PlayerResult.VICTOR) {
+                eventPublisher.publishEvent(new SystemTaskEvent(new WonMatchEvent(matchPlayer)));
+            }
         }
         System.out.println("Match ended");
     }

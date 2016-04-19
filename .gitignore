@@ -60,3 +60,4 @@ nbdist/
 # jme specific #
 lwjgl64.dll
 OpenAL64.dll
+/CardsParent/CardsMatchApi/target/

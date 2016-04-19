@@ -99,7 +99,7 @@
         </dependency>
         <dependency>
             <groupId>com.etherblood</groupId>
-            <artifactId>CardsMatch</artifactId>
+            <artifactId>CardsMatchApi</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         

@@ -1,7 +1,7 @@
 package com.etherblood.firstruleset.logic.effects.systems.triggers;
 
 import com.etherblood.cardsmatch.cardgame.AbstractMatchSystem;
-import com.etherblood.cardsmatch.cardgame.IllegalCommandException;
+import com.etherblood.cardsmatchapi.IllegalCommandException;
 import com.etherblood.cardsmatch.cardgame.components.player.ItsMyTurnComponent;
 import com.etherblood.cardscontext.Autowire;
 import com.etherblood.entitysystem.data.EntityComponentMapReadonly;

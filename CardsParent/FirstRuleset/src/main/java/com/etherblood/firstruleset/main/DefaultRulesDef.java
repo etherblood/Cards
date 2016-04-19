@@ -1,13 +1,9 @@
-package com.etherblood.firstruleset;
+package com.etherblood.firstruleset.main;
 
 import com.etherblood.cardsmatch.cardgame.MatchGameEventDispatcher;
 import com.etherblood.cardsmatch.cardgame.TemplateSet;
 import com.etherblood.cardsmatch.cardgame.UpdateBuilder;
-import com.etherblood.firstruleset.bot.monteCarlo.MonteCarloController;
 import com.etherblood.cardsmatch.cardgame.client.SystemsEventHandlerDispatcher;
-import com.etherblood.cardsmatch.cardgame.components.misc.NameComponent;
-import com.etherblood.firstruleset.logic.player.NextTurnPlayerComponent;
-import com.etherblood.cardsmatch.cardgame.components.player.PlayerComponent;
 import com.etherblood.cardsmatch.cardgame.events.gameover.PlayerLostEvent;
 import com.etherblood.cardsmatch.cardgame.events.gameover.systems.EndMatchSystem;
 import com.etherblood.cardsmatch.cardgame.events.gameover.systems.PlayerLostSystem;
@@ -20,13 +16,10 @@ import com.etherblood.cardsmatch.cardgame.events.surrender.systems.SurrenderSyst
 import com.etherblood.cardsmatch.cardgame.rng.RngFactoryImpl;
 import com.etherblood.entitysystem.data.EntityComponentMap;
 import com.etherblood.entitysystem.data.EntityComponentMapImpl;
-import com.etherblood.entitysystem.data.EntityId;
-import com.etherblood.entitysystem.data.EntityIdFactory;
 import com.etherblood.entitysystem.data.IncrementalEntityIdFactory;
 import com.etherblood.eventsystem.GameEvent;
 import com.etherblood.eventsystem.GameEventDispatcher;
 import com.etherblood.eventsystem.GameEventHandler;
-import com.etherblood.eventsystem.GameEventQueue;
 import com.etherblood.eventsystem.GameEventQueueImpl;
 import com.etherblood.firstruleset.logic.attack.AttackEvent;
 import com.etherblood.firstruleset.logic.attack.systems.ApplyAttackSystem;
@@ -126,10 +119,16 @@ import com.etherblood.firstruleset.logic.summon.systems.ApplySummonSystem;
 import com.etherblood.firstruleset.logic.summon.systems.BattlecrySystem;
 import com.etherblood.cardscontext.MatchContext;
 import com.etherblood.cardscontext.MatchContextBuilder;
-import com.etherblood.cardsmatch.cardgame.match.PlayerDefinition;
-import com.etherblood.cardsmatch.cardgame.match.RulesDefinition;
+import com.etherblood.cardsmatchapi.MatchBuilder;
+import com.etherblood.cardsmatchapi.RulesDefinition;
 import com.etherblood.entitysystem.version.VersionedEntityComponentMapImpl;
-import com.etherblood.firstruleset.bot.CommandGeneratorImpl;
+import com.etherblood.firstruleset.AttachAttackAbilitySystem;
+import com.etherblood.firstruleset.ClientUpdaterFactory;
+import com.etherblood.firstruleset.CommandHandlerImpl;
+import com.etherblood.firstruleset.CopyBattlecryConditionsSystem;
+import com.etherblood.firstruleset.DefaultTemplateSetFactory;
+import com.etherblood.firstruleset.MatchLogger;
+import com.etherblood.firstruleset.ValidEffectTargetsSelectorImpl;
 import com.etherblood.firstruleset.logic.auras.systems.WarsongAuraSystem;
 import com.etherblood.firstruleset.logic.effects.systems.triggers.ValidateTargetedTriggerEffectSystem;
 import com.etherblood.firstruleset.logic.templates.patron.PatronSurvivalCheckEvent;
@@ -139,7 +138,6 @@ import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 /**
  *
@@ -148,6 +146,33 @@ import java.util.Random;
 public class DefaultRulesDef implements RulesDefinition {
 
     private final TemplateSet templates;
+    private final ContextFactory contextFactory = new ContextFactory() {
+            @Override
+            public MatchContext buildContext(boolean core) {
+                MatchContextBuilder builder = new MatchContextBuilder();
+                GameEventDispatcher eventDispatcher = new MatchGameEventDispatcher();
+                GameEventQueueImpl events = new GameEventQueueImpl(eventDispatcher);
+                IncrementalEntityIdFactory idFactory = new IncrementalEntityIdFactory();
+                SystemsEventHandlerDispatcher systemsDispatcher = new SystemsEventHandlerDispatcher();
+                EntityComponentMap data = new EntityComponentMapImpl();
+                if (core) {
+                    data = new VersionedEntityComponentMapImpl(data);
+                    systemsDispatcher.getHandlers().add(new MatchLogger(data));
+                    builder.addBean(new CommandHandlerImpl());
+                }
+                builder.addBean(data);
+                builder.addBean(eventDispatcher);
+                builder.addBean(systemsDispatcher);
+                builder.addBean(events);
+                builder.addBean(events.getDataStack());
+                builder.addBean(idFactory);
+                builder.addBean(new RngFactoryImpl());
+                builder.addBean(DefaultRulesDef.this.templates);
+                builder.addBean(new ValidEffectTargetsSelectorImpl());
+                DefaultRulesDef.this.addSystems(builder, eventDispatcher);
+                return builder.build();
+            }
+        };
 
     public DefaultRulesDef() {
         this(new DefaultTemplateSetFactory().createEntityTemplates("/templates.xml"));
@@ -158,75 +183,24 @@ public class DefaultRulesDef implements RulesDefinition {
     }
 
     @Override
-    public MatchContext init(List<PlayerDefinition> playerDefinitions) {
-        if (playerDefinitions.size() != 2) {
-            throw new IllegalStateException();
-        }
-        MatchContext match = buildContext(true);
+    public String getName() {
+        return "default rules";
+    }
 
-        EntityComponentMap data = match.getBean(EntityComponentMap.class);
-        EntityIdFactory idFactory = match.getBean(EntityIdFactory.class);
-        for (PlayerDefinition def : playerDefinitions) {
-            EntityId playerEntity = idFactory.createEntity();
-            def.setEntity(playerEntity);
-            initPlayer(match, playerEntity, def.getName(), def.getHeroTemplate(), def.getLibrary());
-            if (def.isBot()) {
-                def.setBotInstance(new MonteCarloController(match, buildContext(false), new CommandGeneratorImpl(), playerDefinitions.get(0).getEntity()));
-                match.getBean(CommandHandlerImpl.class).registerBot(def.getBotInstance());
-            } else {
-                def.setConverter(new IdConverterExtendedImpl(data));
-            }
-        }
+    @Override
+    public List<String> getTemplateNames() {
+        return Arrays.asList(templates.getCollectableTemplateNames());
+    }
 
-        EntityId player1 = playerDefinitions.get(0).getEntity();
-        EntityId player2 = playerDefinitions.get(1).getEntity();
+    private Map<Class, UpdateBuilder> getUpdateBuilders() {
+        return ClientUpdaterFactory.createUpdateBuilders();
+    }
 
-        data.set(player1, new NextTurnPlayerComponent(player2));
-        data.set(player2, new NextTurnPlayerComponent(player1));
-
-        GameEventQueue eventQueue = match.getBean(GameEventQueue.class);
-        eventQueue.fireEvent(new GameStartEvent());
-
-        for (int i = 0; i < 3; i++) {
-            eventQueue.fireEvent(new RequestDrawEvent(player2));
-            eventQueue.fireEvent(new RequestDrawEvent(player1));
-        }
-        Random rng = new Random();
-        EntityId startingPlayer = rng.nextBoolean() ? player1 : player2;
-        eventQueue.fireEvent(new RequestDrawEvent(startingPlayer == player1 ? player2 : player1));
-        eventQueue.fireEvent(new StartTurnEvent(startingPlayer));
-
-        return match;
+    @Override
+    public MatchBuilder createMatchBuilder() {
+        return new DefaultMatchBuilder(contextFactory);
     }
     
-    private MatchContext buildContext(boolean core) {
-        MatchContextBuilder builder = new MatchContextBuilder();
-        GameEventDispatcher eventDispatcher = new MatchGameEventDispatcher();
-        GameEventQueueImpl events = new GameEventQueueImpl(eventDispatcher);
-        IncrementalEntityIdFactory idFactory = new IncrementalEntityIdFactory();
-        SystemsEventHandlerDispatcher systemsDispatcher = new SystemsEventHandlerDispatcher();
-        EntityComponentMap data = new EntityComponentMapImpl();
-        if(core) {
-            data = new VersionedEntityComponentMapImpl(data);
-            systemsDispatcher.getHandlers().add(new MatchLogger(data));
-            builder.addBean(new CommandHandlerImpl());
-        }
-
-        builder.addBean(data);
-        builder.addBean(eventDispatcher);
-        builder.addBean(systemsDispatcher);
-        builder.addBean(events);
-        builder.addBean(events.getDataStack());
-        builder.addBean(idFactory);
-        builder.addBean(new RngFactoryImpl());
-        builder.addBean(templates);
-        builder.addBean(new ValidEffectTargetsSelectorImpl());
-
-        addSystems(builder, eventDispatcher);
-
-        return builder.build();
-    }
-
     private void addSystems(MatchContextBuilder builder, GameEventDispatcher eventDispatcher) {
         addSystem(builder, eventDispatcher, ApplyEndTurnEvent.class, new ApplyEndTurnSystem());
         addSystem(builder, eventDispatcher, AttachTemplateEvent.class, new AttachTemplateSystem());
@@ -329,43 +303,4 @@ public class DefaultRulesDef implements RulesDefinition {
         builder.addBean(system);
     }
 
-    private void initPlayer(MatchContext match, EntityId player, String name, String heroTemplate, String[] library) {
-        EntityComponentMap data = match.getBean(EntityComponentMap.class);
-        EntityIdFactory idFactory = match.getBean(EntityIdFactory.class);
-        GameEventQueue events = match.getBean(GameEventQueue.class);
-
-        data.set(player, new NameComponent(name));
-        data.set(player, new PlayerComponent());
-
-        EntityId hero = idFactory.createEntity();
-        events.fireEvent(new AttachTemplateEvent(hero, heroTemplate, player, null));
-        events.fireEvent(new BoardAttachEvent(hero));
-
-        for (String template : library) {
-            EntityId cardId = idFactory.createEntity();
-            events.fireEvent(new AttachTemplateEvent(cardId, template, player, null));
-            events.fireEvent(new LibraryAttachEvent(cardId));
-        }
-        events.fireEvent(new ShuffleLibraryEvent(player));
-    }
-
-    @Override
-    public String getName() {
-        return "default rules";
-    }
-
-    @Override
-    public List<String> getTemplateNames() {
-        return Arrays.asList(templates.getCollectableTemplateNames());
-    }
-
-    @Override
-    public Map<Class, UpdateBuilder> getUpdateBuilders() {
-        return ClientUpdaterFactory.createUpdateBuilders();
-    }
-
-    @Override
-    public void start(MatchContext context) {
-        context.getBean(GameEventQueueImpl.class).handleEvents();
-    }
 }

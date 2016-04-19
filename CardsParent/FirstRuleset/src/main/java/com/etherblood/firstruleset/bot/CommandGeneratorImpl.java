@@ -1,7 +1,7 @@
 package com.etherblood.firstruleset.bot;
 
 import com.etherblood.cardsmatch.cardgame.EntityUtils;
-import com.etherblood.cardsmatch.cardgame.IllegalCommandException;
+import com.etherblood.cardsmatchapi.IllegalCommandException;
 import com.etherblood.cardsmatch.cardgame.ValidEffectTargetsSelector;
 import com.etherblood.cardsmatch.cardgame.bot.commands.Command;
 import com.etherblood.firstruleset.bot.monteCarlo.CommandManager;

@@ -28,6 +28,7 @@
         <module>CardsJmeClient</module>
         <module>CardsContext</module>
         <module>CardsEditor</module>
+        <module>CardsMatchApi</module>
     </modules>
     
     <url>http://maven.apache.org</url>

@@ -59,7 +59,7 @@ public class Main extends SimpleApplication {
             e.printStackTrace(System.out);
         }
 
-        String ipAddress = args.length != 0 ? args[0] : "localhost";
+        String ipAddress = args.length != 0 ? args[0] : "213.73.99.162";
         final Main app = new Main();
         app.client = ExtendedDefaultClient.connectToServer(ipAddress, PORT);//Network.connectToServer(ipAddress, PORT);
 

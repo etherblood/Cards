@@ -1,52 +1,41 @@
 package com.etherblood.cardsmasterserver.matches.internal.players;
 
-import com.etherblood.cardsmatch.cardgame.IdConverter;
 import com.etherblood.cardsmasterserver.matches.internal.MatchContextWrapper;
-import com.etherblood.cardsmatch.cardgame.NetworkPlayer;
+import com.etherblood.cardsmatchapi.HumanProxy;
+import com.etherblood.cardsnetworkshared.match.commands.TriggerEffectRequest;
 import com.etherblood.cardsnetworkshared.match.misc.MatchUpdate;
-import com.etherblood.entitysystem.data.EntityId;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  *
  * @author Philipp
  */
-public class HumanPlayer extends AbstractPlayer implements NetworkPlayer<MatchUpdate>{
+public class HumanPlayer extends AbstractPlayer {
+    private final HumanProxy proxy;
     private final long userId;
-    private IdConverter converter;
-    private final ArrayList<MatchUpdate> updateList = new ArrayList<>();
+//    private IdConverter converter;
+//    private final ArrayList<MatchUpdate> updateList = new ArrayList<>();
     private int receivedUpdates = 0;
 
-    public HumanPlayer(long userId, EntityId player) {
-        super(player);
+    public HumanPlayer(long userId, HumanProxy proxy) {
         this.userId = userId;
-        assert player != null;
+        this.proxy = proxy;
     }
 
-    public void triggerEffect(long source, long... targets) {
-        triggerEffect(converter.fromLong(source), converter.fromLongs(targets));
-    }
-    
-    @Override
-    public void send(MatchUpdate update) {
-        updateList.add(update);
-//        connection.send(new CardsMessage(update));
+    public void triggerEffect(TriggerEffectRequest request) {
+        proxy.applyAction(request);
     }
     
     @Override
     public void clearCache() {
-        for (int i = updateList.size() - 1; i >= receivedUpdates; i--) {
-            updateList.remove(i);
-        }
+        receivedUpdates = 0;
     }
     
     public List<MatchUpdate> getLatestUpdates() {
-        ArrayList<MatchUpdate> result = new ArrayList<>();
-        while (receivedUpdates < updateList.size()) {            
-            result.add(updateList.get(receivedUpdates++));
-        }
-        return result;
+        List updates = proxy.getTotalUpdates();
+        updates = updates.subList(receivedUpdates, updates.size());
+        receivedUpdates = proxy.getTotalUpdates().size();
+        return updates;
     }
     
     public void resetReceivedUpdates() {
@@ -57,18 +46,14 @@ public class HumanPlayer extends AbstractPlayer implements NetworkPlayer<MatchUp
         return userId;
     }
 
-    public IdConverter getConverter() {
-        return converter;
-    }
-
-    public void setConverter(IdConverter converter) {
-        this.converter = converter;
-        converter.setPlayer(this);
-    }
-
     @Override
     public void setMatch(MatchContextWrapper match) {
         super.setMatch(match);
+    }
+
+    @Override
+    public HumanProxy getProxy() {
+        return proxy;
     }
     
 }

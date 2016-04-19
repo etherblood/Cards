@@ -1,4 +1,4 @@
-package com.etherblood.cardsmatch.cardgame;
+package com.etherblood.cardsmatchapi;
 
 /**
  *
