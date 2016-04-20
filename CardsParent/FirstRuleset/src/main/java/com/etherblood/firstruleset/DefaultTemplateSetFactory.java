@@ -333,9 +333,9 @@ public class DefaultTemplateSetFactory {
         createSpell("Flamecannon", 2, createFilteredDamage(4, targetEnemyMinions, atLeastOneTargetRequired, battlecry, new EffectTargetsSingleRandomComponent()));
         createSpell("Sinister Strike", 1, createFilteredDamage(3, targetEnemyHeroes, battlecry));
 
-        createSpell("Starfire", 6, createDrawEffect(1, targetOwner, battlecry), createUserTargetedDamage(5, targetAllCharacters, atLeastOneTargetRequired));
-        createSpell("Hammer of Wrath", 4, createDrawEffect(1, targetOwner, battlecry), createUserTargetedDamage(3, targetAllCharacters, atLeastOneTargetRequired));
-        createSpell("Shiv", 2, createDrawEffect(1, targetOwner, battlecry), createUserTargetedDamage(1, targetAllCharacters, atLeastOneTargetRequired));
+//        createSpell("Starfire", 6, createDrawEffect(1, targetOwner, battlecry), createUserTargetedDamage(5, targetAllCharacters, atLeastOneTargetRequired));
+//        createSpell("Hammer of Wrath", 4, createDrawEffect(1, targetOwner, battlecry), createUserTargetedDamage(3, targetAllCharacters, atLeastOneTargetRequired));
+//        createSpell("Shiv", 2, createDrawEffect(1, targetOwner, battlecry), createUserTargetedDamage(1, targetAllCharacters, atLeastOneTargetRequired));
         createSpell("Pyroblast", 10, createUserTargetedDamage(10, targetAllCharacters, atLeastOneTargetRequired));
         createSpell("Fireball", 4, createUserTargetedDamage(6, targetAllCharacters, atLeastOneTargetRequired));
         createSpell("Darkbomb", 2, createUserTargetedDamage(3, targetAllCharacters, atLeastOneTargetRequired));

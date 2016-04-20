@@ -127,37 +127,53 @@ public class CommandGeneratorImpl implements CommandManager {
         ArrayList<EntityId> attackersList = attackersList(data, currentPlayer);
         ArrayList<EntityId> castablesList = castablesList(data, targetSelector, currentPlayer);
 
-        int count = attackersList.size() + castablesList.size() + 1;
-        int index = indexing.getDeterministicIndexForEntity(attackersList, source);
-        if (index != -1) {
-            if (targets.length != 1) {
-                throw new IllegalArgumentException();
+        ArrayList<IndexMove> moves = new ArrayList<>();
+        try {
+            int count = attackersList.size() + castablesList.size() + 1;
+            int index = indexing.getDeterministicIndexForEntity(attackersList, source);
+            if (index != -1) {
+                if (targets.length != 1) {
+                    throw new IllegalCommandException("invalid attacker passed to bot");
+                }
+                moves.add(new IndexMove(index, count));
+                ArrayList<EntityId> defendersList = defendersList(data, currentPlayer);
+                index = indexing.getDeterministicIndexForEntity(defendersList, targets[0]);
+                if (index == -1) {
+                    throw new IllegalCommandException("invalid target passed to bot");
+                }
+                moves.add(new IndexMove(index, defendersList.size()));
+                return;
             }
-            consumer.applyMove(index, count);
-            ArrayList<EntityId> defendersList = defendersList(data, currentPlayer);
-            index = indexing.getDeterministicIndexForEntity(defendersList, targets[0]);
-            consumer.applyMove(index, defendersList.size());
-            return;
-        }
-        index = indexing.getDeterministicIndexForEntity(castablesList, source);
-        if (index != -1) {
-            consumer.applyMove(attackersList.size() + index, count);
-            if (data.has(source, EffectRequiresUserTargetsComponent.class)) {
-                assert targets.length == 1;//multitarget not supported yet
-                List<EntityId> selectTargets = targetSelector.selectTargets(source);
-                index = indexing.getDeterministicIndexForEntity(selectTargets, targets[0]);
-                consumer.applyMove(index, selectTargets.size());
-            } else if (targets.length != 0) {
-                System.out.println("WARNING: targets were passed to bot when none were expected");
-                System.out.println(EntityUtils.toString(data, targets));
+            index = indexing.getDeterministicIndexForEntity(castablesList, source);
+            if (index != -1) {
+                moves.add(new IndexMove(attackersList.size() + index, count));
+                if (data.has(source, EffectRequiresUserTargetsComponent.class)) {
+                    assert targets.length == 1;//multitarget not supported yet
+                    List<EntityId> selectTargets = targetSelector.selectTargets(source);
+                    index = indexing.getDeterministicIndexForEntity(selectTargets, targets[0]);
+                    if (index == -1) {
+                        throw new IllegalCommandException("invalid target passed to bot");
+                    }
+                    moves.add(new IndexMove(index, selectTargets.size()));
+                } else if (targets.length != 0) {
+                    System.out.println("WARNING: targets were passed to bot when none were expected");
+                    System.out.println(EntityUtils.toString(data, targets));
+                }
+                return;
             }
-            return;
+            ownerFilter.setValue(currentQuery.first(data));
+            if (!endTurnQuery.first(data).equals(source)) {
+                throw new IllegalCommandException("The selected command was not listed in valid moves of AI");
+            }
+            moves.add(new IndexMove(count - 1, count));
+        } catch (Throwable e) {
+            moves.clear();
+            throw e;
+        } finally {
+            for (IndexMove move : moves) {
+                consumer.applyMove(move.index, move.count);
+            }
         }
-        ownerFilter.setValue(currentQuery.first(data));
-        if (!endTurnQuery.first(data).equals(source)) {
-            throw new IllegalCommandException("The selected command was not listed in valid moves of AI");
-        }
-        consumer.applyMove(count - 1, count);
     }
 
     private ArrayList<EntityId> attackersList(EntityComponentMapReadonly data, EntityId currentPlayer) {

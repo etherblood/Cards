@@ -29,7 +29,7 @@ public class ImageFactory {
     public ImageFactory() {
         defaultImageData = new ImageData();
         defaultImageData.setName("defaultDemon");
-        defaultImageData.setClasspath("./etherblood_demon.jpg");
+        defaultImageData.setClasspath("/etherblood_demon.jpg");
         register(defaultImageData);
     }
 
@@ -85,7 +85,7 @@ public class ImageFactory {
             if (image == null) {
                 try {
                     System.out.println("opening image " + data.getClasspath());
-                    image = ImageIO.read(ClassLoader.getSystemResourceAsStream(data.getClasspath()));
+                    image = ImageIO.read(ImageFactory.class.getResourceAsStream(data.getClasspath()));
                     imageMap.put(data.getClasspath(), image);
                 } catch (IOException ex) {
                     ex.printStackTrace(System.out);

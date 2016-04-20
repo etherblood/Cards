@@ -19,7 +19,7 @@ public class IdConverter {
                 return entry.getKey();
             }
         }
-        throw new RuntimeException("id not registered");
+        throw new IllegalArgumentException("id not registered");
     }
     
     public EntityId[] fromLongs(long[] values) {

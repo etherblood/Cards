@@ -7,6 +7,7 @@ import com.etherblood.cardsnetworkshared.DefaultMessage;
 import com.etherblood.cardsnetworkshared.EncryptedMessage;
 import com.etherblood.cardsnetworkshared.master.commands.MatchRequest;
 import com.etherblood.cardsnetworkshared.master.commands.UserLogin;
+import com.etherblood.cardsnetworkshared.master.commands.UserRegistration;
 import com.etherblood.cardsnetworkshared.master.updates.LoginSuccess;
 import com.jme3.scene.Node;
 import com.simsilica.lemur.Button;
@@ -30,11 +31,18 @@ public class LoginScreen extends AbstractScreen {
         getContainer().addChild(new Label("Hello, World."));
         final TextField username = getContainer().addChild(new TextField("testuser"));
         final TextField password = getContainer().addChild(new TextField("password"));
-        Button clickMe = getContainer().addChild(new Button("login"));
-        clickMe.addClickCommands(new Command<Button>() {
+        Button loginButton = getContainer().addChild(new Button("login"));
+        loginButton.addClickCommands(new Command<Button>() {
             @Override
             public void execute(Button source) {
                 eventbus.sendEvent(new EncryptedMessage(new DefaultMessage(new UserLogin(username.getText(), password.getText()))));
+            }
+        });
+        Button registerButton = getContainer().addChild(new Button("register"));
+        registerButton.addClickCommands(new Command<Button>() {
+            @Override
+            public void execute(Button source) {
+                eventbus.sendEvent(new EncryptedMessage(new DefaultMessage(new UserRegistration(username.getText(), password.getText()))));
             }
         });
     }

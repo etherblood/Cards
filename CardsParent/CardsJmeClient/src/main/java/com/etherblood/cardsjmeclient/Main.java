@@ -1,9 +1,6 @@
 package com.etherblood.cardsjmeclient;
 
 import com.etherblood.cardsnetworkshared.ExtendedDefaultClient;
-import com.etherblood.cardsjmeclient.appscreens.ArrangeMatchScreen;
-import com.etherblood.cardsjmeclient.appscreens.LoginScreen;
-import com.etherblood.cardsjmeclient.appscreens.MatchScreen;
 import com.etherblood.cardsjmeclient.events.AppStartedEvent;
 import com.etherblood.cardsjmeclient.events.EventListener;
 import com.etherblood.cardsjmeclient.events.Eventbus;
@@ -15,9 +12,6 @@ import com.etherblood.cardsnetworkshared.DefaultMessage;
 import com.etherblood.cardsnetworkshared.EncryptedMessage;
 import com.etherblood.cardsnetworkshared.SerializerInit;
 import com.jme3.app.SimpleApplication;
-import com.jme3.asset.AssetManager;
-import com.jme3.asset.plugins.UrlLocator;
-import com.jme3.audio.AudioNode;
 import com.jme3.input.event.MouseButtonEvent;
 import com.jme3.math.Quaternion;
 import com.jme3.network.AbstractMessage;
@@ -29,9 +23,7 @@ import com.jme3.renderer.RenderManager;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.system.AppSettings;
-import com.jme3.system.JmeSystem;
 import com.simsilica.lemur.GuiGlobals;
-import com.simsilica.lemur.Panel;
 import com.simsilica.lemur.event.DefaultMouseListener;
 import com.simsilica.lemur.style.BaseStyles;
 import java.awt.Dimension;
@@ -138,7 +130,7 @@ public class Main extends SimpleApplication {
         testCard = new Card();
 //        testCard.setLocalScale(0.1f);
         Node testNode = new Node();
-        testNode.setLocalScale(0.01f);
+        testNode.setLocalScale(0.1f);
         testNode.setLocalTranslation(500, 500, -100);
         getRootNode().attachChild(testNode);
         testNode.attachChild(testCard);
