@@ -1,8 +1,8 @@
 package com.etherblood.firstruleset;
 
 import com.etherblood.cardscontext.Autowire;
-import com.etherblood.cardslogging.LogLevel;
-import com.etherblood.cardslogging.Logger;
+import com.etherblood.logging.LogLevel;
+import com.etherblood.logging.Logger;
 import com.etherblood.cardsmatch.cardgame.EntityUtils;
 import com.etherblood.firstruleset.logic.battle.MinionComponent;
 import com.etherblood.firstruleset.logic.player.OwnerComponent;

@@ -11,7 +11,7 @@ public class FormattedLogsWriterImpl implements FormattedLogsWriter {
     private static final String NULL_STRING = "null";
     private final String PLACEHOLDER = "{}";
     private final int PLACEHOLDER_LENGTH = PLACEHOLDER.length();
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd hh:mm:ss.SSS Z");
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss.SSS Z");
     
     @Override
     public void append(PrintWriter writer, String message, Object[] params) throws IOException {

@@ -1,6 +1,6 @@
 package com.etherblood.cardsmatchapi;
 
-import com.etherblood.cardslogging.Logger;
+import com.etherblood.logging.Logger;
 import java.util.List;
 
 /**

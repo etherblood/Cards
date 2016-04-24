@@ -1,7 +1,7 @@
 package com.etherblood.cardsmasterserver.matches;
 
-import com.etherblood.cardslogging.DefaultLogger;
-import com.etherblood.cardslogging.LogLevel;
+import com.etherblood.logging.DefaultLogger;
+import com.etherblood.logging.LogLevel;
 import com.etherblood.cardsmasterserver.matches.internal.players.HumanPlayer;
 import com.etherblood.cardsmasterserver.cards.CardCollectionService;
 import com.etherblood.cardsmasterserver.matches.internal.MatchContextWrapper;

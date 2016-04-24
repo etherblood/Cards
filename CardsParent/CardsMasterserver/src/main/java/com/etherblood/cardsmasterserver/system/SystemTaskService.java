@@ -49,7 +49,7 @@ public class SystemTaskService {
     @PreAuthorize("denyAll")
     public void init() {
         executor = Executors.newFixedThreadPool(threadCount);
-    }
+            }
     
     @PreDestroy
     @PreAuthorize("denyAll")

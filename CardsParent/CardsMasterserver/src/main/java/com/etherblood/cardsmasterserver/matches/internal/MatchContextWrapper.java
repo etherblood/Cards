@@ -1,6 +1,6 @@
 package com.etherblood.cardsmasterserver.matches.internal;
 
-import com.etherblood.cardslogging.Logger;
+import com.etherblood.logging.Logger;
 import com.etherblood.cardsmasterserver.matches.internal.players.AbstractPlayer;
 import com.etherblood.cardsmatchapi.PlayerProxy;
 import com.etherblood.cardsmatchapi.PlayerResult;
