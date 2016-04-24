@@ -18,9 +18,6 @@ public class MatchContextWrapper {
     private StateProxy matchState;
     private List<AbstractPlayer> players;
     private final Logger logger;
-//    private final FilterQuery currentPlayerQuery = new FilterQuery().setBaseClass(ItsMyTurnComponent.class);
-//    private MatchContext state;
-//    private List<AbstractPlayer> players;
 
     public MatchContextWrapper(UUID uuid, Logger logger) {
         this.uuid = uuid;
@@ -34,43 +31,10 @@ public class MatchContextWrapper {
             player.setMatch(this);
         }
     }
-//
-//    public synchronized void triggerEffect(EntityId player, EntityId source, EntityId... targets) {
-//        try {
-//            getCommandHandler().handleCommand(player, source, targets);
-//        } catch (IllegalCommandException e) {
-//            for (AbstractPlayer matchPlayer : players) {
-//                matchPlayer.clearCache();
-//            }
-//            throw e;
-//        }
-//    }
-
+    
     public boolean hasMatchEnded() {
         return matchState.isGameOver();
-//        return !getData().entities(MatchEndedComponent.class).isEmpty();
     }
-
-//    public MatchResult getResult() {
-//        assert hasMatchEnded();
-//        List<AbstractPlayer> winners = new ArrayList<>();
-//        List<AbstractPlayer> neutral = new ArrayList<>();
-//        List<AbstractPlayer> losers = new ArrayList<>();
-//        for (AbstractPlayer player : players) {
-//            if (getData().has(player.getPlayer(), WinnerComponent.class)) {
-//                winners.add(player);
-//            } else if (getData().has(player.getPlayer(), LoserComponent.class)) {
-//                losers.add(player);
-//            } else {
-//                neutral.add(player);
-//            }
-//        }
-//        return new MatchResult(winners, neutral, losers);
-//    }
-
-//    public MatchContext getContext() {
-//        return state;
-//    }
 
     public AbstractPlayer getCurrentPlayer() {
         PlayerProxy currentProxy = matchState.getCurrentPlayer();
@@ -82,10 +46,6 @@ public class MatchContextWrapper {
         throw new IllegalStateException(currentProxy.toString());
     }
 
-//    public void endCurrentTurn() {
-//        state.events.fireEvent(new EndTurnEvent(currentPlayerEntity()));
-//        state.events.handleEvents();
-//    }
     public List<AbstractPlayer> getPlayers() {
         return players;
     }
@@ -103,22 +63,6 @@ public class MatchContextWrapper {
     public PlayerResult getResult(AbstractPlayer player) {
         return matchState.getResult(player.getProxy());
     }
-
-//    private EntityId currentPlayerEntity() {
-//        return currentPlayerQuery.first(getData());
-//    }
-//
-//    public GameEventQueueImpl getEvents() {
-//        return state.getBean(GameEventQueueImpl.class);
-//    }
-//    
-//    private CommandHandler getCommandHandler() {
-//        return state.getBean(CommandHandler.class);
-//    }
-//
-//    public VersionedEntityComponentMap getData() {
-//        return state.getBean(VersionedEntityComponentMap.class);
-//    }
 
     public Logger getLogger() {
         return logger;

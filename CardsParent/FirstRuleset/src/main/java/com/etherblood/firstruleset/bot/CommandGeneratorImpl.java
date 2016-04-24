@@ -4,9 +4,9 @@ import com.etherblood.cardsmatch.cardgame.EntityUtils;
 import com.etherblood.cardsmatchapi.IllegalCommandException;
 import com.etherblood.cardsmatch.cardgame.ValidEffectTargetsSelector;
 import com.etherblood.cardsmatch.cardgame.bot.commands.Command;
-import com.etherblood.firstruleset.bot.monteCarlo.CommandManager;
-import com.etherblood.firstruleset.bot.monteCarlo.MoveConsumer;
-import com.etherblood.firstruleset.bot.monteCarlo.MoveSelector;
+import com.etherblood.cardsmatch.cardgame.bot.monteCarlo.CommandManager;
+import com.etherblood.cardsmatch.cardgame.bot.monteCarlo.MoveConsumer;
+import com.etherblood.cardsmatch.cardgame.bot.monteCarlo.MoveSelector;
 import com.etherblood.firstruleset.logic.battle.buffs.AttackCountComponent;
 import com.etherblood.firstruleset.logic.battle.buffs.ChargeComponent;
 import com.etherblood.firstruleset.logic.battle.buffs.SummonSicknessComponent;
@@ -121,7 +121,6 @@ public class CommandGeneratorImpl implements CommandManager {
         events.handleEvents();
     }
 
-    @Override
     public void validate(EntityComponentMapReadonly data, ValidEffectTargetsSelector targetSelector, EntityId source, EntityId[] targets) {
         EntityId currentPlayer = currentQuery.first(data);
         ArrayList<EntityId> attackersList = attackersList(data, currentPlayer);
@@ -129,11 +128,11 @@ public class CommandGeneratorImpl implements CommandManager {
 
         if (attackersList.contains(source)) {
             if (targets.length != 1) {
-                throw new IllegalCommandException("invalid attacker passed to bot");
+                throw new IllegalCommandException("invalid attacker passed");
             }
             ArrayList<EntityId> defendersList = defendersList(data, currentPlayer);
             if (!defendersList.contains(targets[0])) {
-                throw new IllegalCommandException("invalid target passed to bot");
+                throw new IllegalCommandException("invalid target passed");
             }
             return;
         }
@@ -142,17 +141,17 @@ public class CommandGeneratorImpl implements CommandManager {
                 assert targets.length == 1;//multitarget not supported yet
                 List<EntityId> selectTargets = targetSelector.selectTargets(source);
                 if (!selectTargets.contains(targets[0])) {
-                    throw new IllegalCommandException("invalid target passed to bot");
+                    throw new IllegalCommandException("invalid target passed");
                 }
             } else if (targets.length != 0) {
-                System.out.println("WARNING: targets were passed to bot when none were expected");
+                System.out.println("WARNING: targets were passed when none were expected");
                 System.out.println(EntityUtils.toString(data, targets));
             }
             return;
         }
         ownerFilter.setValue(currentQuery.first(data));
         if (!endTurnQuery.first(data).equals(source)) {
-            throw new IllegalCommandException("The selected command was not listed in valid moves of AI");
+            throw new IllegalCommandException("The selected command was not listed in valid moves");
         }
     }
 
@@ -251,4 +250,5 @@ public class CommandGeneratorImpl implements CommandManager {
         }
         return defenders;
     }
+
 }

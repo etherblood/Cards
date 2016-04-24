@@ -1,30 +1,24 @@
 package com.etherblood.cardsjmeclient;
 
 import com.etherblood.cardsnetworkshared.ExtendedDefaultClient;
-import com.etherblood.cardsjmeclient.events.AppStartedEvent;
 import com.etherblood.cardsjmeclient.events.EventListener;
 import com.etherblood.cardsjmeclient.events.Eventbus;
 import com.etherblood.cardsjmeclient.events.EventbusImpl;
 import com.etherblood.cardsjmeclient.events.ExceptionEvent;
-import com.etherblood.cardsjmeclient.match.cards.Card;
+import com.etherblood.cardsjmeclient.events.ScreenRequestEvent;
 import com.etherblood.cardsjmeclient.match.cards.TemplatesReader;
 import com.etherblood.cardsnetworkshared.DefaultMessage;
 import com.etherblood.cardsnetworkshared.EncryptedMessage;
 import com.etherblood.cardsnetworkshared.SerializerInit;
 import com.jme3.app.SimpleApplication;
-import com.jme3.input.event.MouseButtonEvent;
-import com.jme3.math.Quaternion;
 import com.jme3.network.AbstractMessage;
 import com.jme3.network.Client;
 import com.jme3.network.ErrorListener;
 import com.jme3.network.Message;
 import com.jme3.network.MessageListener;
 import com.jme3.renderer.RenderManager;
-import com.jme3.scene.Node;
-import com.jme3.scene.Spatial;
 import com.jme3.system.AppSettings;
 import com.simsilica.lemur.GuiGlobals;
-import com.simsilica.lemur.event.DefaultMouseListener;
 import com.simsilica.lemur.style.BaseStyles;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -144,7 +138,7 @@ public class Main extends SimpleApplication {
 //////                System.out.println("hurrdurr");
 //////            }
 //////        });
-        fireSyncedEvent(new AppStartedEvent());
+        fireSyncedEvent(new ScreenRequestEvent(ScreenKeys.LOGIN));
     }
 
     @Override

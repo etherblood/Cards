@@ -7,5 +7,6 @@ package com.etherblood.logging;
 public interface Logger {
     void log(LogLevel level, String message, Object... arguments);
     void log(LogLevel level, String message);
+    void log(LogLevel level, Object obj);
     boolean acceptsLogLevel(LogLevel level);
 }

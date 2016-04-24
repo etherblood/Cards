@@ -11,7 +11,7 @@ public class ErrorScreen extends AbstractScreen {
 
     @Override
     public void bind(Eventbus eventbus) {
-        getContainer().setLocalTranslation(300, 300, 0);
+        getContainer().setLocalTranslation(300, 800, 0);
 
         // Add some elements
         getContainer().addChild(new Label("Error"));

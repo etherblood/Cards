@@ -27,7 +27,7 @@ import com.etherblood.firstruleset.ClientUpdaterFactory;
 import com.etherblood.firstruleset.CommandHandlerImpl;
 import com.etherblood.firstruleset.IdConverterExtendedImpl;
 import com.etherblood.firstruleset.bot.CommandGeneratorImpl;
-import com.etherblood.firstruleset.bot.monteCarlo.MonteCarloController;
+import com.etherblood.cardsmatch.cardgame.bot.monteCarlo.MonteCarloController;
 import com.etherblood.firstruleset.logic.cardZones.events.BoardAttachEvent;
 import com.etherblood.firstruleset.logic.cardZones.events.LibraryAttachEvent;
 import com.etherblood.firstruleset.logic.draw.RequestDrawEvent;

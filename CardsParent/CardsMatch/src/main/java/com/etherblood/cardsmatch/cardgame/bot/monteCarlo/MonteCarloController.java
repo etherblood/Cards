@@ -1,4 +1,4 @@
-package com.etherblood.firstruleset.bot.monteCarlo;
+package com.etherblood.cardsmatch.cardgame.bot.monteCarlo;
 
 import com.etherblood.cardsmatch.cardgame.ValidEffectTargetsSelector;
 import com.etherblood.cardsmatch.cardgame.bot.Bot;
@@ -147,7 +147,6 @@ public class MonteCarloController implements Bot {
     public void moveNotification(EntityId effect, EntityId... targets) {
         EntityComponentMapReadonly data = state.getBean(EntityComponentMapReadonly.class);
         ValidEffectTargetsSelector targetSelector = state.getBean(ValidEffectTargetsSelector.class);
-        generator.validate(data, targetSelector, effect, targets);
         generator.selectCommand(data, targetSelector, effect, targets, moveConsumer);
     }
 }

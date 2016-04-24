@@ -24,6 +24,7 @@ import com.etherblood.cardsmatchapi.PlayerResult;
 import com.etherblood.cardsnetworkshared.match.updates.JoinedMatchUpdate;
 import java.io.File;
 import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -49,6 +50,7 @@ public class MatchService {
 
     private final ConcurrentHashMap<Long, HumanPlayer> matchMap = new ConcurrentHashMap<>();
     private final AtomicReference<Long> pendingUserId = new AtomicReference<>(null);
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd_HH.mm.ss");
     private HashMap<String, RulesDefinition> rules;
 
 //    private Map<Class, UpdateBuilder> updateBuilders;
@@ -91,13 +93,15 @@ public class MatchService {
     public void onTriggerEffectRequest(TriggerEffectRequest triggerEffect) {
         HumanPlayer matchPlayer = matchMap.get(connectionService.getCurrentUserId());
         MatchContextWrapper match = matchPlayer.getMatch();
-        try {
-            matchPlayer.triggerEffect(triggerEffect);
-            updateMatch(match);
-        } catch (IllegalCommandException e) {
-            match.getLogger().log(LogLevel.ERROR, "{}", e);
-        } catch (Exception e) {
-            cleanupMatchAfterException(e, match);
+        synchronized (match) {
+            try {
+                matchPlayer.triggerEffect(triggerEffect);
+                updateMatch(match);
+            } catch (IllegalCommandException e) {
+                match.getLogger().log(LogLevel.ERROR, e);
+            } catch (Exception e) {
+                cleanupMatchAfterException(e, match);
+            }
         }
     }
 
@@ -127,6 +131,11 @@ public class MatchService {
     }
 
     private void startRuleMatch(long user1, Long user2) {
+        killMatch(user1);
+        if(user2 != null) {
+            killMatch(user2);
+        }
+        
         RulesDefinition ruleset = rules.get("default rules");//new DefaultRulesDef(templateService.getAll());
         ArrayList<AbstractPlayer> players = new ArrayList<>();
         ArrayList<HumanPlayer> humans = new ArrayList<>();
@@ -141,21 +150,16 @@ public class MatchService {
         }
         
         UUID uuid = UUID.randomUUID();
-        String matchName = uuid.toString() + "_" + def1.getName() + "_vs_" + def2.getName();
+        String matchName = dateFormat.format(new Date()) + "_" + def1.getName() + "_vs_" + def2.getName() + "_" + uuid.toString();
         PrintWriter writer;
         try {
             writer = new PrintWriter(new File(System.getProperty("user.home") + System.getProperty("file.separator") + matchLogsPath + matchName + ".txt"));
         } catch(Exception e) {
             throw new RuntimeException(e);
-//            writer = new PrintWriter(System.out);
         }
         DefaultLogger logger = new DefaultLogger(writer);
         logger.log(LogLevel.INFO, "Started match {} - {} vs {}", uuid, def1.getName(), def2.getName());
         MatchBuilder matchBuilder = ruleset.createMatchBuilder(logger);
-//        final EntityComponentMap data = rules.getBuilder().removeBean(EntityComponentMap.class);
-//        rules.getBuilder().addBean(new VersionedEntityComponentMapImpl(data));
-////        final MatchContext context = ruleset.init(playerDefs);
-
         HumanPlayer player1 = new HumanPlayer(user1, matchBuilder.createHuman(def1));
         humans.add(player1);
         players.add(player1);
@@ -172,27 +176,26 @@ public class MatchService {
 
         final MatchContextWrapper wrapper = new MatchContextWrapper(uuid, logger);
         wrapper.init(matchBuilder.getStateTracker(), players);
-
-//        for (AbstractPlayer player : players) {
-//            if (player instanceof AiPlayer) {
-//                AiPlayer ai = (AiPlayer) player;
-//
-////                EndTurnCommandFactory endTurnCommandFactory = new EndTurnCommandFactory();
-////                endTurnCommandFactory.data = wrapper.getData();
-////                ai.setBot(new EndTurnBot(endTurnCommandFactory));
-//                MatchContext simulationContext = new DefaultRulesDef(templateService.getAll()).getBuilder().build();
-//                MonteCarloController monteCarloBot = new MonteCarloController(context, simulationContext, new CommandGeneratorImpl(), player1.getPlayer());
-//                ai.setBot(monteCarloBot);
-//            }
-//        }
-//        ruleset.start(context);
-        for (HumanPlayer human : humans) {
-            matchMap.put(human.getUserId(), human);
-            connectionService.sendMessage(human.getUserId(), new DefaultMessage(new JoinedMatchUpdate()));
+        
+        synchronized(wrapper) {
+            for (HumanPlayer human : humans) {
+                matchMap.put(human.getUserId(), human);
+                connectionService.sendMessage(human.getUserId(), new DefaultMessage(new JoinedMatchUpdate()));
+            }
+            matchBuilder.start();
+            assert wrapper.getCurrentPlayer() != null;
+            updateMatch(wrapper);
         }
-        matchBuilder.start();
-        assert wrapper.getCurrentPlayer() != null;
-        updateMatch(wrapper);
+    }
+
+    private void killMatch(long user1) {
+        HumanPlayer oldPlayer = matchMap.remove(user1);
+        if(oldPlayer != null) {
+            MatchContextWrapper oldMatch = oldPlayer.getMatch();
+            synchronized(oldMatch) {
+                cleanupMatchAfterException(new IllegalStateException("user started new match when an old match was still in progress"), oldMatch);
+            }
+        }
     }
 
     private PlayerDefinition createPlayerDefinition(String name, String[] library) {
@@ -207,13 +210,15 @@ public class MatchService {
     @PreAuthorize("hasRole('ROLE_SYSTEM')")
     public void aiUpdate(AiUpdateRequest request) {
         MatchContextWrapper matchWrapper = request.getMatchWrapper();
-        AbstractPlayer currentPlayer = matchWrapper.getCurrentPlayer();
-        if (currentPlayer instanceof AiPlayer && !matchWrapper.hasMatchEnded()) {
-            try {
-                ((AiPlayer) currentPlayer).compute();
-                updateMatch(matchWrapper);
-            } catch (Exception e) {
-                cleanupMatchAfterException(e, matchWrapper);
+        synchronized (matchWrapper) {
+            AbstractPlayer currentPlayer = matchWrapper.getCurrentPlayer();
+            if (currentPlayer instanceof AiPlayer && !matchWrapper.hasMatchEnded()) {
+                try {
+                    ((AiPlayer) currentPlayer).compute();
+                    updateMatch(matchWrapper);
+                } catch (Exception e) {
+                    cleanupMatchAfterException(e, matchWrapper);
+                }
             }
         }
     }
@@ -221,7 +226,7 @@ public class MatchService {
     private void cleanupMatchAfterException(Exception e, MatchContextWrapper matchWrapper) {
         e.printStackTrace(System.err);
         System.err.println("ending match because of exception");
-        matchWrapper.getLogger().log(LogLevel.ERROR, "{}", e);
+        matchWrapper.getLogger().log(LogLevel.ERROR, e);
         //TODO: end match with exception result
         for (HumanPlayer player : matchWrapper.getPlayers(HumanPlayer.class)) {
             System.out.println("MatchService - TODO: send matchAbort to user " + player.getUserId());//TODO send matchAbort to user

@@ -1,19 +1,12 @@
 package com.etherblood.cardsjmeclient.appscreens;
 
-import com.etherblood.cardsjmeclient.events.AppStartedEvent;
-import com.etherblood.cardsjmeclient.events.EventListener;
 import com.etherblood.cardsjmeclient.events.Eventbus;
 import com.etherblood.cardsnetworkshared.DefaultMessage;
 import com.etherblood.cardsnetworkshared.EncryptedMessage;
-import com.etherblood.cardsnetworkshared.master.commands.MatchRequest;
 import com.etherblood.cardsnetworkshared.master.commands.UserLogin;
 import com.etherblood.cardsnetworkshared.master.commands.UserRegistration;
-import com.etherblood.cardsnetworkshared.master.updates.LoginSuccess;
-import com.jme3.scene.Node;
 import com.simsilica.lemur.Button;
-import com.simsilica.lemur.Checkbox;
 import com.simsilica.lemur.Command;
-import com.simsilica.lemur.Container;
 import com.simsilica.lemur.Label;
 import com.simsilica.lemur.TextField;
 
@@ -25,7 +18,7 @@ public class LoginScreen extends AbstractScreen {
 
     @Override
     public void bind(final Eventbus eventbus) {
-        getContainer().setLocalTranslation(300, 300, 0);
+        getContainer().setLocalTranslation(300, 800, 0);
 
         // Add some elements
         getContainer().addChild(new Label("Hello, World."));

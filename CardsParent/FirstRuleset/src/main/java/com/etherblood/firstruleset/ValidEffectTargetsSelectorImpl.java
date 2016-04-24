@@ -18,7 +18,6 @@ import com.etherblood.firstruleset.logic.effects.targeting.filters.TargetPlayers
 import com.etherblood.firstruleset.logic.effects.targeting.filters.TargetSelfComponent;
 import com.etherblood.firstruleset.logic.player.OwnerComponent;
 import com.etherblood.cardsmatch.cardgame.components.player.PlayerComponent;
-import com.etherblood.cardsmatch.cardgame.rng.RngFactory;
 import com.etherblood.entitysystem.data.EntityComponentMapReadonly;
 import com.etherblood.entitysystem.data.EntityId;
 import com.etherblood.entitysystem.filters.FilterQuery;

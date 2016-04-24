@@ -30,37 +30,19 @@ public class CommandHandlerImpl implements  CommandHandler {
     
     @Override
     public void handleCommand(EntityId player, EntityId source, EntityId... targets) {
-//        int checkpoint = data.getVersion();
-//        try {
-            validate(player, source, targets);
-            notifyBots(source, targets);//notify first to ensure internal events occur in correct order
-            events.fireEvent(new TargetedTriggerEffectEvent(player, source, targets));
-            events.handleEvents();
-//        } catch (IllegalCommandException e) {
-//            System.out.println("illegal command.");
-//            if(data.getVersion() != checkpoint) {
-//                System.err.println("illegal command modified match data, this should not have happened, rolling back...");
-//                data.revertTo(checkpoint);
-//            }
-//            if(!events.isEmpty()) {
-//                System.err.println("illegal command invalidated eventQueue, clearing eventQueue...");
-//                events.clear();
-//            }
-//            if(!events.getDataStack().isEmpty()) {
-//                System.err.println("illegal command invalidated eventDataStack, clearing eventDataStack...");
-//                events.getDataStack().clear();
-//            }
-//            throw e;
-//        }
+        validate(player, source, targets);
+        notifyBots(source, targets);//notify first to ensure internal events occur in correct order
+        events.fireEvent(new TargetedTriggerEffectEvent(player, source, targets));
+        events.handleEvents();
     }
     
     private void validate(EntityId player, EntityId source, EntityId... targets) {
         if(!data.has(player, ItsMyTurnComponent.class)) {
             throw new IllegalCommandException("players can only use commands during their turn");
         }
-        new CommandGeneratorImpl().validate(data, targetSelector, source, targets);
+        new CommandGeneratorImpl().validate(data, targetSelector, source, targets);//TODO: validation should be done here not in the command generator
     }
-    
+
     public void registerBot(Bot bot) {
         bots.add(bot);
     }

@@ -21,6 +21,11 @@ public class DefaultLogger implements Logger {
     }
 
     @Override
+    public void log(LogLevel level, Object obj) {
+        log(level, "{}", obj);
+    }
+
+    @Override
     public void log(LogLevel level, String message, Object... arguments) {
         if(acceptsLogLevel(level)) {
             try {
@@ -29,6 +34,7 @@ public class DefaultLogger implements Logger {
                 writer.append(Thread.currentThread().getName());
                 writer.append(' ');
                 writer.append(level.toString());
+                writer.append(':');
                 writer.append(' ');
                 formatter.append(writer, message, arguments);
                 writer.append(System.lineSeparator());

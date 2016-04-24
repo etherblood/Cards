@@ -19,10 +19,8 @@ public class BotProxyImpl extends AbstractPlayerProxy implements BotProxy {
     
     @Override
     public void doAction() {
-        synchronized(getContext()) {
-            Command command = bot.think();
-            apply(command.effect, command.targets);
-        }
+        Command command = bot.think();
+        apply(command.effect, command.targets);
     }
 
     @Override

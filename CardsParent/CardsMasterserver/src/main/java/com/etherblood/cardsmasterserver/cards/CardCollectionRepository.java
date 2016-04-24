@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public class CardCollectionRepository extends AbstractRepository<CardCollection> {
-    private QCardCollection collection = QCardCollection.cardCollection;
+    private final QCardCollection collection = QCardCollection.cardCollection;
     
     public List<CardCollection> getAllUserCollections(long userId) {
         return from(collection)

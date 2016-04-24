@@ -25,17 +25,15 @@ public class HumanProxyImpl extends AbstractPlayerProxy implements HumanProxy<Tr
 
     @Override
     public void applyAction(TriggerEffectRequest action) {
-        synchronized(getContext()) {
-            EntityId source;
-            EntityId[] targets;
-            try {
-                source = idConverter.fromLong(action.getSource());
-                targets = idConverter.fromLongs(action.getTargets());
-            } catch(IllegalArgumentException e) {
-                throw new IllegalCommandException("passed id's are invalid", e);
-            }
-            apply(source, targets);
+        EntityId source;
+        EntityId[] targets;
+        try {
+            source = idConverter.fromLong(action.getSource());
+            targets = idConverter.fromLongs(action.getTargets());
+        } catch(IllegalArgumentException e) {
+            throw new IllegalCommandException("passed id's are invalid", e);
         }
+        apply(source, targets);
     }
 
     @Override

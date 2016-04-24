@@ -101,7 +101,8 @@ public class ImageFactory {
                     imageMap.put(data.getPath(), image);
                 } catch (IOException ex) {
                     ex.printStackTrace(System.out);
-                    return null;
+                    image = imageMap.get(defaultImageData.getClasspath());
+                    imageMap.put(data.getPath(), image);
                 }
             }
         } else if (data.getUrl() != null) {
@@ -113,7 +114,8 @@ public class ImageFactory {
                     imageMap.put(data.getUrl(), image);
                 } catch (IOException ex) {
                     ex.printStackTrace(System.out);
-                    return null;
+                    image = imageMap.get(defaultImageData.getClasspath());
+                    imageMap.put(data.getUrl(), image);
                 }
             }
         } else {
