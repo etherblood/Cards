@@ -10,6 +10,8 @@ import com.etherblood.entitysystem.data.EntityId;
 import com.etherblood.entitysystem.filters.AbstractComponentFieldValueFilter;
 import com.etherblood.entitysystem.filters.EqualityOperator;
 import com.etherblood.entitysystem.filters.FilterQuery;
+import com.etherblood.eventsystem.GameEvent;
+import com.etherblood.firstruleset.logic.effects.EffectEvent;
 import com.etherblood.firstruleset.logic.effects.TriggerEffectEvent;
 
 /**
@@ -25,9 +27,16 @@ public class BattlecrySystem extends AbstractMatchSystem<SummonEvent> {
             .addComponentFilter(triggerFilter);
     @Override
     public SummonEvent handle(SummonEvent event) {
+        EntityId[] targets;
+        GameEvent parent = events.getParent(event);
+        if(parent instanceof EffectEvent) {
+            targets = ((EffectEvent)parent).targets;
+        } else {
+            targets = new EntityId[0];
+        }
         triggerFilter.setValue(event.minion);
         for (EntityId entity : battlecryTriggerQuery.list(data)) {//TODO: order results
-            enqueueEvent(new TriggerEffectEvent(entity));
+            enqueueEvent(new TriggerEffectEvent(entity, targets));
         }
         return event;
     }

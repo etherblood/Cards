@@ -2,8 +2,6 @@ package com.etherblood.firstruleset.main;
 
 import com.etherblood.cardsmatch.cardgame.MatchGameEventDispatcher;
 import com.etherblood.cardsmatch.cardgame.TemplateSet;
-import com.etherblood.cardsmatch.cardgame.UpdateBuilder;
-import com.etherblood.cardsmatch.cardgame.client.SystemsEventHandlerDispatcher;
 import com.etherblood.cardsmatch.cardgame.events.gameover.PlayerLostEvent;
 import com.etherblood.cardsmatch.cardgame.events.gameover.systems.EndMatchSystem;
 import com.etherblood.cardsmatch.cardgame.events.gameover.systems.PlayerLostSystem;
@@ -119,11 +117,11 @@ import com.etherblood.firstruleset.logic.summon.systems.ApplySummonSystem;
 import com.etherblood.firstruleset.logic.summon.systems.BattlecrySystem;
 import com.etherblood.cardscontext.MatchContext;
 import com.etherblood.cardscontext.MatchContextBuilder;
+import com.etherblood.cardslogging.DefaultLogger;
+import com.etherblood.cardslogging.Logger;
 import com.etherblood.cardsmatchapi.MatchBuilder;
 import com.etherblood.cardsmatchapi.RulesDefinition;
-import com.etherblood.entitysystem.version.VersionedEntityComponentMapImpl;
 import com.etherblood.firstruleset.AttachAttackAbilitySystem;
-import com.etherblood.firstruleset.ClientUpdaterFactory;
 import com.etherblood.firstruleset.CommandHandlerImpl;
 import com.etherblood.firstruleset.CopyBattlecryConditionsSystem;
 import com.etherblood.firstruleset.DefaultTemplateSetFactory;
@@ -137,7 +135,6 @@ import com.etherblood.firstruleset.logic.templates.patron.systems.PatronSurvival
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 /**
  *
@@ -148,28 +145,23 @@ public class DefaultRulesDef implements RulesDefinition {
     private final TemplateSet templates;
     private final ContextFactory contextFactory = new ContextFactory() {
             @Override
-            public MatchContext buildContext(boolean core) {
+            public MatchContext buildContext(Object... extraBeans) {
                 MatchContextBuilder builder = new MatchContextBuilder();
                 GameEventDispatcher eventDispatcher = new MatchGameEventDispatcher();
                 GameEventQueueImpl events = new GameEventQueueImpl(eventDispatcher);
                 IncrementalEntityIdFactory idFactory = new IncrementalEntityIdFactory();
-                SystemsEventHandlerDispatcher systemsDispatcher = new SystemsEventHandlerDispatcher();
                 EntityComponentMap data = new EntityComponentMapImpl();
-                if (core) {
-                    data = new VersionedEntityComponentMapImpl(data);
-                    systemsDispatcher.getHandlers().add(new MatchLogger(data));
-                    builder.addBean(new CommandHandlerImpl());
-                }
                 builder.addBean(data);
                 builder.addBean(eventDispatcher);
-                builder.addBean(systemsDispatcher);
                 builder.addBean(events);
-                builder.addBean(events.getDataStack());
                 builder.addBean(idFactory);
                 builder.addBean(new RngFactoryImpl());
-                builder.addBean(DefaultRulesDef.this.templates);
+                builder.addBean(templates);
                 builder.addBean(new ValidEffectTargetsSelectorImpl());
-                DefaultRulesDef.this.addSystems(builder, eventDispatcher);
+                for (Object extraBean : extraBeans) {
+                    builder.addBean(extraBean);
+                }
+                addSystems(builder, eventDispatcher);
                 return builder.build();
             }
         };
@@ -192,13 +184,9 @@ public class DefaultRulesDef implements RulesDefinition {
         return Arrays.asList(templates.getCollectableTemplateNames());
     }
 
-    private Map<Class, UpdateBuilder> getUpdateBuilders() {
-        return ClientUpdaterFactory.createUpdateBuilders();
-    }
-
     @Override
-    public MatchBuilder createMatchBuilder() {
-        return new DefaultMatchBuilder(contextFactory);
+    public MatchBuilder createMatchBuilder(Logger logger) {
+        return new DefaultMatchBuilder(contextFactory, contextFactory.buildContext(logger, new MatchLogger(), new CommandHandlerImpl()));
     }
     
     private void addSystems(MatchContextBuilder builder, GameEventDispatcher eventDispatcher) {

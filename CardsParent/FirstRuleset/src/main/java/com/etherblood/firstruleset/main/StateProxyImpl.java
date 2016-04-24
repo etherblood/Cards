@@ -8,9 +8,9 @@ import com.etherblood.cardsmatch.cardgame.components.player.WinnerComponent;
 import com.etherblood.cardsmatchapi.PlayerProxy;
 import com.etherblood.cardsmatchapi.PlayerResult;
 import com.etherblood.cardsmatchapi.StateProxy;
+import com.etherblood.entitysystem.data.EntityComponentMapReadonly;
 import com.etherblood.entitysystem.data.EntityId;
 import com.etherblood.entitysystem.filters.FilterQuery;
-import com.etherblood.entitysystem.version.VersionedEntityComponentMap;
 import java.util.List;
 
 /**
@@ -61,8 +61,8 @@ public class StateProxyImpl implements StateProxy {
         return currentPlayerQuery.first(getData());
     }
 
-    public VersionedEntityComponentMap getData() {
-        return context.getBean(VersionedEntityComponentMap.class);
+    public EntityComponentMapReadonly getData() {
+        return context.getBean(EntityComponentMapReadonly.class);
     }
     
 }

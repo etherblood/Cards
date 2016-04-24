@@ -38,7 +38,7 @@ public class Main extends SimpleApplication {
 
     private static final int PORT = 6145;
     private Client client;
-    private Card testCard;
+//    private Card testCard;
 
     private final Eventbus eventbus = new EventbusImpl();
 
@@ -127,29 +127,29 @@ public class Main extends SimpleApplication {
 //        new MatchScreen().bind(eventbus, getGuiNode());
 //        LoginAppstate loginAppstate = new LoginAppstate(eventbus);
 //        ArrangeMatchAppstate arrangeMatchAppstate = new ArrangeMatchAppstate(eventbus);
-        testCard = new Card();
-//        testCard.setLocalScale(0.1f);
-        Node testNode = new Node();
-        testNode.setLocalScale(0.1f);
-        testNode.setLocalTranslation(500, 500, -100);
-        getRootNode().attachChild(testNode);
-        testNode.attachChild(testCard);
-        testCard.setCardName("Wisp");
-        testCard.setAttack(1);
-        testCard.setCost(1);
-        testCard.setHealth(1);
-        testCard.addMouseListener(new DefaultMouseListener() {
-            @Override
-            protected void click(MouseButtonEvent event, Spatial target, Spatial capture) {
-                System.out.println("hurrdurr");
-            }
-        });
+//////        testCard = new Card();
+////////        testCard.setLocalScale(0.1f);
+//////        Node testNode = new Node();
+//////        testNode.setLocalScale(0.1f);
+//////        testNode.setLocalTranslation(500, 500, -100);
+//////        getRootNode().attachChild(testNode);
+//////        testNode.attachChild(testCard);
+//////        testCard.setCardName("Wisp");
+//////        testCard.setAttack(1);
+//////        testCard.setCost(1);
+//////        testCard.setHealth(1);
+//////        testCard.addMouseListener(new DefaultMouseListener() {
+//////            @Override
+//////            protected void click(MouseButtonEvent event, Spatial target, Spatial capture) {
+//////                System.out.println("hurrdurr");
+//////            }
+//////        });
         fireSyncedEvent(new AppStartedEvent());
     }
 
     @Override
     public void simpleUpdate(float tpf) {
-        testCard.setLocalRotation(testCard.getLocalRotation().mult(new Quaternion().fromAngles(tpf, 0, 0)));
+//        testCard.setLocalRotation(testCard.getLocalRotation().mult(new Quaternion().fromAngles(tpf, 0, 0)));
     }
 
     @Override

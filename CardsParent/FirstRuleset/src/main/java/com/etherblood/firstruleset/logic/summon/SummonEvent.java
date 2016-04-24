@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.etherblood.firstruleset.logic.summon;
 
 import com.etherblood.eventsystem.GameEvent;
@@ -16,5 +12,10 @@ public class SummonEvent implements GameEvent {
 
     public SummonEvent(EntityId source) {
         this.minion = source;
+    }
+
+    @Override
+    public String toString() {
+        return "SummonEvent{" + "minion=" + minion + '}';
     }
 }

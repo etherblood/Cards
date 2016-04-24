@@ -10,7 +10,6 @@ import com.etherblood.firstruleset.logic.cardZones.components.BoardCardComponent
 import com.etherblood.firstruleset.logic.effects.EffectTriggerEntityComponent;
 import com.etherblood.firstruleset.logic.effects.conditions.CanAttackConditionComponent;
 import com.etherblood.firstruleset.logic.player.OwnerComponent;
-import com.etherblood.firstruleset.eventData.EffectTargets;
 import com.etherblood.firstruleset.logic.effects.EffectEvent;
 import com.etherblood.entitysystem.data.EntityComponentMapReadonly;
 import com.etherblood.entitysystem.data.EntityId;
@@ -44,11 +43,11 @@ public class CanAttackConditionSystem extends AbstractMatchSystem<EffectEvent> {
                 System.out.println("can't attack because it has AttackCountComponent");
                 return null;
             }
-            if(eventData().get(EffectTargets.class).targets.length == 0) {
+            if(event.targets.length == 0) {
                 System.out.println("WARNING: tried to attack without target");
                 return null;
             }
-            for (EntityId defender : eventData().get(EffectTargets.class).targets) {
+            for (EntityId defender : event.targets) {
                 EntityId opponentPlayer = data.get(defender, OwnerComponent.class).player;
                 if (data.get(attacker, OwnerComponent.class).player == opponentPlayer) {
                     return null;

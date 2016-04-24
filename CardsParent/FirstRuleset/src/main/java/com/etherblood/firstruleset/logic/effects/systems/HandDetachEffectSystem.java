@@ -7,7 +7,6 @@ package com.etherblood.firstruleset.logic.effects.systems;
 import com.etherblood.cardsmatch.cardgame.AbstractMatchSystem;
 import com.etherblood.cardscontext.Autowire;
 import com.etherblood.firstruleset.logic.effects.effects.cardzone.HandDetachEffectComponent;
-import com.etherblood.firstruleset.eventData.EffectTargets;
 import com.etherblood.firstruleset.logic.cardZones.events.HandDetachEvent;
 import com.etherblood.firstruleset.logic.effects.EffectEvent;
 import com.etherblood.entitysystem.data.EntityComponentMapReadonly;
@@ -24,11 +23,8 @@ public class HandDetachEffectSystem extends AbstractMatchSystem<EffectEvent> {
     @Override
     public EffectEvent handle(EffectEvent event) {
         if(data.has(event.effect, HandDetachEffectComponent.class)) {
-            EffectTargets targets = eventData().get(EffectTargets.class);
-            if(targets != null) {
-                for (EntityId target : targets.targets) {
-                    enqueueEvent(new HandDetachEvent(target));
-                }
+            for (EntityId target : event.targets) {
+                enqueueEvent(new HandDetachEvent(target));
             }
         }
         return event;

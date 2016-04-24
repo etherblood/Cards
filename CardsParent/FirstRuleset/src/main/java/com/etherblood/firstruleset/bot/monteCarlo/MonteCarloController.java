@@ -12,7 +12,6 @@ import com.etherblood.entitysystem.data.EntityComponentMap;
 import com.etherblood.entitysystem.data.EntityComponentMapReadonly;
 import com.etherblood.entitysystem.data.EntityId;
 import com.etherblood.entitysystem.data.IncrementalEntityIdFactory;
-import com.etherblood.eventsystem.GameEventDataStack;
 import com.etherblood.eventsystem.GameEventQueueImpl;
 import com.etherblood.cardscontext.MatchContext;
 import com.etherblood.montecarlotreesearch.MonteCarloControls;
@@ -82,9 +81,6 @@ public class MonteCarloController implements Bot {
         assert simulationState.getBean(GameEventQueueImpl.class).isEmpty();
         assert state.getBean(GameEventQueueImpl.class).isEmpty();
 
-        assert simulationState.getBean(GameEventDataStack.class).isEmpty();
-        assert state.getBean(GameEventDataStack.class).isEmpty();
-
         EntityComponentMap destData = simulationState.getBean(EntityComponentMap.class);
         EntityComponentMap sourceData = state.getBean(EntityComponentMap.class);
         destData.copyFrom(sourceData);
@@ -149,8 +145,9 @@ public class MonteCarloController implements Bot {
 
     @Override
     public void moveNotification(EntityId effect, EntityId... targets) {
-        EntityComponentMapReadonly data = MonteCarloController.this.state.getBean(EntityComponentMapReadonly.class);
-        ValidEffectTargetsSelector targetSelector = MonteCarloController.this.state.getBean(ValidEffectTargetsSelector.class);
+        EntityComponentMapReadonly data = state.getBean(EntityComponentMapReadonly.class);
+        ValidEffectTargetsSelector targetSelector = state.getBean(ValidEffectTargetsSelector.class);
+        generator.validate(data, targetSelector, effect, targets);
         generator.selectCommand(data, targetSelector, effect, targets, moveConsumer);
     }
 }

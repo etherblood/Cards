@@ -7,5 +7,5 @@ import com.etherblood.cardscontext.MatchContext;
  * @author Philipp
  */
 public interface ContextFactory {
-    MatchContext buildContext(boolean core);
+    MatchContext buildContext(Object... extraBeans);
 }

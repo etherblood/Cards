@@ -1,6 +1,5 @@
 package com.etherblood.cardsmatch.cardgame;
 
-import com.etherblood.cardsmatch.cardgame.client.SystemsEventHandler;
 import com.etherblood.eventsystem.GameEvent;
 import java.util.ArrayList;
 
@@ -8,7 +7,7 @@ import java.util.ArrayList;
  *
  * @author Philipp
  */
-public class EventLogs implements SystemsEventHandler {
+public class EventLogs implements GlobalEventHandler {
     private final ArrayList<GameEvent> events = new ArrayList<>();
     private final ArrayList<Class> systems = new ArrayList<>();
 

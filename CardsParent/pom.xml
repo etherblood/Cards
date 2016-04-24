@@ -29,6 +29,7 @@
         <module>CardsContext</module>
         <module>CardsEditor</module>
         <module>CardsMatchApi</module>
+        <module>Logging</module>
     </modules>
     
     <url>http://maven.apache.org</url>

@@ -1,23 +1,31 @@
 package com.etherblood.cardsmasterserver.matches.internal;
 
+import com.etherblood.cardslogging.Logger;
 import com.etherblood.cardsmasterserver.matches.internal.players.AbstractPlayer;
 import com.etherblood.cardsmatchapi.PlayerProxy;
 import com.etherblood.cardsmatchapi.PlayerResult;
 import com.etherblood.cardsmatchapi.StateProxy;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  *
  * @author Philipp
  */
 public class MatchContextWrapper {
-
+    private final UUID uuid;
     private StateProxy matchState;
     private List<AbstractPlayer> players;
+    private final Logger logger;
 //    private final FilterQuery currentPlayerQuery = new FilterQuery().setBaseClass(ItsMyTurnComponent.class);
 //    private MatchContext state;
 //    private List<AbstractPlayer> players;
+
+    public MatchContextWrapper(UUID uuid, Logger logger) {
+        this.uuid = uuid;
+        this.logger = logger;
+    }
 
     public void init(StateProxy matchState, List<AbstractPlayer> players) {
         this.matchState = matchState;
@@ -111,4 +119,12 @@ public class MatchContextWrapper {
 //    public VersionedEntityComponentMap getData() {
 //        return state.getBean(VersionedEntityComponentMap.class);
 //    }
+
+    public Logger getLogger() {
+        return logger;
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
 }

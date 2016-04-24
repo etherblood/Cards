@@ -1,4 +1,4 @@
-package com.etherblood.cardsmatch.cardgame.client;
+package com.etherblood.cardsmatch.cardgame;
 
 import com.etherblood.eventsystem.GameEvent;
 import com.etherblood.eventsystem.GameEventHandler;
@@ -7,6 +7,6 @@ import com.etherblood.eventsystem.GameEventHandler;
  *
  * @author Philipp
  */
-public interface SystemsEventHandler {
+public interface GlobalEventHandler {
     <T extends GameEvent> void onEvent(Class<GameEventHandler<T>> systemClass, T gameEvent);
 }

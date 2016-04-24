@@ -5,13 +5,11 @@ import com.etherblood.cardsmatch.cardgame.AbstractMatchSystem;
 import com.etherblood.cardsmatch.cardgame.ValidEffectTargetsSelector;
 import com.etherblood.firstruleset.logic.effects.EffectTriggerEntityComponent;
 import com.etherblood.cardscontext.Autowire;
-import com.etherblood.cardsmatchapi.IllegalCommandException;
 import com.etherblood.firstruleset.logic.effects.targeting.EffectIsTargetedComponent;
 import com.etherblood.firstruleset.logic.effects.targeting.EffectMinimumTargetsRequiredComponent;
 import com.etherblood.firstruleset.logic.effects.targeting.EffectRequiresUserTargetsComponent;
 import com.etherblood.cardsmatch.cardgame.components.misc.NameComponent;
 import com.etherblood.cardsmatch.cardgame.rng.RngFactory;
-import com.etherblood.firstruleset.eventData.EffectTargets;
 import com.etherblood.firstruleset.logic.effects.TriggerEffectEvent;
 import com.etherblood.entitysystem.data.EntityComponentMapReadonly;
 import com.etherblood.entitysystem.data.EntityId;
@@ -37,14 +35,13 @@ public class SelectTargetsEffectSystem extends AbstractMatchSystem<TriggerEffect
         if (data.has(event.effect, EffectIsTargetedComponent.class)) {
             List<EntityId> list = selector.selectTargets(event.effect);
             if (data.has(event.effect, EffectRequiresUserTargetsComponent.class)) {
-                EntityId[] targets = eventData().get(EffectTargets.class).targets;
                 if(data.has(event.effect, EffectTargetsSingleRandomComponent.class)) {
-                    logEffect(event, list, targets);
+                    logEffect(event, list, event.targets);
                     throw new IllegalStateException("user targeted events with rng targets not supported");
                 }
-                if (!list.containsAll(Arrays.asList(targets))) {
-                    logEffect(event, list, targets);
-                    throw new IllegalCommandException("selected user targets are not valid");
+                if (!list.containsAll(Arrays.asList(event.targets))) {
+                    logEffect(event, list, event.targets);
+                    throw new IllegalStateException("selected user targets are not valid");
                 }
             } else {
                 if (list.size() > 1 && data.has(event.effect, EffectTargetsSingleRandomComponent.class)) {
@@ -53,15 +50,14 @@ public class SelectTargetsEffectSystem extends AbstractMatchSystem<TriggerEffect
                     list.add(randomItem);
                 }
                 EntityId[] targets = list.toArray(new EntityId[list.size()]);
-                eventData().push(new EffectTargets(targets));
+                event = new TriggerEffectEvent(event.effect, targets);
             }
             EffectMinimumTargetsRequiredComponent minimumTargetsComponent = data.get(event.effect, EffectMinimumTargetsRequiredComponent.class);
             if(minimumTargetsComponent != null) {
-                EntityId[] targets = eventData().get(EffectTargets.class).targets;
-                int actualTargets = targets.length;
+                int actualTargets = event.targets.length;
                 if(actualTargets < minimumTargetsComponent.count) {
-                    logEffect(event, list, targets);
-                    throw new IllegalCommandException(data.get(event.effect, NameComponent.class).name + " of " + data.get(data.get(event.effect, EffectTriggerEntityComponent.class).entity, NameComponent.class).name + " requires " + minimumTargetsComponent.count + " targets, but only " + actualTargets + " were available");
+                    logEffect(event, list, event.targets);
+                    throw new IllegalStateException(data.get(event.effect, NameComponent.class).name + " of " + data.get(data.get(event.effect, EffectTriggerEntityComponent.class).entity, NameComponent.class).name + " requires " + minimumTargetsComponent.count + " targets, but only " + actualTargets + " were available");
                 }
             }
         }

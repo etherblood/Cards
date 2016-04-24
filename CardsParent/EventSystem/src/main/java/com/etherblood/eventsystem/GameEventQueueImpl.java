@@ -12,7 +12,7 @@ public final class GameEventQueueImpl implements GameEventQueue {
 
     private final GameEventDispatcher dispatcher;
     private final ArrayList<ArrayDeque<GameEvent>> queues = new ArrayList<>();
-    private final GameEventDataStack dataStack = new GameEventDataStack();
+    private int depth = 0;
     private int successiveEventsCount;
 
     private final HashSet<GameEvent> handledEvents = new HashSet<>();
@@ -31,18 +31,18 @@ public final class GameEventQueueImpl implements GameEventQueue {
 
     private void handleEventsIteration() throws RuntimeException {
         if (currentQueue().isEmpty()) {
-            dataStack.down();
+            depth--;
             currentQueue().removeFirst();//all response-events were handled, remove current event
             return;
         }
         GameEvent event = currentQueue().peekFirst();
-        dataStack.up();
+        depth++;
         assert handledEvents.add(event);
         try {
             dispatcher.dispatch(event);//response-events will be put into currentQueue
         } catch (Exception ex) {
             System.out.println("eventQueue at time of exception:");
-            for (int i = 0; i < dataStack.depth(); i++) {
+            for (int i = 0; i < depth; i++) {
                 if(i != 0) {
                     System.out.println("childs:");
                 }
@@ -61,24 +61,29 @@ public final class GameEventQueueImpl implements GameEventQueue {
     public void fireEvent(GameEvent event) {
         currentQueue().addLast(event);
     }
+    
+    public GameEvent getParent(GameEvent event) {
+        for (int i = depth; i > 0; i--) {
+            if(queue(i).peekFirst().equals(event)) {
+                return queue(i - 1).peekFirst();
+            }
+        }
+        return null;
+    }
 
     private ArrayDeque<GameEvent> rootQueue() {
         return queue(0);
     }
 
     private ArrayDeque<GameEvent> currentQueue() {
-        return queue(dataStack.depth());
+        return queue(depth);
     }
 
     private ArrayDeque<GameEvent> queue(int depth) {
         while (queues.size() <= depth) {
-            queues.add(new ArrayDeque<GameEvent>());
+            queues.add(new ArrayDeque<>());
         }
         return queues.get(depth);
-    }
-
-    public GameEventDataStack getDataStack() {
-        return dataStack;
     }
 
     public boolean isEmpty() {
@@ -86,7 +91,6 @@ public final class GameEventQueueImpl implements GameEventQueue {
     }
 
     public void clear() {
-        dataStack.clear();
         queues.clear();
         handledEvents.clear();
     }

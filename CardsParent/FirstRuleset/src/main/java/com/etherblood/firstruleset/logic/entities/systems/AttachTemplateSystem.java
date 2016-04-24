@@ -30,11 +30,7 @@ public class AttachTemplateSystem extends AbstractMatchSystem<AttachTemplateEven
 
     @Override
     public AttachTemplateEvent handle(AttachTemplateEvent event) {
-        EntityTemplate template = templates.getTemplate(event.template);
-        if(template == null) {
-            throw new RuntimeException("template " + event.template + " was not found.");
-        }
-        attachTemplate(template, event);
+        attachTemplate(templates.getTemplate(event.template), event);
         return event;
     }
 

@@ -1,6 +1,5 @@
 package com.etherblood.cardscontext;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,20 +16,21 @@ public class MatchContext {
     }
 
     public <T> T getBean(Class<T> beanClass) {
-        return (T) getWireCandidate(beanClass);
+        return extractResult(getBeans(beanClass), beanClass);
     }
 
-    private Object getWireCandidate(Class fieldClass) {
-        ArrayList<Object> result = new ArrayList<>();
+
+    public <T> List<T> getBeans(Class<T> fieldClass) {
+        ArrayList<T> result = new ArrayList<>();
         for (Object wireCandidate : beans) {
             if (fieldClass.isInstance(wireCandidate)) {
-                result.add(wireCandidate);
+                result.add((T) wireCandidate);
             }
         }
-        return extractResult(result, fieldClass);
+        return result;
     }
 
-    private Object extractResult(ArrayList<Object> results, Class fieldClass) throws IllegalStateException {
+    private <T> T extractResult(List<T> results, Class<T> fieldClass) throws IllegalStateException {
         if (results.size() != 1) {
             if (results.isEmpty()) {
                 throw new IllegalStateException("no bean found for " + fieldClass.getName());

@@ -15,7 +15,6 @@ import java.lang.reflect.Field;
  * @author Philipp
  */
 public class EffectTriggerEntityComponent implements EntityComponent {
-    public final static Field ENTITY_FIELD;
     public static AbstractComponentFieldValueFilter<EffectTriggerEntityComponent> createTriggerFilter(BinaryOperator operator) {
         return new AbstractComponentFieldValueFilter<EffectTriggerEntityComponent>(operator) {
             @Override
@@ -27,14 +26,6 @@ public class EffectTriggerEntityComponent implements EntityComponent {
                 return EffectTriggerEntityComponent.class;
             }
         };
-    }
-    static{
-        try {
-            ENTITY_FIELD = EffectTriggerEntityComponent.class.getDeclaredField("entity");
-            ENTITY_FIELD.setAccessible(true);
-        } catch (NoSuchFieldException | SecurityException ex) {
-            throw new RuntimeException(ex);
-        }
     }
 
     public final EntityId entity;

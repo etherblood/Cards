@@ -1,11 +1,10 @@
 package com.etherblood.firstruleset.main;
 
 import com.etherblood.cardscontext.MatchContext;
+import com.etherblood.cardsmatch.cardgame.MatchGameEventDispatcher;
 import com.etherblood.cardsmatch.cardgame.NetworkPlayer;
 import com.etherblood.cardsmatch.cardgame.UpdateBuilder;
 import com.etherblood.cardsmatch.cardgame.bot.Bot;
-import com.etherblood.cardsmatch.cardgame.client.SystemsEventHandler;
-import com.etherblood.cardsmatch.cardgame.client.SystemsEventHandlerDispatcher;
 import com.etherblood.cardsmatch.cardgame.components.misc.NameComponent;
 import com.etherblood.cardsmatch.cardgame.components.player.PlayerComponent;
 import com.etherblood.cardsmatch.cardgame.events.gamestart.GameStartEvent;
@@ -40,6 +39,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
+import com.etherblood.cardsmatch.cardgame.GlobalEventHandler;
 
 /**
  *
@@ -52,9 +52,9 @@ public class DefaultMatchBuilder implements MatchBuilder<TriggerEffectRequest, M
     private final SpectatorProxy spectator = new SpectatorProxyImpl();
     private final StateProxyImpl stateProxy;
 
-    public DefaultMatchBuilder(ContextFactory contextFactory) {
+    public DefaultMatchBuilder(ContextFactory contextFactory, MatchContext context) {
         this.contextFactory = contextFactory;
-        this.context = contextFactory.buildContext(true);
+        this.context = context;
         stateProxy = new StateProxyImpl(context, players);
     }
     
@@ -85,8 +85,8 @@ public class DefaultMatchBuilder implements MatchBuilder<TriggerEffectRequest, M
         EntityComponentMap data = context.getBean(EntityComponentMap.class);
         EntityIdFactory idFactory = context.getBean(EntityIdFactory.class);
         CommandHandlerImpl commandHandler = context.getBean(CommandHandlerImpl.class);
-        SystemsEventHandlerDispatcher dispatcher = context.getBean(SystemsEventHandlerDispatcher.class);
-        List<SystemsEventHandler> handlers = dispatcher.getHandlers();
+        MatchGameEventDispatcher dispatcher = context.getBean(MatchGameEventDispatcher.class);
+        List<GlobalEventHandler> handlers = dispatcher.getGlobalEventHandlers();
         final HashMap<Class, UpdateBuilder> updateBuilders = ClientUpdaterFactory.createUpdateBuilders();
 
         for (AbstractPlayerProxy player : players) {
@@ -98,7 +98,7 @@ public class DefaultMatchBuilder implements MatchBuilder<TriggerEffectRequest, M
             initPlayer(context, playerEntity, def.getName(), def.getHeroTemplate(), def.getLibrary());
             if (player instanceof BotProxyImpl) {
                 BotProxyImpl botProxy = (BotProxyImpl)player;
-                Bot bot = new MonteCarloController(context, contextFactory.buildContext(false), new CommandGeneratorImpl(), players.get(0).getEntity());
+                Bot bot = new MonteCarloController(context, contextFactory.buildContext(), new CommandGeneratorImpl(), players.get(0).getEntity());
                 botProxy.setBot(bot);
                 commandHandler.registerBot(bot);
             } else if (player instanceof HumanProxyImpl) {
@@ -110,7 +110,7 @@ public class DefaultMatchBuilder implements MatchBuilder<TriggerEffectRequest, M
                         humanProxy.getTotalUpdates().add(message);
                     }
                 });
-                handlers.add(new SystemsEventHandler() {
+                handlers.add(new GlobalEventHandler() {
                     @Override
                     public <T extends GameEvent> void onEvent(Class<GameEventHandler<T>> systemClass, T gameEvent) {
                         UpdateBuilder<MatchUpdate, T> updateBuilder = updateBuilders.get(systemClass);

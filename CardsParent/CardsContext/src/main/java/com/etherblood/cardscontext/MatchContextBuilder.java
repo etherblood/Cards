@@ -3,6 +3,7 @@ package com.etherblood.cardscontext;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -52,11 +53,16 @@ public class MatchContextBuilder {
                         field.setAccessible(true);
                         Class fieldClass = field.getType();
                         field.set(obj, context.getBean(fieldClass));
+                    } else if (field.isAnnotationPresent(AutowireList.class)) {
+                        field.setAccessible(true);
+                        ParameterizedType fieldType = (ParameterizedType)field.getGenericType();
+                        field.set(obj, context.getBeans((Class) fieldType.getActualTypeArguments()[0]));
                     }
                 }
                 clazz = clazz.getSuperclass();
             }
-        } catch (IllegalArgumentException | IllegalAccessException ex) {
+        } catch (Exception ex) {
+            System.out.println("error when populating bean: " + obj);
             throw new RuntimeException(ex);
         }
     }

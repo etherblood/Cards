@@ -1,5 +1,6 @@
 package com.etherblood.cardsmatchapi;
 
+import com.etherblood.cardslogging.Logger;
 import java.util.List;
 
 /**
@@ -9,7 +10,7 @@ import java.util.List;
 public interface RulesDefinition<A, U> {
     String getName();
     List<String> getTemplateNames();
-    MatchBuilder<A, U> createMatchBuilder();
+    MatchBuilder<A, U> createMatchBuilder(Logger logger);
 //    Map<Class, UpdateBuilder> getUpdateBuilders();//TODO: remove
 //    MatchContext init();
 //    HumanProxy<A, U> attachHuman(MatchContext context, PlayerDefinition def);

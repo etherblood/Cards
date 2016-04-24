@@ -21,11 +21,7 @@ public class NextTurnSystem extends AbstractMatchSystem<EndTurnEvent> {
     
     @Override
     public EndTurnEvent handle(EndTurnEvent event) {
-        if(data.has(event.player, NextTurnPlayerComponent.class)) {
-            enqueueEvent(new StartTurnEvent(data.get(event.player, NextTurnPlayerComponent.class).player));
-        } else {
-            throw new RuntimeException("Failed to assign next turn because " + NextTurnPlayerComponent.class.getSimpleName() + " is missing.");
-        }
+        enqueueEvent(new StartTurnEvent(data.get(event.player, NextTurnPlayerComponent.class).player));
         return event;
     }
     

@@ -1,5 +1,7 @@
 package com.etherblood.cardsmasterserver.matches;
 
+import com.etherblood.cardslogging.DefaultLogger;
+import com.etherblood.cardslogging.LogLevel;
 import com.etherblood.cardsmasterserver.matches.internal.players.HumanPlayer;
 import com.etherblood.cardsmasterserver.cards.CardCollectionService;
 import com.etherblood.cardsmasterserver.matches.internal.MatchContextWrapper;
@@ -20,11 +22,15 @@ import com.etherblood.cardsmatchapi.RulesDefinition;
 import com.etherblood.cardsmatchapi.MatchBuilder;
 import com.etherblood.cardsmatchapi.PlayerResult;
 import com.etherblood.cardsnetworkshared.match.updates.JoinedMatchUpdate;
+import java.io.File;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +63,8 @@ public class MatchService {
     @Autowired
     private ApplicationEventPublisher eventPublisher;
 
+    @Value("${matchLogs.path}")
+    private String matchLogsPath;
 //    @PostConstruct
 //    @PreAuthorize("denyAll")
 //    public void initRules() {
@@ -87,7 +95,7 @@ public class MatchService {
             matchPlayer.triggerEffect(triggerEffect);
             updateMatch(match);
         } catch (IllegalCommandException e) {
-            e.printStackTrace(System.err);
+            match.getLogger().log(LogLevel.ERROR, "{}", e);
         } catch (Exception e) {
             cleanupMatchAfterException(e, match);
         }
@@ -120,22 +128,30 @@ public class MatchService {
 
     private void startRuleMatch(long user1, Long user2) {
         RulesDefinition ruleset = rules.get("default rules");//new DefaultRulesDef(templateService.getAll());
-        ArrayList<PlayerDefinition> playerDefs = new ArrayList<>();
         ArrayList<AbstractPlayer> players = new ArrayList<>();
         ArrayList<HumanPlayer> humans = new ArrayList<>();
 
         PlayerDefinition def1 = createPlayerDefinition(userService.getUser(user1).getUsername(), createBotLibrary(ruleset.getTemplateNames()));
-        playerDefs.add(def1);
-
+        
         PlayerDefinition def2;
         if (user2 != null) {
             def2 = createPlayerDefinition(userService.getUser(user2).getUsername(), createBotLibrary(ruleset.getTemplateNames()));
         } else {
             def2 = createPlayerDefinition("Bot", createBotLibrary(ruleset.getTemplateNames()));
         }
-        playerDefs.add(def2);
-
-        MatchBuilder matchBuilder = ruleset.createMatchBuilder();
+        
+        UUID uuid = UUID.randomUUID();
+        String matchName = uuid.toString() + "_" + def1.getName() + "_vs_" + def2.getName();
+        PrintWriter writer;
+        try {
+            writer = new PrintWriter(new File(System.getProperty("user.home") + System.getProperty("file.separator") + matchLogsPath + matchName + ".txt"));
+        } catch(Exception e) {
+            throw new RuntimeException(e);
+//            writer = new PrintWriter(System.out);
+        }
+        DefaultLogger logger = new DefaultLogger(writer);
+        logger.log(LogLevel.INFO, "Started match {} - {} vs {}", uuid, def1.getName(), def2.getName());
+        MatchBuilder matchBuilder = ruleset.createMatchBuilder(logger);
 //        final EntityComponentMap data = rules.getBuilder().removeBean(EntityComponentMap.class);
 //        rules.getBuilder().addBean(new VersionedEntityComponentMapImpl(data));
 ////        final MatchContext context = ruleset.init(playerDefs);
@@ -154,7 +170,7 @@ public class MatchService {
         }
         players.add(player2);
 
-        final MatchContextWrapper wrapper = new MatchContextWrapper();
+        final MatchContextWrapper wrapper = new MatchContextWrapper(uuid, logger);
         wrapper.init(matchBuilder.getStateTracker(), players);
 
 //        for (AbstractPlayer player : players) {
@@ -205,6 +221,7 @@ public class MatchService {
     private void cleanupMatchAfterException(Exception e, MatchContextWrapper matchWrapper) {
         e.printStackTrace(System.err);
         System.err.println("ending match because of exception");
+        matchWrapper.getLogger().log(LogLevel.ERROR, "{}", e);
         //TODO: end match with exception result
         for (HumanPlayer player : matchWrapper.getPlayers(HumanPlayer.class)) {
             System.out.println("MatchService - TODO: send matchAbort to user " + player.getUserId());//TODO send matchAbort to user
@@ -222,6 +239,8 @@ public class MatchService {
     }
 
     private void cleanupMatch(MatchContextWrapper matchWrapper) {
+        matchWrapper.getLogger().log(LogLevel.INFO, "Match ended");
+        ((DefaultLogger)matchWrapper.getLogger()).getWriter().close();
         for (HumanPlayer matchPlayer : matchWrapper.getPlayers(HumanPlayer.class)) {
             matchMap.remove(matchPlayer.getUserId());
             if(matchWrapper.getResult(matchPlayer) == PlayerResult.VICTOR) {

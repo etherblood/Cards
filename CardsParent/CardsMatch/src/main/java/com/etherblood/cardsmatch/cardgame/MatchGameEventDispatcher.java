@@ -1,12 +1,12 @@
 package com.etherblood.cardsmatch.cardgame;
 
-import com.etherblood.cardscontext.Autowire;
-import com.etherblood.cardsmatch.cardgame.client.SystemsEventHandler;
+import com.etherblood.cardscontext.AutowireList;
 import com.etherblood.eventsystem.GameEvent;
 import com.etherblood.eventsystem.GameEventDispatcher;
 import com.etherblood.eventsystem.GameEventHandler;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  *
@@ -15,8 +15,8 @@ import java.util.HashMap;
 public class MatchGameEventDispatcher implements GameEventDispatcher {
 
     private final HashMap<Class, ArrayList<GameEventHandler>> handlersMap = new HashMap<>();
-    @Autowire
-    private SystemsEventHandler systemsEventHandler = null;
+    @AutowireList
+    private List<GlobalEventHandler> globalEventHandlers;
 
     @Override
     public void dispatch(GameEvent event) {
@@ -34,8 +34,8 @@ public class MatchGameEventDispatcher implements GameEventDispatcher {
 
     private <T extends GameEvent> T handleEvent(GameEventHandler<T> handler, T event) {
         T result = handler.handle(event);
-        if (systemsEventHandler != null) {
-            systemsEventHandler.onEvent((Class<GameEventHandler<T>>) handler.getClass(), event);
+        for (GlobalEventHandler globalHandler : globalEventHandlers) {
+            globalHandler.onEvent((Class<GameEventHandler<T>>) handler.getClass(), event);
         }
         return result;
     }
@@ -63,11 +63,7 @@ public class MatchGameEventDispatcher implements GameEventDispatcher {
         return handlers;
     }
 
-    public SystemsEventHandler getEventHandlerTracker() {
-        return systemsEventHandler;
-    }
-
-    public void setEventHandlerTracker(SystemsEventHandler eventHandlerTracker) {
-        this.systemsEventHandler = eventHandlerTracker;
+    public List<GlobalEventHandler> getGlobalEventHandlers() {
+        return globalEventHandlers;
     }
 }

@@ -12,7 +12,7 @@ import com.etherblood.cardscontext.MatchContext;
  */
 public interface CommandManager {
     void executeCommand(MatchContext context, Command command);
-    Command generate(EntityComponentMapReadonly bean, ValidEffectTargetsSelector bean0, MoveSelector orginalMoveSelector);
+    Command generate(EntityComponentMapReadonly bean, ValidEffectTargetsSelector targetSelector, MoveSelector orginalMoveSelector);
     void selectCommand(EntityComponentMapReadonly data, ValidEffectTargetsSelector targetSelector, EntityId effect, EntityId[] targets, MoveConsumer moveConsumer);
-
+    void validate(EntityComponentMapReadonly data, ValidEffectTargetsSelector targetSelector, EntityId effect, EntityId[] targets);
 }

@@ -2,6 +2,7 @@ package com.etherblood.firstruleset.logic.effects;
 
 import com.etherblood.entitysystem.data.EntityId;
 import com.etherblood.eventsystem.GameEvent;
+import java.util.Arrays;
 
 /**
  *
@@ -16,5 +17,10 @@ public class TargetedTriggerEffectEvent implements GameEvent {
         this.player = player;
         this.effect = effect;
         this.targets = targets;
+    }
+
+    @Override
+    public String toString() {
+        return "TargetedTriggerEffectEvent{" + "player=" + player + ", effect=" + effect + ", targets=" + Arrays.toString(targets) + '}';
     }
 }

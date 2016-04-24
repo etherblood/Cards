@@ -18,7 +18,7 @@ public class ApplyEndTurnSystem extends AbstractMatchSystem<ApplyEndTurnEvent> {
     @Override
     public ApplyEndTurnEvent handle(ApplyEndTurnEvent event) {
         if(data.remove(event.playerId, ItsMyTurnComponent.class) == null) {
-            throw new RuntimeException("Removed " + EndTurnEvent.class.getSimpleName() + " because it was not the players turn.");
+            throw new IllegalStateException("Removed " + EndTurnEvent.class.getSimpleName() + " because it was not the players turn.");
         }
         return event;
     }

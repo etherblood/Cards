@@ -14,9 +14,7 @@ public interface EntityComponentMapReadonly {
     <T extends EntityComponent> T get(EntityId entity, Class<T> componentClass);
     Set<EntityId> entities(Class componentType);
     Set<EntityId> allEntities();
-//    boolean passesAllFilters(EntityId entity, ComponentFilter... filters);
     List<EntityComponent> components(EntityId entity);
     Set<Class> registeredComponentClasses();
     void extractMappingsForComponentType(Class componentType, Map<EntityId, EntityComponent> dest);
-//    Set<Map.Entry<EntityId, EntityComponent>> getEntityComponentPairs(Class componentType);
 }
