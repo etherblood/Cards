@@ -8,8 +8,6 @@ import com.etherblood.cardsmasterserver.users.model.Password;
 import com.etherblood.cardsmasterserver.users.model.UserAccount;
 import com.etherblood.cardsnetworkshared.master.commands.UserRegistration;
 import java.security.SecureRandom;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.bind.DatatypeConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;

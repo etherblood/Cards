@@ -29,11 +29,7 @@ public class DefaultLogger implements Logger {
     public void log(LogLevel level, String message, Object... arguments) {
         if(acceptsLogLevel(level)) {
             try {
-                formatter.append(writer, new Date());
-                writer.append(' ');
-                writer.append(Thread.currentThread().getName());
-                writer.append(' ');
-                writer.append(level.toString());
+                logPreInfo(level);
                 writer.append(':');
                 writer.append(' ');
                 formatter.append(writer, message, arguments);
@@ -44,6 +40,14 @@ public class DefaultLogger implements Logger {
                 ex.printStackTrace(System.err);
             }
         }
+    }
+
+    protected void logPreInfo(LogLevel level) throws IOException {
+        formatter.append(writer, new Date());
+        writer.append(' ');
+        writer.append(Thread.currentThread().getName());
+        writer.append(' ');
+        writer.append(level.toString());
     }
 
     @Override

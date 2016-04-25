@@ -103,10 +103,10 @@ public class DefaultMatchBuilder implements MatchBuilder<TriggerEffectRequest, M
                 commandHandler.registerBot(bot);
             } else if (player instanceof HumanProxyImpl) {
                 final HumanProxyImpl humanProxy = (HumanProxyImpl) player;
-                IdConverterExtendedImpl converter = new IdConverterExtendedImpl(data);
-                converter.setPlayer(new NetworkPlayer<MatchUpdate>() {
+                IdConverterExtendedImpl converter = new IdConverterExtendedImpl(data, new NetworkPlayer<MatchUpdate>() {
                     @Override
                     public void send(MatchUpdate message) {
+                        //TODO: remove this, idConverter should not send anything
                         humanProxy.getTotalUpdates().add(message);
                     }
                 });

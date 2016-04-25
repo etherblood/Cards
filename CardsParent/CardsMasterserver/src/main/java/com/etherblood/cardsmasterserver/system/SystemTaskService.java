@@ -1,7 +1,9 @@
 package com.etherblood.cardsmasterserver.system;
 
+import com.etherblood.cardsmasterserver.logging.LoggerService;
 import com.etherblood.cardsmasterserver.network.connections.DefaultAuthentication;
 import com.etherblood.cardsmasterserver.users.UserRoles;
+import com.etherblood.logging.LogLevel;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.annotation.PostConstruct;
@@ -24,6 +26,8 @@ public class SystemTaskService {
     private int threadCount;
     @Autowired
     private ApplicationEventPublisher eventPublisher;
+    @Autowired
+    private LoggerService logger;
     private ExecutorService executor;
     private final DefaultAuthentication systemAuthentication = new DefaultAuthentication(DefaultAuthentication.SYSTEM_PRINCIPAL, null, UserRoles.SYSTEM);
     
@@ -38,6 +42,7 @@ public class SystemTaskService {
                     eventPublisher.publishEvent(task.getEvent());
                 } catch(Exception e) {
                     e.printStackTrace(System.err);
+                    logger.getLogger(getClass()).log(LogLevel.ERROR, e);
                 } finally {
                     SecurityContextHolder.clearContext();
                 }

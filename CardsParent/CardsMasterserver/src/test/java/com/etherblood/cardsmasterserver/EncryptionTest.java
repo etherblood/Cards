@@ -9,11 +9,7 @@ import com.etherblood.cardsnetworkshared.SerializerInit;
 import com.etherblood.cardsnetworkshared.master.commands.UserLogin;
 import com.jme3.network.Message;
 import com.jme3.network.serializing.Serializer;
-import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import static junit.framework.Assert.assertEquals;
 import junit.framework.TestCase;
 

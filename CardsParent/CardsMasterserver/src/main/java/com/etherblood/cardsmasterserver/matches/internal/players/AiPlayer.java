@@ -20,10 +20,10 @@ public class AiPlayer extends AbstractPlayer {
     }
 
     public void compute() {
-        MatchContextWrapper matchWrapper = getMatch();
-        if (!matchWrapper.hasMatchEnded()) {
+//        MatchContextWrapper matchWrapper = getMatch();
+//        if (!matchWrapper.hasMatchEnded()) {
             proxy.doAction();
-        }
+//        }
     }
 
     @Override

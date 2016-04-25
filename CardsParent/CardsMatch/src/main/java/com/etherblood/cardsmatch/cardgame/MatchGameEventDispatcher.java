@@ -1,6 +1,6 @@
 package com.etherblood.cardsmatch.cardgame;
 
-import com.etherblood.cardscontext.AutowireList;
+import com.etherblood.cardscontext.Autowire;
 import com.etherblood.eventsystem.GameEvent;
 import com.etherblood.eventsystem.GameEventDispatcher;
 import com.etherblood.eventsystem.GameEventHandler;
@@ -15,7 +15,7 @@ import java.util.List;
 public class MatchGameEventDispatcher implements GameEventDispatcher {
 
     private final HashMap<Class, ArrayList<GameEventHandler>> handlersMap = new HashMap<>();
-    @AutowireList
+    @Autowire
     private List<GlobalEventHandler> globalEventHandlers;
 
     @Override

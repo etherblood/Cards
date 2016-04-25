@@ -1,13 +1,16 @@
 package com.etherblood.cardsmasterserver.network.messages;
 
+import com.etherblood.cardsmasterserver.logging.LoggerService;
 import com.etherblood.cardsmasterserver.network.connections.UserConnectionService;
 import com.etherblood.cardsnetworkshared.DefaultMessage;
+import com.etherblood.logging.LogLevel;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
@@ -25,6 +28,8 @@ public class MessageFromClientService implements BeanDefinitionRegistryPostProce
 
     private final HashMap<Class, List<UserMessageHandler>> messageHandlers = new HashMap<>();
     private ApplicationContext context;
+    @Autowired
+    private LoggerService logger;
 
     @PreAuthorize("permitAll")
     public void dispatchMessage(Object message) {
@@ -34,6 +39,7 @@ public class MessageFromClientService implements BeanDefinitionRegistryPostProce
                 messageHandler.onMessage(message);
             } catch (Exception e) {
                 e.printStackTrace(System.out);
+                logger.getLogger(getClass()).log(LogLevel.ERROR, e);
 //                throw new RuntimeException("exception when dispatching " + message + " to " + messageHandler, e);
             }
         }
@@ -45,6 +51,8 @@ public class MessageFromClientService implements BeanDefinitionRegistryPostProce
 //            throw new RuntimeException("MessageHandler<" + messageClass + "> was overwritten.");
 //        }
 //    }
+    
+    //TODO: create an eventclass->handlers map instead of looping over context for each event
     @Override
     @PreAuthorize("denyAll")
     public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry bdr) throws BeansException {

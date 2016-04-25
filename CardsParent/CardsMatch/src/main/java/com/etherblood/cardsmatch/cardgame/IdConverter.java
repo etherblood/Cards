@@ -11,7 +11,6 @@ import java.util.Map;
 public class IdConverter {
     private final HashMap<EntityId, Long> map = new HashMap<>();
     private long nextId = 0;
-    private NetworkPlayer player;
     
     public EntityId fromLong(Long value) {
         for (Map.Entry<EntityId, Long> entry : map.entrySet()) {
@@ -39,13 +38,5 @@ public class IdConverter {
         Long value = nextId++;
         map.put(id, value);
         return value;
-    }
-
-    public NetworkPlayer getPlayer() {
-        return player;
-    }
-
-    public void setPlayer(NetworkPlayer player) {
-        this.player = player;
     }
 }

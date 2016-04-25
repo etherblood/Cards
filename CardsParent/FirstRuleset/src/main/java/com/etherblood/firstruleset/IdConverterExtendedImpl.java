@@ -1,6 +1,7 @@
 package com.etherblood.firstruleset;
 
 import com.etherblood.cardsmatch.cardgame.IdConverter;
+import com.etherblood.cardsmatch.cardgame.NetworkPlayer;
 import com.etherblood.cardsmatch.cardgame.components.misc.NameComponent;
 import com.etherblood.cardsnetworkshared.match.updates.CreateEntity;
 import com.etherblood.cardsnetworkshared.match.updates.SetAttack;
@@ -19,9 +20,11 @@ import com.etherblood.firstruleset.logic.battle.stats.ManaCostComponent;
 public class IdConverterExtendedImpl extends IdConverter {
 //TODO: replace this hack with proper network logic
     private final EntityComponentMapReadonly data;
+    private final NetworkPlayer player;
 
-    public IdConverterExtendedImpl(EntityComponentMapReadonly data) {
+    public IdConverterExtendedImpl(EntityComponentMapReadonly data, NetworkPlayer player) {
         this.data = data;
+        this.player = player;
     }
 
     @Override
@@ -30,30 +33,30 @@ public class IdConverterExtendedImpl extends IdConverter {
         if (longId == null) {
             longId = register(id);
             NameComponent nameComponent = data.get(id, NameComponent.class);
-            getPlayer().send(new CreateEntity(longId, nameComponent == null ? null : nameComponent.name));
+            player.send(new CreateEntity(longId, nameComponent == null ? null : nameComponent.name));
             AttackComponent attack = data.get(id, AttackComponent.class);
             if (attack != null) {
-                getPlayer().send(new SetAttack(longId, attack.attack));
+                player.send(new SetAttack(longId, attack.attack));
             }
             ManaCostComponent cost = data.get(id, ManaCostComponent.class);
             if (cost != null) {
-                getPlayer().send(new SetCost(longId, cost.mana));
+                player.send(new SetCost(longId, cost.mana));
             }
             HealthComponent health = data.get(id, HealthComponent.class);
             if (health != null) {
-                getPlayer().send(new SetHealth(longId, health.health));
+                player.send(new SetHealth(longId, health.health));
             }
             TauntComponent taunt = data.get(id, TauntComponent.class);
             if (taunt != null) {
-                getPlayer().send(new SetProperty(longId, "Taunt", 1));
+                player.send(new SetProperty(longId, "Taunt", 1));
             }
             ChargeComponent charge = data.get(id, ChargeComponent.class);
             if (charge != null) {
-                getPlayer().send(new SetProperty(longId, "Charge", 1));
+                player.send(new SetProperty(longId, "Charge", 1));
             }
             DivineShieldComponent divine = data.get(id, DivineShieldComponent.class);
             if (divine != null) {
-                getPlayer().send(new SetProperty(longId, "Divine Shield", 1));
+                player.send(new SetProperty(longId, "Divine Shield", 1));
             }
         }
         return longId;

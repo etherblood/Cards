@@ -52,11 +52,12 @@ public class MatchContextBuilder {
                     if (field.isAnnotationPresent(Autowire.class)) {
                         field.setAccessible(true);
                         Class fieldClass = field.getType();
-                        field.set(obj, context.getBean(fieldClass));
-                    } else if (field.isAnnotationPresent(AutowireList.class)) {
-                        field.setAccessible(true);
-                        ParameterizedType fieldType = (ParameterizedType)field.getGenericType();
-                        field.set(obj, context.getBeans((Class) fieldType.getActualTypeArguments()[0]));
+                        if(List.class.isAssignableFrom(fieldClass)) {
+                            ParameterizedType fieldType = (ParameterizedType)field.getGenericType();
+                            field.set(obj, context.getBeans((Class) fieldType.getActualTypeArguments()[0]));
+                        } else {
+                            field.set(obj, context.getBean(fieldClass));
+                        }
                     }
                 }
                 clazz = clazz.getSuperclass();

@@ -4,6 +4,7 @@ import com.etherblood.logging.DefaultLogger;
 import com.etherblood.logging.LogLevel;
 import com.etherblood.cardsmasterserver.matches.internal.players.HumanPlayer;
 import com.etherblood.cardsmasterserver.cards.CardCollectionService;
+import com.etherblood.cardsmasterserver.logging.LoggerService;
 import com.etherblood.cardsmasterserver.matches.internal.MatchContextWrapper;
 import com.etherblood.cardsmasterserver.matches.internal.players.AbstractPlayer;
 import com.etherblood.cardsmasterserver.matches.internal.players.AiPlayer;
@@ -34,6 +35,7 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
+import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
@@ -53,11 +55,10 @@ public class MatchService {
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd_HH.mm.ss");
     private HashMap<String, RulesDefinition> rules;
 
-//    private Map<Class, UpdateBuilder> updateBuilders;
+    @Autowired
+    private LoggerService loggerService;
     @Autowired
     private UserConnectionService connectionService;
-//    @Autowired
-//    private CardTemplatesService templateService;
     @Autowired
     private CardCollectionService collectionService;
     @Autowired
@@ -67,11 +68,7 @@ public class MatchService {
 
     @Value("${matchLogs.path}")
     private String matchLogsPath;
-//    @PostConstruct
-//    @PreAuthorize("denyAll")
-//    public void initRules() {
-//        updateBuilders = ClientUpdaterFactory.createUpdateBuilders();
-//    }
+    
     @PreAuthorize("denyAll")
     @Value("${rules.paths}")
     public void setRules(List<String> availableRulePaths) {
@@ -83,6 +80,7 @@ public class MatchService {
                 RulesDefinition rule = (RulesDefinition) rulesetClass.newInstance();
                 rules.put(rule.getName(), rule);
             } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
+                loggerService.getLogger(getClass()).log(LogLevel.ERROR, ex);
                 ex.printStackTrace(System.out);
             }
         }
@@ -131,6 +129,7 @@ public class MatchService {
     }
 
     private void startRuleMatch(long user1, Long user2) {
+        //TODO: reconnect instead of dropping previous matches
         killMatch(user1);
         if(user2 != null) {
             killMatch(user2);
@@ -153,7 +152,7 @@ public class MatchService {
         String matchName = dateFormat.format(new Date()) + "_" + def1.getName() + "_vs_" + def2.getName() + "_" + uuid.toString();
         PrintWriter writer;
         try {
-            writer = new PrintWriter(new File(System.getProperty("user.home") + System.getProperty("file.separator") + matchLogsPath + matchName + ".txt"));
+            writer = new PrintWriter(new File(matchLogsPath + matchName + ".txt"));
         } catch(Exception e) {
             throw new RuntimeException(e);
         }
@@ -214,7 +213,7 @@ public class MatchService {
             AbstractPlayer currentPlayer = matchWrapper.getCurrentPlayer();
             if (currentPlayer instanceof AiPlayer && !matchWrapper.hasMatchEnded()) {
                 try {
-                    ((AiPlayer) currentPlayer).compute();
+                    ((AiPlayer) currentPlayer).compute();//TODO: can we avoid synchronized while the AI is thinking?
                     updateMatch(matchWrapper);
                 } catch (Exception e) {
                     cleanupMatchAfterException(e, matchWrapper);
@@ -226,9 +225,12 @@ public class MatchService {
     private void cleanupMatchAfterException(Exception e, MatchContextWrapper matchWrapper) {
         e.printStackTrace(System.err);
         System.err.println("ending match because of exception");
+        loggerService.getLogger(getClass()).log(LogLevel.WARN, "ending match because of exception");
         matchWrapper.getLogger().log(LogLevel.ERROR, e);
+        loggerService.getLogger(getClass()).log(LogLevel.ERROR, e);
         //TODO: end match with exception result
         for (HumanPlayer player : matchWrapper.getPlayers(HumanPlayer.class)) {
+            loggerService.getLogger(getClass()).log(LogLevel.ERROR, "MatchService - TODO: send matchAbort to user {}", player.getUserId());
             System.out.println("MatchService - TODO: send matchAbort to user " + player.getUserId());//TODO send matchAbort to user
         }
         cleanupMatch(matchWrapper);
@@ -262,6 +264,7 @@ public class MatchService {
                 continue;
             }
             DefaultMessage[] messages = messagesFromUpdates(updates);
+            loggerService.getLogger(getClass()).log(LogLevel.DEBUG, "{} messages for player with id {}", messages.length, matchPlayer.getUserId());
             System.out.println(messages.length + " messages for player with id " + matchPlayer.getUserId());
             connectionService.sendMessages(matchPlayer.getUserId(), messages);
         }
