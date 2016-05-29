@@ -1,7 +1,7 @@
 package com.etherblood.cardsjmeclient.appscreens;
 
+import com.etherblood.cardsjmeclient.ScreenKeys;
 import com.etherblood.cardsjmeclient.events.EventListener;
-import com.etherblood.cardsjmeclient.events.Eventbus;
 import com.jme3.scene.Spatial;
 import java.util.Map;
 
@@ -11,10 +11,9 @@ import java.util.Map;
  */
 public interface Screen {
 
-    void bind(Eventbus eventbus);
     Spatial getNode();
     Map<Class, EventListener> getEventListeners();
     void onAttach();
     void onDetach();
-//    void bind(Eventbus eventbus, Node parent);
+    ScreenKeys getScreenKey();
 }

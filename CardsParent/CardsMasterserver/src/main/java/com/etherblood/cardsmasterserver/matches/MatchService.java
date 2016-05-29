@@ -1,9 +1,11 @@
 package com.etherblood.cardsmasterserver.matches;
 
+import com.etherblood.cardsmasterserver.cards.CardService;
+import com.etherblood.cardsmasterserver.cards.model.Card;
+import com.etherblood.cardsmasterserver.cards.model.CardGroup;
 import com.etherblood.logging.DefaultLogger;
 import com.etherblood.logging.LogLevel;
 import com.etherblood.cardsmasterserver.matches.internal.players.HumanPlayer;
-import com.etherblood.cardsmasterserver.cards.CardCollectionService;
 import com.etherblood.cardsmasterserver.logging.LoggerService;
 import com.etherblood.cardsmasterserver.matches.internal.MatchContextWrapper;
 import com.etherblood.cardsmasterserver.matches.internal.players.AbstractPlayer;
@@ -13,6 +15,7 @@ import com.etherblood.cardsmasterserver.network.events.UserLogoutEvent;
 import com.etherblood.cardsmasterserver.network.messages.MessageHandler;
 import com.etherblood.cardsmasterserver.system.SystemTaskEvent;
 import com.etherblood.cardsmasterserver.users.UserService;
+import com.etherblood.cardsmasterserver.users.model.UserAccount;
 import com.etherblood.cardsmatchapi.IllegalCommandException;
 import com.etherblood.cardsnetworkshared.master.commands.MatchRequest;
 import com.etherblood.cardsnetworkshared.match.commands.TriggerEffectRequest;
@@ -22,7 +25,11 @@ import com.etherblood.cardsmatchapi.PlayerDefinition;
 import com.etherblood.cardsmatchapi.RulesDefinition;
 import com.etherblood.cardsmatchapi.MatchBuilder;
 import com.etherblood.cardsmatchapi.PlayerResult;
+import com.etherblood.cardsnetworkshared.master.commands.AvailableBotsRequest;
+import com.etherblood.cardsnetworkshared.master.updates.AvailableBotsUpdate;
+import com.etherblood.cardsnetworkshared.master.updates.BotTo;
 import com.etherblood.cardsnetworkshared.match.updates.JoinedMatchUpdate;
+import com.etherblood.logging.FormattedLogsWriterImpl;
 import java.io.File;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
@@ -32,6 +39,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
@@ -42,6 +50,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -51,7 +60,7 @@ import org.springframework.stereotype.Service;
 public class MatchService {
 
     private final ConcurrentHashMap<Long, HumanPlayer> matchMap = new ConcurrentHashMap<>();
-    private final AtomicReference<Long> pendingUserId = new AtomicReference<>(null);
+    private final AtomicReference<MatchQueuePlayer> pendingPlayer = new AtomicReference<>(null);
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd_HH.mm.ss");
     private HashMap<String, RulesDefinition> rules;
 
@@ -60,7 +69,7 @@ public class MatchService {
     @Autowired
     private UserConnectionService connectionService;
     @Autowired
-    private CardCollectionService collectionService;
+    private CardService cardsService;
     @Autowired
     private UserService userService;
     @Autowired
@@ -85,6 +94,16 @@ public class MatchService {
             }
         }
     }
+    
+    @Transactional
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public void registerCards() {
+        for (RulesDefinition<?, ?> rule : rules.values()) {
+            for (String templateName : rule.getTemplateNames()) {
+                cardsService.tryRegisterCard(templateName);
+            }
+        }
+    }
 
     @MessageHandler
     @PreAuthorize("hasRole('ROLE_USER')")
@@ -104,18 +123,37 @@ public class MatchService {
     }
 
     @MessageHandler
+    @Transactional
     @PreAuthorize("hasRole('ROLE_USER')")
     public void onMatchRequest(MatchRequest matchRequest) {
         //TODO: make sure a user can only be once in the matchQueue/an active match
         //duplicate matchRequests should be discarded as should requests during a match
-        Long currentUserId = connectionService.getCurrentUserId();
+        UserAccount currentUser = connectionService.getCurrentUser();
+        
+        PlayerDefinition def = new PlayerDefinition();
+        def.setHeroTemplate("Hero");
+        def.setName(currentUser.getUsername());
+        def.setLibrary(fetchLibrary(matchRequest.getLibraryId()));
+        MatchQueuePlayer queuePlayer = new MatchQueuePlayer();
+        queuePlayer.setUser(currentUser);
+        queuePlayer.setDef(def);
+        
         if (matchRequest.isVersusBot()) {
-            startRuleMatch(currentUserId, null);
+            BotTo bot = matchRequest.getBot();
+            PlayerDefinition botDef = new PlayerDefinition();
+            botDef.setLibrary(fetchLibrary(bot.library.id));
+            botDef.setHeroTemplate("Hero");
+            botDef.setName(bot.displayName);
+            
+            MatchQueuePlayer queueBot = new MatchQueuePlayer();
+            queueBot.setDef(botDef);
+            
+            startRuleMatch(queuePlayer, queueBot);
         } else {
-            while (!pendingUserId.compareAndSet(null, currentUserId)) {
-                Long matchPartnerId = pendingUserId.getAndSet(null);
-                if (matchPartnerId != null) {
-                    startRuleMatch(matchPartnerId, currentUserId);
+            while (!pendingPlayer.compareAndSet(null, queuePlayer)) {
+                MatchQueuePlayer matchPartner = pendingPlayer.getAndSet(null);
+                if (matchPartner != null) {
+                    startRuleMatch(queuePlayer, matchPartner);
                     break;
                 }
             }
@@ -125,28 +163,26 @@ public class MatchService {
     @EventListener
     @PreAuthorize("hasRole('ROLE_SYSTEM')")
     public void onUserLogout(UserLogoutEvent event) {
-        pendingUserId.compareAndSet(event.getUserId(), null);
+        MatchQueuePlayer queuePlayer = new MatchQueuePlayer();
+        UserAccount userAccount = new UserAccount();
+        userAccount.setId(event.getUserId());
+        queuePlayer.setUser(userAccount);
+        pendingPlayer.compareAndSet(queuePlayer, null);
     }
 
-    private void startRuleMatch(long user1, Long user2) {
+    private void startRuleMatch(MatchQueuePlayer queuePlayer1, MatchQueuePlayer queuePlayer2) {
         //TODO: reconnect instead of dropping previous matches
-        killMatch(user1);
-        if(user2 != null) {
-            killMatch(user2);
+        killMatch(queuePlayer1.getUser().getId());
+        if(!queuePlayer2.isBot()) {
+            killMatch(queuePlayer2.getUser().getId());
         }
         
         RulesDefinition ruleset = rules.get("default rules");//new DefaultRulesDef(templateService.getAll());
         ArrayList<AbstractPlayer> players = new ArrayList<>();
         ArrayList<HumanPlayer> humans = new ArrayList<>();
 
-        PlayerDefinition def1 = createPlayerDefinition(userService.getUser(user1).getUsername(), createBotLibrary(ruleset.getTemplateNames()));
-        
-        PlayerDefinition def2;
-        if (user2 != null) {
-            def2 = createPlayerDefinition(userService.getUser(user2).getUsername(), createBotLibrary(ruleset.getTemplateNames()));
-        } else {
-            def2 = createPlayerDefinition("Bot", createBotLibrary(ruleset.getTemplateNames()));
-        }
+        PlayerDefinition def1 = queuePlayer1.getDef();
+        PlayerDefinition def2 = queuePlayer2.getDef();
         
         UUID uuid = UUID.randomUUID();
         String matchName = dateFormat.format(new Date()) + "_" + def1.getName() + "_vs_" + def2.getName() + "_" + uuid.toString();
@@ -156,16 +192,16 @@ public class MatchService {
         } catch(Exception e) {
             throw new RuntimeException(e);
         }
-        DefaultLogger logger = new DefaultLogger(writer);
+        DefaultLogger logger = new DefaultLogger(new FormattedLogsWriterImpl(writer));
         logger.log(LogLevel.INFO, "Started match {} - {} vs {}", uuid, def1.getName(), def2.getName());
         MatchBuilder matchBuilder = ruleset.createMatchBuilder(logger);
-        HumanPlayer player1 = new HumanPlayer(user1, matchBuilder.createHuman(def1));
+        HumanPlayer player1 = new HumanPlayer(queuePlayer1.getUser().getId(), matchBuilder.createHuman(def1));
         humans.add(player1);
         players.add(player1);
 
         AbstractPlayer player2;
-        if (user2 != null) {
-            player2 = new HumanPlayer(user2, matchBuilder.createHuman(def2));
+        if (!queuePlayer2.isBot()) {
+            player2 = new HumanPlayer(queuePlayer2.getUser().getId(), matchBuilder.createHuman(def2));
             humans.add((HumanPlayer) player2);
         } else {
             AiPlayer aiPlayer = new AiPlayer(matchBuilder.createBot(def2));
@@ -195,14 +231,6 @@ public class MatchService {
                 cleanupMatchAfterException(new IllegalStateException("user started new match when an old match was still in progress"), oldMatch);
             }
         }
-    }
-
-    private PlayerDefinition createPlayerDefinition(String name, String[] library) {
-        PlayerDefinition def = new PlayerDefinition();
-        def.setLibrary(library);
-        def.setHeroTemplate("Hero");
-        def.setName(name);
-        return def;
     }
 
     @EventListener
@@ -247,7 +275,7 @@ public class MatchService {
 
     private void cleanupMatch(MatchContextWrapper matchWrapper) {
         matchWrapper.getLogger().log(LogLevel.INFO, "Match ended");
-        ((DefaultLogger)matchWrapper.getLogger()).getWriter().close();
+        ((FormattedLogsWriterImpl)((DefaultLogger)matchWrapper.getLogger()).getFormatter()).getWriter().close();
         for (HumanPlayer matchPlayer : matchWrapper.getPlayers(HumanPlayer.class)) {
             matchMap.remove(matchPlayer.getUserId());
             if(matchWrapper.getResult(matchPlayer) == PlayerResult.VICTOR) {
@@ -278,22 +306,14 @@ public class MatchService {
         return messages;
     }
 
-    private String[] createBotLibrary(List<String> templates) {
-//        String[] COLLECTIBLE_TEMPLATES = templateService.getCollectibles();
-        Random rng = new Random();
-        String[] library = new String[30];
-        for (int i = 0; i < library.length; i++) {
-            library[i] = templates.get(rng.nextInt(templates.size()));//COLLECTIBLE_TEMPLATES[rng.nextInt(COLLECTIBLE_TEMPLATES.length)];
+    private List<String> fetchLibrary(long libraryId) {
+        Set<Card> libraryCards = cardsService.findCardGroup(libraryId).getCards();
+        List<String> library = new ArrayList<>();
+        for (Card libraryCard : libraryCards) {
+            for (int j = 0; j < libraryCard.getAmount(); j++) {
+                library.add(libraryCard.getTemplate().getName());
+            }
         }
-//        for (int i = 0; i < 5; i++) {
-//            library[i] = "Warsong Commander";
-//        }
-//        for (int i = 5; i < 10; i++) {
-//            library[i] = "Grim Patron";
-//        }
-//        for (int i = 10; i < 15; i++) {
-//            library[i] = "Whirlwind";
-//        }
         return library;
     }
 }

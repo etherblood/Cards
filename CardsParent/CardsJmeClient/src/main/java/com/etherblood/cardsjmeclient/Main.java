@@ -1,27 +1,37 @@
 package com.etherblood.cardsjmeclient;
 
-import com.etherblood.cardsnetworkshared.ExtendedDefaultClient;
+import com.etherblood.cardscontext.CardsContext;
+import com.etherblood.cardscontext.CardsContextBuilder;
+import com.etherblood.cardsjmeclient.appscreens.ConnectScreen;
+import com.etherblood.cardsjmeclient.appscreens.DeckbuilderScreen;
+import com.etherblood.cardsjmeclient.appscreens.ErrorScreen;
+import com.etherblood.cardsjmeclient.appscreens.LobbyScreen;
+import com.etherblood.cardsjmeclient.appscreens.LoginScreen;
+import com.etherblood.cardsjmeclient.appscreens.MainMenuScreen;
+import com.etherblood.cardsjmeclient.appscreens.MatchScreen;
 import com.etherblood.cardsjmeclient.events.EventListener;
 import com.etherblood.cardsjmeclient.events.Eventbus;
 import com.etherblood.cardsjmeclient.events.EventbusImpl;
-import com.etherblood.cardsjmeclient.events.ExceptionEvent;
 import com.etherblood.cardsjmeclient.events.ScreenRequestEvent;
+import com.etherblood.cardsjmeclient.events.SynchronizedEvent;
 import com.etherblood.cardsjmeclient.match.cards.TemplatesReader;
-import com.etherblood.cardsnetworkshared.DefaultMessage;
-import com.etherblood.cardsnetworkshared.EncryptedMessage;
+import com.etherblood.cardsjmeclient.states.BotsState;
+import com.etherblood.cardsjmeclient.states.CardCollectionState;
+import com.etherblood.cardsjmeclient.states.ConnectionState;
+import com.etherblood.cardsjmeclient.states.GuiState;
 import com.etherblood.cardsnetworkshared.SerializerInit;
 import com.jme3.app.SimpleApplication;
-import com.jme3.network.AbstractMessage;
-import com.jme3.network.Client;
-import com.jme3.network.ErrorListener;
-import com.jme3.network.Message;
-import com.jme3.network.MessageListener;
 import com.jme3.renderer.RenderManager;
 import com.jme3.system.AppSettings;
 import com.simsilica.lemur.GuiGlobals;
 import com.simsilica.lemur.style.BaseStyles;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.annotation.PreDestroy;
 
 /**
  * test
@@ -30,11 +40,9 @@ import java.awt.Toolkit;
  */
 public class Main extends SimpleApplication {
 
-    private static final int PORT = 6145;
-    private Client client;
+    public static String ipAddress;
+    private CardsContext context;
 //    private Card testCard;
-
-    private final Eventbus eventbus = new EventbusImpl();
 
     public static void main(String[] args) throws Exception {
         SerializerInit.init();
@@ -44,39 +52,9 @@ public class Main extends SimpleApplication {
         } catch (Exception e) {
             e.printStackTrace(System.out);
         }
-
-        String ipAddress = args.length != 0 ? args[0] : "213.73.99.162";
+        
+        ipAddress = args.length != 0 ? args[0] : "destrostudios.com";
         final Main app = new Main();
-        app.client = ExtendedDefaultClient.connectToServer(ipAddress, PORT);//Network.connectToServer(ipAddress, PORT);
-
-        final MessageListener<Client> defaultMessageListener = new MessageListener<Client>() {
-            @Override
-            public void messageReceived(Client source, Message m) {
-                DefaultMessage message = (DefaultMessage) m;
-                app.fireSyncedEvent(message.getData());
-            }
-        };
-        final MessageListener<Client> encryptedMessageListener = new MessageListener<Client>() {
-            @Override
-            public void messageReceived(Client connection, Message message) {
-                defaultMessageListener.messageReceived(connection, ((EncryptedMessage) message).getMessage());
-            }
-        };
-        app.client.addMessageListener(defaultMessageListener, DefaultMessage.class);
-        app.client.addMessageListener(encryptedMessageListener, EncryptedMessage.class);
-        app.eventbus.subscribe(AbstractMessage.class, new EventListener<AbstractMessage>() {
-            @Override
-            public void onEvent(AbstractMessage event) {
-                app.client.send(event);
-            }
-        });
-        app.client.addErrorListener(new ErrorListener<Client>() {
-            @Override
-            public void handleError(Client s, Throwable thrwbl) {
-                app.fireSyncedEvent(new ExceptionEvent(thrwbl));
-            }
-        });
-        app.client.start();
 
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         int width = (int) screenSize.getWidth() - 50;
@@ -84,21 +62,13 @@ public class Main extends SimpleApplication {
 
         AppSettings appSettings = new AppSettings(true);
         appSettings.setFrameRate(200);
+        appSettings.setResizable(true);
 //        appSettings.setFullscreen(true);
         appSettings.setResolution(width, height);
         appSettings.setAudioRenderer(AppSettings.LWJGL_OPENAL);
         app.setShowSettings(false);
         app.setSettings(appSettings);
         app.start();
-    }
-
-    public void fireSyncedEvent(final Object event) {
-        enqueue(new Runnable() {
-            @Override
-            public void run() {
-                eventbus.sendEvent(event);
-            }
-        });
     }
 
     @Override
@@ -115,30 +85,34 @@ public class Main extends SimpleApplication {
         // Set 'glass' as the default style when not specified
         GuiGlobals.getInstance().getStyles().setDefaultStyle("glass");
 
-        ScreenManager<ScreenKeys> manager = new InitScreens().create(getGuiNode(), eventbus);
-//        new LoginScreen().bind(eventbus, getGuiNode());
-//        new ArrangeMatchScreen().bind(eventbus, getGuiNode());
-//        new MatchScreen().bind(eventbus, getGuiNode());
-//        LoginAppstate loginAppstate = new LoginAppstate(eventbus);
-//        ArrangeMatchAppstate arrangeMatchAppstate = new ArrangeMatchAppstate(eventbus);
-//////        testCard = new Card();
-////////        testCard.setLocalScale(0.1f);
-//////        Node testNode = new Node();
-//////        testNode.setLocalScale(0.1f);
-//////        testNode.setLocalTranslation(500, 500, -100);
-//////        getRootNode().attachChild(testNode);
-//////        testNode.attachChild(testCard);
-//////        testCard.setCardName("Wisp");
-//////        testCard.setAttack(1);
-//////        testCard.setCost(1);
-//////        testCard.setHealth(1);
-//////        testCard.addMouseListener(new DefaultMouseListener() {
-//////            @Override
-//////            protected void click(MouseButtonEvent event, Spatial target, Spatial capture) {
-//////                System.out.println("hurrdurr");
-//////            }
-//////        });
-        fireSyncedEvent(new ScreenRequestEvent(ScreenKeys.LOGIN));
+        Eventbus eventbus = new EventbusImpl();
+        
+        CardsContextBuilder builder = new CardsContextBuilder();
+        builder.addBean(new ScreenManager());
+        builder.addBean(new InitScreens());
+        builder.addBean(eventbus);
+        builder.addBean(new GuiState(guiNode));
+        builder.addBean(new CardCollectionState());
+        builder.addBean(new ConnectionState());
+        builder.addBean(new BotsState());
+        
+        builder.addBean(new ConnectScreen());
+        builder.addBean(new LoginScreen());
+        builder.addBean(new MatchScreen());
+        builder.addBean(new LobbyScreen());
+        builder.addBean(new ErrorScreen());
+        builder.addBean(new MainMenuScreen());
+        builder.addBean(new DeckbuilderScreen());
+        
+        context = builder.build();
+        
+        eventbus.subscribe(SynchronizedEvent.class, new EventListener<SynchronizedEvent>() {
+            @Override
+            public void onEvent(SynchronizedEvent event) {
+                enqueue(event);
+            }
+        });
+        eventbus.sendEvent(new ScreenRequestEvent(ScreenKeys.CONNECT));
     }
 
     @Override
@@ -153,7 +127,7 @@ public class Main extends SimpleApplication {
 
     @Override
     public void destroy() {
+        context.destroy();
         super.destroy();
-        client.close();
     }
 }

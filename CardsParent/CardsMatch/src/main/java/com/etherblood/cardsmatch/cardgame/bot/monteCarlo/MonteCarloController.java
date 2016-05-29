@@ -13,7 +13,7 @@ import com.etherblood.entitysystem.data.EntityComponentMapReadonly;
 import com.etherblood.entitysystem.data.EntityId;
 import com.etherblood.entitysystem.data.IncrementalEntityIdFactory;
 import com.etherblood.eventsystem.GameEventQueueImpl;
-import com.etherblood.cardscontext.MatchContext;
+import com.etherblood.cardscontext.CardsContext;
 import com.etherblood.montecarlotreesearch.MonteCarloControls;
 import com.etherblood.montecarlotreesearch.MonteCarloNode;
 import com.etherblood.montecarlotreesearch.MonteCarloState;
@@ -28,8 +28,8 @@ public class MonteCarloController implements Bot {
     long millis = 5000;
     private final EntityId player1Entity;
     private final MonteCarloControls controls = new MonteCarloControls();
-    private final MatchContext state;
-    private final MatchContext simulationState;
+    private final CardsContext state;
+    private final CardsContext simulationState;
     private final CommandManager generator;
     private final MoveSelector simulationMoveSelector = new MoveSelector() {
         @Override
@@ -57,7 +57,7 @@ public class MonteCarloController implements Bot {
         }
     };
 
-    public MonteCarloController(MatchContext state, MatchContext simulationState, CommandManager commandGenerator, EntityId player1) {
+    public MonteCarloController(CardsContext state, CardsContext simulationState, CommandManager commandGenerator, EntityId player1) {
         this.state = state;
         this.simulationState = simulationState;
         this.generator = commandGenerator;

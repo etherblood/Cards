@@ -68,6 +68,7 @@ public class UserService {
         UserAccount user = new UserAccount();
         user.setUsername(userRegistration.getUsername());
         user.setPassword(generatePassword(userRegistration.getPlaintextPassword()));
+        user.getRoles().add("ROLE_USER");
 
         userRepo.persist(user);
         eventPublisher.publishEvent(new SystemTaskEvent(new UserRegisteredEvent(user)));

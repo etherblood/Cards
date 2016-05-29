@@ -21,4 +21,9 @@ public class AttachTemplateEvent implements GameEvent {
         this.owner = owner;
         this.parent = parent;
     }
+
+    @Override
+    public String toString() {
+        return "AttachTemplateEvent{" + "target=" + target + ", owner=" + owner + ", parent=" + parent + ", template=" + template + '}';
+    }
 }

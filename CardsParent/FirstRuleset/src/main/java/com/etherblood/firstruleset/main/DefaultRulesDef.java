@@ -114,8 +114,8 @@ import com.etherblood.firstruleset.logic.startTurn.systems.StartTurnSystem;
 import com.etherblood.firstruleset.logic.summon.SummonEvent;
 import com.etherblood.firstruleset.logic.summon.systems.ApplySummonSystem;
 import com.etherblood.firstruleset.logic.summon.systems.BattlecrySystem;
-import com.etherblood.cardscontext.MatchContext;
-import com.etherblood.cardscontext.MatchContextBuilder;
+import com.etherblood.cardscontext.CardsContext;
+import com.etherblood.cardscontext.CardsContextBuilder;
 import com.etherblood.logging.Logger;
 import com.etherblood.cardsmatchapi.MatchBuilder;
 import com.etherblood.cardsmatchapi.RulesDefinition;
@@ -143,8 +143,8 @@ public class DefaultRulesDef implements RulesDefinition {
     private final TemplateSet templates;
     private final ContextFactory contextFactory = new ContextFactory() {
             @Override
-            public MatchContext buildContext(Object... extraBeans) {
-                MatchContextBuilder builder = new MatchContextBuilder();
+            public CardsContext buildContext(Object... extraBeans) {
+                CardsContextBuilder builder = new CardsContextBuilder();
                 GameEventDispatcher eventDispatcher = new MatchGameEventDispatcher();
                 builder.addBean(new EntityComponentMapImpl());
                 builder.addBean(eventDispatcher);
@@ -184,7 +184,7 @@ public class DefaultRulesDef implements RulesDefinition {
         return new DefaultMatchBuilder(contextFactory, contextFactory.buildContext(logger, new MatchLogger(), new CommandHandlerImpl()));
     }
     
-    private void addSystems(MatchContextBuilder builder, GameEventDispatcher eventDispatcher) {
+    private void addSystems(CardsContextBuilder builder, GameEventDispatcher eventDispatcher) {
         addSystem(builder, eventDispatcher, ApplyEndTurnEvent.class, new ApplyEndTurnSystem());
         addSystem(builder, eventDispatcher, AttachTemplateEvent.class, new AttachTemplateSystem());
         addSystem(builder, eventDispatcher, AttachTemplateEvent.class, new CopyBattlecryConditionsSystem());
@@ -274,13 +274,13 @@ public class DefaultRulesDef implements RulesDefinition {
         addSystem(builder, eventDispatcher, TriggerEffectEvent.class, new TriggerEffectSystem());
     }
 
-    private <E extends GameEvent> void addSystem(MatchContextBuilder builder, GameEventDispatcher dispatcher, Class<E> eventClass, GameEventHandler<E> system) {
+    private <E extends GameEvent> void addSystem(CardsContextBuilder builder, GameEventDispatcher dispatcher, Class<E> eventClass, GameEventHandler<E> system) {
 //        dispatcher.subscribe(eventClass, system);
 //        builder.addPassiveBean(system);
         addSystem(builder, dispatcher, system);
     }
     
-    private <E extends GameEvent> void addSystem(MatchContextBuilder builder, GameEventDispatcher dispatcher, GameEventHandler<E> system) {
+    private <E extends GameEvent> void addSystem(CardsContextBuilder builder, GameEventDispatcher dispatcher, GameEventHandler<E> system) {
         ParameterizedType genericSuperclass = (ParameterizedType)system.getClass().getGenericSuperclass();
         dispatcher.subscribe((Class) genericSuperclass.getActualTypeArguments()[0], system);
         builder.addBean(system);

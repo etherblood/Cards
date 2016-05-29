@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  * @author Philipp
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
+@Target({ElementType.FIELD, ElementType.METHOD})
 public @interface Autowire {
     
 }

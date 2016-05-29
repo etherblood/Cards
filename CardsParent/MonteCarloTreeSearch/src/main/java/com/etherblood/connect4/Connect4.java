@@ -144,4 +144,8 @@ public class Connect4 {
     public int getWidth() {
         return width;
     }
+
+    public long[] getPlayerTokens() {
+        return playerTokens;
+    }
 }

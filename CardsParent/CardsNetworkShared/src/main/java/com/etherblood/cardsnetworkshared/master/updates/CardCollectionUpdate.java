@@ -1,6 +1,8 @@
 package com.etherblood.cardsnetworkshared.master.updates;
 
 import com.jme3.network.serializing.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  *
@@ -8,16 +10,6 @@ import com.jme3.network.serializing.Serializable;
  */
 @Serializable
 public class CardCollectionUpdate {
-    private String[] cards;
-
-    public CardCollectionUpdate() {
-    }
-
-    public CardCollectionUpdate(String[] cards) {
-        this.cards = cards;
-    }
-
-    public String[] getCards() {
-        return cards;
-    }
+    public CardGroupTo collection;
+    public Set<CardGroupTo> libraries = new HashSet<>();
 }

@@ -1,6 +1,6 @@
 package com.etherblood.firstruleset.main;
 
-import com.etherblood.cardscontext.MatchContext;
+import com.etherblood.cardscontext.CardsContext;
 import com.etherblood.cardsmatch.cardgame.components.misc.MatchEndedComponent;
 import com.etherblood.cardsmatch.cardgame.components.player.ItsMyTurnComponent;
 import com.etherblood.cardsmatch.cardgame.components.player.LoserComponent;
@@ -19,10 +19,10 @@ import java.util.List;
  */
 public class StateProxyImpl implements StateProxy {
     private final FilterQuery currentPlayerQuery = new FilterQuery().setBaseClass(ItsMyTurnComponent.class);
-    private final MatchContext context;
+    private final CardsContext context;
     private final List<AbstractPlayerProxy> players;
 
-    public StateProxyImpl(MatchContext context, List<AbstractPlayerProxy> players) {
+    public StateProxyImpl(CardsContext context, List<AbstractPlayerProxy> players) {
         this.context = context;
         this.players = players;
     }

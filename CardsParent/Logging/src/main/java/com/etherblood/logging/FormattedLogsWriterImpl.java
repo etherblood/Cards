@@ -9,12 +9,33 @@ import java.util.Objects;
 
 public class FormattedLogsWriterImpl implements FormattedLogsWriter {
     private static final String NULL_STRING = "null";
-    private final String PLACEHOLDER = "{}";
-    private final int PLACEHOLDER_LENGTH = PLACEHOLDER.length();
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss.SSS Z");
-    
+    private static final String PLACEHOLDER = "{}";
+    private static final int PLACEHOLDER_LENGTH = PLACEHOLDER.length();
+    private final SimpleDateFormat dateFormat;
+    private final PrintWriter writer;
+
+    public FormattedLogsWriterImpl(PrintWriter writer) {
+        this(writer, new SimpleDateFormat("yyyy.MM.dd HH:mm:ss.SSS Z"));
+    }
+    public FormattedLogsWriterImpl(PrintWriter writer, SimpleDateFormat dateFormat) {
+        this.writer = writer;
+        this.dateFormat = dateFormat;
+    }
+
     @Override
-    public void append(PrintWriter writer, String message, Object[] params) throws IOException {
+    public void log(LogLevel level, String message, Object[] arguments) throws IOException {
+        append(writer, new Date());
+        writer.append(' ');
+        writer.append(Thread.currentThread().getName());
+        writer.append(' ');
+        writer.append(level.toString());
+        writer.append(": ");
+        append(writer, message, arguments);
+        writer.append(System.lineSeparator());
+        writer.flush();
+    }
+    
+    protected void append(PrintWriter writer, String message, Object[] params) throws IOException {
         if(params == null || params.length == 0) {
             writer.append(message);
         } else {
@@ -33,8 +54,7 @@ public class FormattedLogsWriterImpl implements FormattedLogsWriter {
         }
     }
 
-    @Override
-    public void append(PrintWriter writer, Object object) throws IOException {
+    protected void append(PrintWriter writer, Object object) throws IOException {
         if(object instanceof Date) {
             writer.append(dateFormat.format((Date)object));
         } else if(object instanceof Throwable) {
@@ -42,6 +62,14 @@ public class FormattedLogsWriterImpl implements FormattedLogsWriter {
         } else {
             writer.append(Objects.toString(object, NULL_STRING));
         }
+    }
+
+    public SimpleDateFormat getDateFormat() {
+        return dateFormat;
+    }
+
+    public PrintWriter getWriter() {
+        return writer;
     }
 
 }

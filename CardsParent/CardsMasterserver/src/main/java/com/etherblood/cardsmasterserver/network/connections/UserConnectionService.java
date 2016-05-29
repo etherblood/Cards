@@ -30,6 +30,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -99,6 +100,7 @@ public class UserConnectionService {
         server.close();
     }
 
+    @Transactional
     @MessageHandler
     @PreAuthorize("hasRole('ROLE_ANONYMOUS')")
     public LoginSuccess login(UserLogin userLogin) {
@@ -110,7 +112,7 @@ public class UserConnectionService {
                 logger.getLogger(getClass()).log(LogLevel.INFO, "user {} was kicked because he logged in a second time.", user.getUsername());
         }
         HostedConnection connection = getCurrentConnection();
-        setAuthentication(connection, new DefaultAuthentication(connection, user.getId(), user.getRoles()));
+        setAuthentication(connection, new DefaultAuthentication(connection, user.getId(), user.getRolesAsArray()));
         System.out.println(connection.getAddress() + " logged in as " + user.getUsername());
         logger.getLogger(getClass()).log(LogLevel.INFO, "{} logged in as {}", connection.getAddress(), user.getUsername());
         return new LoginSuccess(user.getUsername());

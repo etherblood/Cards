@@ -1,11 +1,11 @@
 package com.etherblood.firstruleset.main;
 
-import com.etherblood.cardscontext.MatchContext;
+import com.etherblood.cardscontext.CardsContext;
 
 /**
  *
  * @author Philipp
  */
 public interface ContextFactory {
-    MatchContext buildContext(Object... extraBeans);
+    CardsContext buildContext(Object... extraBeans);
 }

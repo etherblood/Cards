@@ -1,11 +1,13 @@
 package com.etherblood.cardsjmeclient.appscreens;
 
+import com.etherblood.cardscontext.Autowire;
 import com.etherblood.cardsjmeclient.ScreenKeys;
 import com.etherblood.cardsjmeclient.events.Eventbus;
 import com.etherblood.cardsjmeclient.events.ScreenRequestEvent;
 import com.simsilica.lemur.Button;
 import com.simsilica.lemur.Command;
 import com.simsilica.lemur.Label;
+import javax.annotation.PostConstruct;
 
 /**
  *
@@ -13,8 +15,8 @@ import com.simsilica.lemur.Label;
  */
 public class MainMenuScreen extends AbstractScreen {
 
-    @Override
-    public void bind(Eventbus eventbus) {
+    @PostConstruct
+    public void init() {
         getContainer().setLocalTranslation(300, 800, 0);
 
         // Add some elements
@@ -23,16 +25,21 @@ public class MainMenuScreen extends AbstractScreen {
         lobbyButton.addClickCommands(new Command<Button>() {
             @Override
             public void execute(Button source) {
-                eventbus.sendEvent(new ScreenRequestEvent(ScreenKeys.LOBBY));
+                getEventbus().sendEvent(new ScreenRequestEvent(ScreenKeys.LOBBY));
             }
         });
         Button deckButton = getContainer().addChild(new Button("Deckbuilder"));
         deckButton.addClickCommands(new Command<Button>() {
             @Override
             public void execute(Button source) {
-                eventbus.sendEvent(new ScreenRequestEvent(ScreenKeys.DECKBUILDER));
+                getEventbus().sendEvent(new ScreenRequestEvent(ScreenKeys.DECKBUILDER));
             }
         });
+    }
+
+    @Override
+    public ScreenKeys getScreenKey() {
+        return ScreenKeys.MAIN_MENU;
     }
 
 }

@@ -1,18 +1,20 @@
 package com.etherblood.logging;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Date;
 
 
 public class DefaultLogger implements Logger {
-    private LogLevel minimumLogLevel;
-    private FormattedLogsWriter formatter = new FormattedLogsWriterImpl();
-    private final PrintWriter writer;
+    private final LogLevel minimumLogLevel;
+    private final FormattedLogsWriter formatter;
 
-    public DefaultLogger(PrintWriter writer) {
-        this.writer = writer;
-        setMinimumLogLevel(LogLevel.INFO);
+    public DefaultLogger(FormattedLogsWriter formatter) {
+        this(formatter, LogLevel.INFO);
+    }
+
+    public DefaultLogger(FormattedLogsWriter formatter, LogLevel minimumLogLevel) {
+        this.formatter = formatter;
+        this.minimumLogLevel = minimumLogLevel;
+        log(LogLevel.ALWAYS, "LogLevel was set to {}", this.minimumLogLevel);
     }
     
     @Override
@@ -26,15 +28,10 @@ public class DefaultLogger implements Logger {
     }
 
     @Override
-    public void log(LogLevel level, String message, Object... arguments) {
+    public final synchronized void log(LogLevel level, String message, Object... arguments) {
         if(acceptsLogLevel(level)) {
             try {
-                logPreInfo(level);
-                writer.append(':');
-                writer.append(' ');
-                formatter.append(writer, message, arguments);
-                writer.append(System.lineSeparator());
-                writer.flush();
+                formatter.log(level, message, arguments);
             } catch (IOException ex) {
                 System.err.println(ex);
                 ex.printStackTrace(System.err);
@@ -42,13 +39,6 @@ public class DefaultLogger implements Logger {
         }
     }
 
-    protected void logPreInfo(LogLevel level) throws IOException {
-        formatter.append(writer, new Date());
-        writer.append(' ');
-        writer.append(Thread.currentThread().getName());
-        writer.append(' ');
-        writer.append(level.toString());
-    }
 
     @Override
     public boolean acceptsLogLevel(LogLevel level) {
@@ -59,21 +49,8 @@ public class DefaultLogger implements Logger {
         return minimumLogLevel;
     }
 
-    public void setMinimumLogLevel(LogLevel minimumLogLevel) {
-        this.minimumLogLevel = minimumLogLevel;
-        log(LogLevel.ALWAYS, "LogLevel was set to {}", minimumLogLevel);
-    }
-
     public FormattedLogsWriter getFormatter() {
         return formatter;
-    }
-
-    public void setFormatter(FormattedLogsWriter formatter) {
-        this.formatter = formatter;
-    }
-
-    public PrintWriter getWriter() {
-        return writer;
     }
 
 }

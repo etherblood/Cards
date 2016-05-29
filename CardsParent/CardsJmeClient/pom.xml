@@ -71,6 +71,11 @@
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
+            <groupId>com.etherblood</groupId>
+            <artifactId>CardsContext</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <groupId>org.jmonkeyengine</groupId>
             <artifactId>jme3-core</artifactId>
         </dependency>
@@ -91,11 +96,11 @@
             <artifactId>lemur</artifactId>
             <version>1.6.1</version>
         </dependency>
-        <!--<dependency>
+        <dependency>
             <groupId>com.simsilica</groupId>
             <artifactId>lemur-proto</artifactId>
-            <version>1.5.1</version>
-        </dependency>-->
+            <version>1.6.1</version>
+        </dependency>
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-all</artifactId>

@@ -1,7 +1,8 @@
 package com.etherblood.cardsjmeclient.appscreens;
 
-import com.etherblood.cardsjmeclient.events.Eventbus;
+import com.etherblood.cardsjmeclient.ScreenKeys;
 import com.simsilica.lemur.Label;
+import javax.annotation.PostConstruct;
 
 /**
  *
@@ -9,12 +10,17 @@ import com.simsilica.lemur.Label;
  */
 public class ErrorScreen extends AbstractScreen {
 
-    @Override
-    public void bind(Eventbus eventbus) {
+    @PostConstruct
+    public void init() {
         getContainer().setLocalTranslation(300, 800, 0);
 
         // Add some elements
         getContainer().addChild(new Label("Error"));
+    }
+
+    @Override
+    public ScreenKeys getScreenKey() {
+        return ScreenKeys.ERROR;
     }
 
 }

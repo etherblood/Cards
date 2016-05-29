@@ -1,6 +1,6 @@
 package com.etherblood.firstruleset.main;
 
-import com.etherblood.cardscontext.MatchContext;
+import com.etherblood.cardscontext.CardsContext;
 import com.etherblood.cardsmatch.cardgame.IdConverter;
 import com.etherblood.cardsmatchapi.HumanProxy;
 import com.etherblood.cardsmatchapi.IllegalCommandException;
@@ -19,7 +19,7 @@ public class HumanProxyImpl extends AbstractPlayerProxy implements HumanProxy<Tr
     private final List<MatchUpdate> updates = new ArrayList<>();
     private IdConverter idConverter;
 
-    public HumanProxyImpl(MatchContext context, PlayerDefinition definition) {
+    public HumanProxyImpl(CardsContext context, PlayerDefinition definition) {
         super(context, definition);
     }
 
@@ -43,6 +43,10 @@ public class HumanProxyImpl extends AbstractPlayerProxy implements HumanProxy<Tr
 
     public void setIdConverter(IdConverter idConverter) {
         this.idConverter = idConverter;
+    }
+
+    public IdConverter getIdConverter() {
+        return idConverter;
     }
 
 }

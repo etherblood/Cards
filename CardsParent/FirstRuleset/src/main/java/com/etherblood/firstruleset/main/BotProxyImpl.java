@@ -1,6 +1,6 @@
 package com.etherblood.firstruleset.main;
 
-import com.etherblood.cardscontext.MatchContext;
+import com.etherblood.cardscontext.CardsContext;
 import com.etherblood.cardsmatch.cardgame.bot.Bot;
 import com.etherblood.cardsmatch.cardgame.bot.commands.Command;
 import com.etherblood.cardsmatchapi.BotProxy;
@@ -13,7 +13,7 @@ import com.etherblood.cardsmatchapi.PlayerDefinition;
 public class BotProxyImpl extends AbstractPlayerProxy implements BotProxy {
     private Bot bot;
 
-    public BotProxyImpl(MatchContext context, PlayerDefinition definition) {
+    public BotProxyImpl(CardsContext context, PlayerDefinition definition) {
         super(context, definition);
     }
     

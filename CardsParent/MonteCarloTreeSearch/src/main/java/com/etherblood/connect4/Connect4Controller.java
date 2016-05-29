@@ -81,18 +81,25 @@ public class Connect4Controller {
     
     private int playout() {
         while (true) {
-            long moves = simulationState.generateTokenMoves();
-            int numMoves = Long.bitCount(moves);
-            int index = rng.nextInt(numMoves);
-            long move = extractMoveToken(moves, index);
-            simulationState.tokenMove(move);
-
+            randomMove(simulationState);
             if (simulationState.opponentWon()) {
                 return simulationState.opponent();
             } else if (simulationState.isBoardFull()) {
                 return MATCH_RESULT_DRAW;
             }
         }
+    }
+    
+    public void randomMove() {
+        randomMove(state);
+    }
+
+    private void randomMove(Connect4 state) {
+        long moves = state.generateTokenMoves();
+        int numMoves = Long.bitCount(moves);
+        int index = rng.nextInt(numMoves);
+        long move = extractMoveToken(moves, index);
+        state.tokenMove(move);
     }
 
     private long extractMoveToken(long moves, int index) {

@@ -11,7 +11,7 @@ public class EventbusImpl implements Eventbus {
     @Override
     public <T> void subscribe(Class<T> eventClass, EventListener<T> listener) {
         if(eventClass.isInterface()) {
-            throw new UnsupportedOperationException("interfaces not supported yet");
+            throw new UnsupportedOperationException("interfaces not supported yet. " + eventClass.getName());
         }
         List<EventListener> list = classListeners.get(eventClass);
         if (list == null) {

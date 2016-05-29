@@ -34,7 +34,7 @@ import com.etherblood.entitysystem.filters.FilterQuery;
 import com.etherblood.entitysystem.util.DeterministicEntityIndices;
 import com.etherblood.eventsystem.GameEventQueueImpl;
 import com.etherblood.firstruleset.logic.effects.TargetedTriggerEffectEvent;
-import com.etherblood.cardscontext.MatchContext;
+import com.etherblood.cardscontext.CardsContext;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -115,7 +115,7 @@ public class CommandGeneratorImpl implements CommandManager {
     }
 
     @Override
-    public void executeCommand(MatchContext context, Command command) {
+    public void executeCommand(CardsContext context, Command command) {
         GameEventQueueImpl events = context.getBean(GameEventQueueImpl.class);
         events.fireEvent(new TargetedTriggerEffectEvent(currentQuery.first(context.getBean(EntityComponentMapReadonly.class)), command.effect, command.targets));
         events.handleEvents();

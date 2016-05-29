@@ -1,6 +1,6 @@
 package com.etherblood.firstruleset.main;
 
-import com.etherblood.cardscontext.MatchContext;
+import com.etherblood.cardscontext.CardsContext;
 import com.etherblood.cardsmatch.cardgame.MatchGameEventDispatcher;
 import com.etherblood.cardsmatch.cardgame.NetworkPlayer;
 import com.etherblood.cardsmatch.cardgame.UpdateBuilder;
@@ -46,13 +46,13 @@ import com.etherblood.cardsmatch.cardgame.GlobalEventHandler;
  * @author Philipp
  */
 public class DefaultMatchBuilder implements MatchBuilder<TriggerEffectRequest, MatchUpdate>{
-    private final MatchContext context;
+    private final CardsContext context;
     private final ContextFactory contextFactory;
     private final List<AbstractPlayerProxy> players = new ArrayList<>();
     private final SpectatorProxy spectator = new SpectatorProxyImpl();
     private final StateProxyImpl stateProxy;
 
-    public DefaultMatchBuilder(ContextFactory contextFactory, MatchContext context) {
+    public DefaultMatchBuilder(ContextFactory contextFactory, CardsContext context) {
         this.contextFactory = contextFactory;
         this.context = context;
         stateProxy = new StateProxyImpl(context, players);
@@ -151,7 +151,7 @@ public class DefaultMatchBuilder implements MatchBuilder<TriggerEffectRequest, M
         eventQueue.handleEvents();
     }
     
-    private void initPlayer(MatchContext match, EntityId player, String name, String heroTemplate, String[] library) {
+    private void initPlayer(CardsContext match, EntityId player, String name, String heroTemplate, List<String> library) {
         EntityComponentMap data = match.getBean(EntityComponentMap.class);
         EntityIdFactory idFactory = match.getBean(EntityIdFactory.class);
         GameEventQueue events = match.getBean(GameEventQueue.class);

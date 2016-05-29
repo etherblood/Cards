@@ -1,6 +1,7 @@
 package com.etherblood.cardsmasterserver;
 
-import com.etherblood.cardsmasterserver.cards.CardCollectionService;
+import com.etherblood.cardsmasterserver.cards.CardService;
+import com.etherblood.cardsmasterserver.matches.MatchService;
 import com.etherblood.cardsmasterserver.network.connections.DefaultAuthentication;
 import com.etherblood.cardsmasterserver.users.UserRoles;
 import com.etherblood.cardsmasterserver.users.UserService;
@@ -32,6 +33,7 @@ public class Main implements Runnable {
     }
 
     private void runAdminThread(ClassPathXmlApplicationContext context) {
+        context.getBean(MatchService.class).registerCards();
         context.getBean(UserService.class).registerUser(new UserRegistration("testuser", "password"));
         Scanner scanner = new Scanner(System.in);
         while (true) {
@@ -48,7 +50,7 @@ public class Main implements Runnable {
                         break;
                     case "gift":
                         UserAccount user = context.getBean(UserService.class).getUser(args[1]);
-                        context.getBean(CardCollectionService.class).giftCard(user, chainArgs(args, 2), 1);
+                        context.getBean(CardService.class).giftCard(user.getId(), chainArgs(args, 2), 1);
                         break;
                     default:
                         System.out.println("command not found");

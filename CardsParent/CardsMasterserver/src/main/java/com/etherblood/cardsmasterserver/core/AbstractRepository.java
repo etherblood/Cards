@@ -11,17 +11,21 @@ import javax.persistence.PersistenceContext;
  */
 public abstract class AbstractRepository<T> {
     @PersistenceContext
-    private EntityManager em;
+    private EntityManager entityManager;
 
     public void persist(T entity) {
-        em.persist(entity);
+        entityManager.persist(entity);
     }
     
     public void remove(T entity) {
-        em.remove(entity);
+        entityManager.remove(entity);
     }
     
     protected JPAQuery from(EntityPath... paths) {
-        return new JPAQuery(em).from(paths);
+        return new JPAQuery(entityManager).from(paths);
+    }
+
+    public EntityManager getEntityManager() {
+        return entityManager;
     }
 }

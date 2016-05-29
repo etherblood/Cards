@@ -39,7 +39,7 @@ public final class GameEventQueueImpl implements GameEventQueue {
         depth++;
         assert handledEvents.add(event);
         try {
-            dispatcher.dispatch(event);//response-events will be put into currentQueue
+            dispatchEvent(event);//response-events will be put into currentQueue
         } catch (Exception ex) {
             System.out.println("eventQueue at time of exception:");
             for (int i = 0; i < depth; i++) {
@@ -57,9 +57,24 @@ public final class GameEventQueueImpl implements GameEventQueue {
         }
     }
 
+    private void dispatchEvent(GameEvent event) {
+        if(event instanceof MultiEvent) {
+            for (GameEvent subEvent : ((MultiEvent)event).events) {
+                dispatcher.dispatch(subEvent);
+            }
+        } else {
+            dispatcher.dispatch(event);
+        }
+    }
+
     @Override
     public void fireEvent(GameEvent event) {
         currentQueue().addLast(event);
+    }
+
+    @Override
+    public void fireEvents(List<GameEvent> events) {
+        currentQueue().addLast(new MultiEvent(events));
     }
     
     public GameEvent getParent(GameEvent event) {

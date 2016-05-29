@@ -1,14 +1,17 @@
 package com.etherblood.cardsjmeclient.appscreens;
 
+import com.etherblood.cardsjmeclient.ScreenKeys;
 import com.etherblood.cardsjmeclient.events.Eventbus;
 import com.etherblood.cardsnetworkshared.DefaultMessage;
 import com.etherblood.cardsnetworkshared.EncryptedMessage;
+import com.etherblood.cardsnetworkshared.master.commands.CardCollectionRequest;
 import com.etherblood.cardsnetworkshared.master.commands.UserLogin;
 import com.etherblood.cardsnetworkshared.master.commands.UserRegistration;
 import com.simsilica.lemur.Button;
 import com.simsilica.lemur.Command;
 import com.simsilica.lemur.Label;
 import com.simsilica.lemur.TextField;
+import javax.annotation.PostConstruct;
 
 /**
  *
@@ -16,8 +19,8 @@ import com.simsilica.lemur.TextField;
  */
 public class LoginScreen extends AbstractScreen {
 
-    @Override
-    public void bind(final Eventbus eventbus) {
+    @PostConstruct
+    public void init() {
         getContainer().setLocalTranslation(300, 800, 0);
 
         // Add some elements
@@ -28,15 +31,20 @@ public class LoginScreen extends AbstractScreen {
         loginButton.addClickCommands(new Command<Button>() {
             @Override
             public void execute(Button source) {
-                eventbus.sendEvent(new EncryptedMessage(new DefaultMessage(new UserLogin(username.getText(), password.getText()))));
+                getEventbus().sendEvent(new EncryptedMessage(new DefaultMessage(new UserLogin(username.getText(), password.getText()))));
             }
         });
         Button registerButton = getContainer().addChild(new Button("register"));
         registerButton.addClickCommands(new Command<Button>() {
             @Override
             public void execute(Button source) {
-                eventbus.sendEvent(new EncryptedMessage(new DefaultMessage(new UserRegistration(username.getText(), password.getText()))));
+                getEventbus().sendEvent(new EncryptedMessage(new DefaultMessage(new UserRegistration(username.getText(), password.getText()))));
             }
         });
+    }
+
+    @Override
+    public ScreenKeys getScreenKey() {
+        return ScreenKeys.LOGIN;
     }
 }

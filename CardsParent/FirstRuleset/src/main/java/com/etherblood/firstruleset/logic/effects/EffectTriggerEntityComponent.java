@@ -8,6 +8,7 @@ import com.etherblood.entitysystem.data.EntityComponent;
 import com.etherblood.entitysystem.data.EntityId;
 import com.etherblood.entitysystem.filters.AbstractComponentFieldValueFilter;
 import com.etherblood.entitysystem.filters.BinaryOperator;
+import com.etherblood.entitysystem.filters.EqualityOperator;
 import java.lang.reflect.Field;
 
 /**
@@ -26,6 +27,12 @@ public class EffectTriggerEntityComponent implements EntityComponent {
                 return EffectTriggerEntityComponent.class;
             }
         };
+    }
+    
+    public static AbstractComponentFieldValueFilter<EffectTriggerEntityComponent> equalsFilter(EntityId value) {
+        AbstractComponentFieldValueFilter<EffectTriggerEntityComponent> filter = createTriggerFilter(EqualityOperator.INSTANCE);
+        filter.setValue(value);
+        return filter;
     }
 
     public final EntityId entity;

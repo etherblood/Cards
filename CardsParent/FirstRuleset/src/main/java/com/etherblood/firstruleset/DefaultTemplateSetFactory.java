@@ -264,6 +264,9 @@ public class DefaultTemplateSetFactory {
 
         EntityTemplate leperGnome = createMinion("Leper Gnome", 1, 2, 1);
         leperGnome.addChild(createFilteredDamage(2, targetEnemyHeroes, deathrattle));
+        
+        EntityTemplate freeWin = createMinion("Free Win", 0, 100, 100);
+        freeWin.addChild(createFilteredDamage(100, targetEnemyHeroes, deathrattle));
 
         EntityTemplate nightBlade = createMinion("Nightblade", 5, 4, 4);
         nightBlade.addChild(createFilteredDamage(4, targetEnemyHeroes, battlecry));

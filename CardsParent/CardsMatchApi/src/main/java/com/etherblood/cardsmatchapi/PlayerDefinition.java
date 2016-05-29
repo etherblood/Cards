@@ -1,12 +1,14 @@
 package com.etherblood.cardsmatchapi;
 
+import java.util.List;
+
 /**
  *
  * @author Philipp
  */
 public class PlayerDefinition {
     private String name, heroTemplate;
-    private String[] library;
+    private List<String> library;
 //    private EntityId entity;
 //    private boolean bot;
 //    private Bot botInstance;
@@ -20,7 +22,7 @@ public class PlayerDefinition {
         return heroTemplate;
     }
 
-    public String[] getLibrary() {
+    public List<String> getLibrary() {
         return library;
     }
 
@@ -46,7 +48,7 @@ public class PlayerDefinition {
         this.heroTemplate = hero;
     }
 
-    public void setLibrary(String[] library) {
+    public void setLibrary(List<String> library) {
         this.library = library;
     }
 

@@ -33,8 +33,12 @@ public class MessageFromClientService implements BeanDefinitionRegistryPostProce
 
     @PreAuthorize("permitAll")
     public void dispatchMessage(Object message) {
+        List<UserMessageHandler> handlers = messageHandlers.get(message.getClass());
+        if(handlers == null) {
+            throw new IllegalStateException("message not handled: " + message);
+        }
 //        UserMessageHandler messageHandler = messageHandlers.get(message.getClass());
-        for (UserMessageHandler messageHandler : messageHandlers.get(message.getClass())) {
+        for (UserMessageHandler messageHandler : handlers) {
             try {
                 messageHandler.onMessage(message);
             } catch (Exception e) {

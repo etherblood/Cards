@@ -1,5 +1,6 @@
 package com.etherblood.cardsmasterserver.core;
 
+import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
@@ -15,7 +16,7 @@ import javax.validation.constraints.NotNull;
  * @author Philipp
  */
 @MappedSuperclass
-public abstract class MutableEntity {
+public abstract class MutableEntity implements Serializable {
 
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)

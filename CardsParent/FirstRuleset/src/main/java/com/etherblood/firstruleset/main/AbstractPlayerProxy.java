@@ -1,6 +1,6 @@
 package com.etherblood.firstruleset.main;
 
-import com.etherblood.cardscontext.MatchContext;
+import com.etherblood.cardscontext.CardsContext;
 import com.etherblood.cardsmatch.cardgame.CommandHandler;
 import com.etherblood.cardsmatchapi.PlayerDefinition;
 import com.etherblood.cardsmatchapi.PlayerProxy;
@@ -11,11 +11,11 @@ import com.etherblood.entitysystem.data.EntityId;
  * @author Philipp
  */
 public class AbstractPlayerProxy implements PlayerProxy {
-    private final MatchContext context;
+    private final CardsContext context;
     private final PlayerDefinition definition;
     private EntityId entity;
 
-    public AbstractPlayerProxy(MatchContext context, PlayerDefinition definition) {
+    public AbstractPlayerProxy(CardsContext context, PlayerDefinition definition) {
         this.context = context;
         this.definition = definition;
     }
@@ -38,7 +38,7 @@ public class AbstractPlayerProxy implements PlayerProxy {
         commands.handleCommand(entity, source, targets);
     }
 
-    public MatchContext getContext() {
+    public CardsContext getContext() {
         return context;
     }
 

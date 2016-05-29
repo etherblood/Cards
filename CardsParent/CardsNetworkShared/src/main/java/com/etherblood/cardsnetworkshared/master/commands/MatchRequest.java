@@ -1,5 +1,6 @@
 package com.etherblood.cardsnetworkshared.master.commands;
 
+import com.etherblood.cardsnetworkshared.master.updates.BotTo;
 import com.jme3.network.serializing.Serializable;
 
 /**
@@ -8,16 +9,26 @@ import com.jme3.network.serializing.Serializable;
  */
 @Serializable
 public class MatchRequest {
-    private boolean versusBot;
-
-    public MatchRequest() {
-    }
-
-    public MatchRequest(boolean versusBot) {
-        this.versusBot = versusBot;
-    }
+    private long libraryId;
+    private BotTo bot;
 
     public boolean isVersusBot() {
-        return versusBot;
+        return bot != null;
+    }
+
+    public long getLibraryId() {
+        return libraryId;
+    }
+
+    public BotTo getBot() {
+        return bot;
+    }
+
+    public void setLibraryId(long libraryId) {
+        this.libraryId = libraryId;
+    }
+
+    public void setBot(BotTo bot) {
+        this.bot= bot;
     }
 }

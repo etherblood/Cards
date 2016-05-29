@@ -14,11 +14,8 @@
     
     <modules>
         <module>CardsMasterserver</module>
-        <module>CardsJsonClient</module>
         <module>CardsMatch</module>
         <module>CardsNetworkShared</module>
-        <module>CardsSwingClient</module>
-        <module>CardsSwingDisplay</module>
         <module>EntitySystem</module>
         <module>EventSystem</module>
         <module>AnnotationProcessors</module>
