@@ -10,7 +10,6 @@ import com.etherblood.cardsmasterserver.network.messages.MessageHandler;
 import com.etherblood.cardsmasterserver.users.UserService;
 import com.etherblood.cardsmasterserver.users.events.PreUserDeleteEvent;
 import com.etherblood.cardsmasterserver.users.events.UserRegisteredEvent;
-import com.etherblood.cardsmasterserver.users.model.UserAccount;
 import com.etherblood.cardsnetworkshared.master.commands.AvailableBotsRequest;
 import com.etherblood.cardsnetworkshared.master.commands.CardCollectionRequest;
 import com.etherblood.cardsnetworkshared.master.updates.AvailableBotsUpdate;
@@ -69,7 +68,7 @@ public class CardService {
     @MessageHandler
     @Transactional
     @PreAuthorize("hasRole('ROLE_USER')")
-    public AvailableBotsUpdate onUserLogout(AvailableBotsRequest event) {
+    public AvailableBotsUpdate onAvailableBotsRequest(AvailableBotsRequest event) {
         AvailableBotsUpdate update = new AvailableBotsUpdate();
         update.bots = new ArrayList<>();
         List<CardGroup> botGroups = cardGroupsRepo.getBotLibraries();
@@ -83,12 +82,6 @@ public class CardService {
                 for (CardTemplate template : cardTemplateRepo.randomTemplates(20)) {
                     addCard(collection, template.getName(), 1);
                 }
-    //            addCard(collection, "Wisp", 3);
-    //            addCard(collection, "River Crocolisk", 4);
-    //            addCard(collection, "Faerie Dragon", 3);
-    //            addCard(collection, "Mirth", 2);
-    //            addCard(collection, "Leeroy Jenkins", 1);
-    //            addCard(collection, "Black Dragon", 1);
                 botGroups.add(collection);
             }
         }
@@ -148,7 +141,6 @@ public class CardService {
         addCard(collection, "Mirth", 2);
         addCard(collection, "Leeroy Jenkins", 1);
         addCard(collection, "Black Dragon", 1);
-        addCard(collection, "Free Win", 1);
         
         CardGroup library = new CardGroup();
         library.setDisplayName("Library");
@@ -162,7 +154,6 @@ public class CardService {
         addCard(library, "Mirth", 2);
         addCard(library, "Leeroy Jenkins", 1);
         addCard(library, "Black Dragon", 1);
-        addCard(library, "Free Win", 1);
     }
     
     private void addCard(CardGroup collection, String templateName, int amount) {

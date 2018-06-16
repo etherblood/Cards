@@ -24,7 +24,6 @@ public class ApplyAttackSystem extends AbstractMatchSystem<AttackEvent> {
         AttackComponent attack = data.get(event.source, AttackComponent.class);
         if(attack != null && attack.attack > 0) {
             damageEvents.add(new DamageEvent(event.source, event.target, attack.attack));
-            enqueueEvent(new DamageEvent(event.source, event.target, attack.attack));
         }
         attack = data.get(event.target, AttackComponent.class);
         if(attack != null && attack.attack > 0) {
