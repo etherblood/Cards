@@ -20,7 +20,7 @@
         <spring.version>4.2.4.RELEASE</spring.version>
         <spring.security.version>4.0.3.RELEASE</spring.security.version>
         <hibernate.version>5.0.7.Final</hibernate.version>
-        <hibernate.validator.version>5.2.2.Final</hibernate.validator.version>
+        <hibernate.validator.version>5.3.6.Final</hibernate.validator.version>
         <querydsl.version>3.7.0</querydsl.version>
     </properties>
     
